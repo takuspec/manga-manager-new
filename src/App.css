@@ -1,0 +1,671 @@
+body {
+  margin: 0;
+  background: #111827;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 16px 20px 100px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.page-title-row {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.page-title-row .title {
+  margin-bottom: 0;
+  padding: 0 54px;
+  text-align: center;
+}
+
+.data-action {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.page-settings-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.data-action-menu {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  background: #1f2937;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+.data-action-menu button {
+  width: 100%;
+  text-align: left;
+  background: #374151;
+}
+
+.data-import-input {
+  display: none;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input,
+select {
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #1f2937;
+  color: white;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #111827;
+  border-top: 1px solid #374151;
+}
+
+.bottom-nav button {
+  flex: 1;
+}
+
+/* 雑誌一覧 */
+
+.magazine-add-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.magazine-add-row input {
+  flex: 1;
+}
+
+.magazine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.magazine-list-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #1f2937;
+  border-radius: 20px;
+  padding: 14px;
+  cursor: pointer;
+}
+
+.magazine-cover {
+  width: 72px;
+  height: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #374151;
+}
+
+.magazine-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.magazine-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.magazine-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.magazine-stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #cbd5e1;
+}
+
+.magazine-stat span {
+  color: white;
+  font-weight: 700;
+}
+
+.magazine-menu-button {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  font-size: 24px;
+}
+
+/* 連載一覧 */
+
+.series-page-header {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 86px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.series-page-title {
+  text-align: center;
+  margin-bottom: 0;
+  min-width: 0;
+  font-size: clamp(18px, 5vw, 22px);
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.series-page-header .back-button,
+.series-page-header .mode-button {
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.latest-issue-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.latest-issue-box span {
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.latest-issue-box strong {
+  color: #60a5fa;
+  font-size: 20px;
+}
+
+.sort-row {
+  margin-bottom: 16px;
+}
+
+.sort-row select {
+  width: 100%;
+}
+
+.sort-row-with-button {
+  display: flex;
+  gap: 10px;
+}
+
+.sort-row-with-button select {
+  flex: 1;
+}
+
+.sort-row-with-button button {
+  width: 88px;
+}
+
+.bulk-issue-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.bulk-issue-box select {
+  width: 110px;
+}
+
+.bulk-issue-box input {
+  width: 72px;
+}
+
+.bulk-issue-box button {
+  flex: 1;
+}
+
+.series-tool-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.series-tool-row button {
+  height: 54px;
+  line-height: 1.2;
+}
+
+.minus-button {
+  background: #1e3a8a;
+}
+
+.series-list-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px 1fr 58px;
+  gap: 14px;
+  align-items: center;
+  background: linear-gradient(135deg, #1f2937, #111827);
+  border: 1px solid #263244;
+  border-radius: 20px;
+  padding: 14px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.series-list-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 999px;
+  background: #2563eb;
+}
+
+.series-cover-small {
+  width: 92px;
+  height: 124px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.series-cover-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.series-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.series-issue {
+  color: #9ca3af;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.series-issue span {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.series-step-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.series-step-buttons button {
+  width: 52px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.series-popup-menu {
+  grid-column: 1 / -1;
+  margin: 10px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.series-popup-menu button {
+  width: 100%;
+  padding: 12px;
+  background: #1f2937;
+  text-align: left;
+}
+
+/* グリッド */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: #1f2937;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover.large {
+  width: 120px;
+  height: 170px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-title {
+  padding: 8px 8px 2px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-issue {
+  padding: 0 8px 8px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.card-unread {
+  margin: 0 8px 8px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.card.selected {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #1e3a8a, #111827);
+}
+
+.card.selected .cover {
+  position: relative;
+}
+
+.card.selected .cover::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.55);
+  color: white;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.completed {
+  opacity: 0.55;
+}
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  background: #374151;
+  font-size: 12px;
+}
+
+/* 編集画面 */
+
+.edit-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.edit-title {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.back-icon-button {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+}
+
+.edit-page {
+  background: linear-gradient(135deg, #1f2937, #111827);
+  border: 1px solid #263244;
+  border-radius: 24px;
+  padding: 20px;
+  margin-top: 12px;
+}
+
+.image-upload-area {
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 24px;
+}
+
+.edit-group {
+  margin-bottom: 20px;
+}
+
+.edit-group > div {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.edit-page input,
+.edit-page select {
+  width: 100%;
+  font-size: 16px;
+}
+
+.save-button,
+.delete-button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+  font-size: 16px;
+}
+
+.delete-button {
+  background: #7f1d1d;
+}
+
+/* 完結 雑誌一覧 */
+
+.completed-magazine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.completed-magazine-card {
+  display: grid;
+  grid-template-columns: 72px 1fr 24px;
+  gap: 14px;
+  align-items: center;
+  min-height: 118px;
+  padding: 14px;
+  border-radius: 20px;
+  background: #1f2937;
+  border: 1px solid #263244;
+  cursor: pointer;
+}
+
+.completed-magazine-card .magazine-cover {
+  width: 72px;
+  height: 92px;
+}
+
+.completed-magazine-card .magazine-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.completed-magazine-card .magazine-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.completed-magazine-card .magazine-stat {
+  justify-content: flex-start;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.completed-magazine-card .magazine-stat span {
+  color: #60a5fa;
+  font-weight: 800;
+}
+
+.completed-magazine-arrow {
+  text-align: right;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  opacity: 0.9;
+}
+
+/* 完結 作品カード */
+
+.completed-issue-row {
+  display: grid;
+  grid-template-columns: 24px 48px 26px;
+  column-gap: 2px;
+  align-items: center;
+  padding: 0 4px 2px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.completed-issue-label {
+  color: #9ca3af;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.completed-issue-year {
+  color: #60a5fa;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.completed-issue-number {
+  color: #60a5fa;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.completed-issue-row.harta {
+  grid-template-columns: 24px minmax(38px, 1fr) 28px;
+}
+
+.completed-issue-row.harta .completed-issue-number {
+  min-width: 0;
+  display: block;
+  text-align: right;
+  overflow: visible;
+}
+
+.completed-issue-row.harta .completed-issue-year {
+  text-align: right;
+}
+
+.completed-issue-volume {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
