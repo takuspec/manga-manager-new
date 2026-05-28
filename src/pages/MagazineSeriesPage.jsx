@@ -3,6 +3,7 @@ import ImageView from '../components/ImageView'
 
 import {
   formatIssue,
+  getYearOptions,
   getEstimatedLatestIssueInfo
 } from '../utils/issueUtils'
 
@@ -74,11 +75,7 @@ function MagazineSeriesPage({
     )
 
   const yearOptions =
-    Array.from(
-      { length: 11 },
-      (_, i) =>
-        new Date().getFullYear() - 5 + i
-    )
+    getYearOptions()
 
   const [
     showSeriesControls,

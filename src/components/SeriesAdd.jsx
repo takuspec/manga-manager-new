@@ -1,6 +1,9 @@
 ﻿import { useState } from 'react'
 import ImageCropModal from './ImageCropModal'
 import ImageView from './ImageView'
+import {
+  getYearOptions
+} from '../utils/issueUtils'
 
 function SeriesAdd({
   newSeriesTitle,
@@ -22,11 +25,7 @@ function SeriesAdd({
   goBack
 }) {
   const yearOptions =
-    Array.from(
-      { length: 11 },
-      (_, i) =>
-        new Date().getFullYear() - 5 + i
-    )
+    getYearOptions()
 
   const isHarta =
     magazine?.frequency === 'harta'

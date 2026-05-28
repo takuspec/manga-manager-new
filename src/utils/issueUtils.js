@@ -4,6 +4,13 @@ export const todayString = () => {
     .slice(0, 10)
 }
 
+export const getYearOptions = () => {
+  return Array.from(
+    { length: 2050 - 1980 + 1 },
+    (_, i) => 1980 + i
+  )
+}
+
 export const has53Weeks = (year) => {
   const dec31 = new Date(year, 11, 31)
   const day = dec31.getDay()

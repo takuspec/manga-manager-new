@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import ImageCropModal from '../components/ImageCropModal'
 import ImageView from '../components/ImageView'
+import {
+  getYearOptions
+} from '../utils/issueUtils'
 
 function MagazineEditPage({
   magazineList,
@@ -73,11 +76,7 @@ function MagazineEditPage({
   ] = useState(null)
 
   const yearOptions =
-    Array.from(
-      { length: 11 },
-      (_, i) =>
-        new Date().getFullYear() - 5 + i
-    )
+    getYearOptions()
 
   useEffect(() => {
     if (magazine) {

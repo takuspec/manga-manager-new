@@ -2,7 +2,8 @@ import ImageCropModal from './ImageCropModal'
 import ImageView from './ImageView'
 import { useEffect, useState } from 'react'
 import {
-  getHartaYearMonthFromVolume
+  getHartaYearMonthFromVolume,
+  getYearOptions
 } from '../utils/issueUtils'
 
 function SeriesEdit({
@@ -20,11 +21,7 @@ function SeriesEdit({
   saveCroppedImage
 }) {
   const yearOptions =
-    Array.from(
-      { length: 11 },
-      (_, i) =>
-        new Date().getFullYear() - 5 + i
-    )
+    getYearOptions()
 
   const magazine =
     magazineList.find((item) => {
