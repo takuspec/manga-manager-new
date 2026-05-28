@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 
 function DataActionMenu({
   onBackupData,
-  onImportData
+  onImportData,
+  onWeeklySettings
 }) {
   const [isOpen, setIsOpen] =
     useState(false)
@@ -80,6 +81,18 @@ function DataActionMenu({
 
       {isOpen && (
         <div className="data-action-menu">
+          {onWeeklySettings && (
+            <button
+              type="button"
+              onClick={() => {
+                onWeeklySettings()
+                setIsOpen(false)
+              }}
+            >
+              週刊誌情報
+            </button>
+          )}
+
           <button
             type="button"
             onClick={handleImportButtonClick}

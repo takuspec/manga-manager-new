@@ -15,6 +15,8 @@ import SeriesAddPage from './pages/SeriesAddPage'
 import SeriesEditPage from './pages/SeriesEditPage'
 import useMangaData from './hooks/useMangaData'
 import CompletedSeriesPage from './pages/CompletedSeriesPage'
+import WeeklySettingsPage from './pages/WeeklySettingsPage'
+import WeeklyIssueRulesPage from './pages/WeeklyIssueRulesPage'
 
 import {
   getEstimatedLatestIssue,
@@ -111,6 +113,8 @@ function App() {
     saveCroppedMagazineImage,
     backupData,
     importData,
+    updateWeeklyIssueRule,
+    updateWeeklyIssueRules,
     handleImageUpload
   } = useMangaData({
     navigate,
@@ -296,6 +300,32 @@ function App() {
             }
             navigate={navigate}
             useParams={useParams}
+          />
+        }
+      />
+
+      <Route
+        path="/weekly-settings"
+        element={
+          <WeeklySettingsPage
+            magazineList={magazineList}
+            navigate={navigate}
+          />
+        }
+      />
+
+      <Route
+        path="/weekly-settings/:magazineId"
+        element={
+          <WeeklyIssueRulesPage
+            magazineList={magazineList}
+            updateWeeklyIssueRule={
+              updateWeeklyIssueRule
+            }
+            updateWeeklyIssueRules={
+              updateWeeklyIssueRules
+            }
+            navigate={navigate}
           />
         }
       />

@@ -28,6 +28,9 @@ function MagazineListPage({
       <DataActionMenu
         onBackupData={onBackupData}
         onImportData={onImportData}
+        onWeeklySettings={() =>
+          navigate('/weekly-settings')
+        }
       />
       </div>
 

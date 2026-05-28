@@ -1,0 +1,267 @@
+import {
+  useRef,
+  useState
+} from 'react'
+import { useParams } from 'react-router-dom'
+import {
+  getWeeklyFinalIssue,
+  getYearOptions
+} from '../utils/issueUtils'
+
+function WeeklyIssueRulesPage({
+  magazineList,
+  updateWeeklyIssueRule,
+  updateWeeklyIssueRules,
+  navigate
+}) {
+  const params = useParams()
+  const currentYear =
+    new Date().getFullYear()
+  const years =
+    getYearOptions()
+
+  const [rangeStart, setRangeStart] =
+    useState(1980)
+  const [rangeEnd, setRangeEnd] =
+    useState(2050)
+
+  const currentYearRef =
+    useRef(null)
+
+  const magazineId =
+    Number(params.magazineId)
+
+  const magazine =
+    magazineList.find((item) => {
+      return item.id === magazineId
+    })
+
+  const applyAll = (finalIssue) => {
+    const rules = {}
+
+    years.forEach((year) => {
+      rules[year] = finalIssue
+    })
+
+    updateWeeklyIssueRules(
+      magazineId,
+      rules
+    )
+  }
+
+  const applyRange = (finalIssue) => {
+    const start =
+      Math.max(
+        1980,
+        Math.min(
+          Number(rangeStart),
+          Number(rangeEnd)
+        )
+      )
+
+    const end =
+      Math.min(
+        2050,
+        Math.max(
+          Number(rangeStart),
+          Number(rangeEnd)
+        )
+      )
+
+    const rules = {}
+
+    for (
+      let year = start;
+      year <= end;
+      year += 1
+    ) {
+      rules[year] = finalIssue
+    }
+
+    updateWeeklyIssueRules(
+      magazineId,
+      rules
+    )
+  }
+
+  if (
+    !magazine ||
+    magazine.frequency !== 'weekly'
+  ) {
+    return (
+      <div className="app">
+        <button
+          className="back-button"
+          onClick={() =>
+            navigate('/weekly-settings')
+          }
+        >
+          ← 戻る
+        </button>
+
+        <div className="title">
+          週刊誌が見つかりません
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="app">
+      <div className="series-page-header">
+        <button
+          className="back-button"
+          onClick={() =>
+            navigate('/weekly-settings')
+          }
+        >
+          ← 戻る
+        </button>
+
+        <div className="title series-page-title">
+          {magazine.name}
+        </div>
+
+        <button
+          className="mode-button"
+          onClick={() =>
+            currentYearRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            })
+          }
+        >
+          今年へ
+        </button>
+      </div>
+
+      <div className="weekly-bulk-box">
+        <div className="weekly-bulk-buttons">
+          <button
+            type="button"
+            onClick={() => applyAll(52)}
+          >
+            全て52号
+          </button>
+
+          <button
+            type="button"
+            onClick={() => applyAll(53)}
+          >
+            全て53号
+          </button>
+        </div>
+
+        <div className="weekly-range-row">
+          <input
+            type="number"
+            min="1980"
+            max="2050"
+            value={rangeStart}
+            onChange={(e) =>
+              setRangeStart(e.target.value)
+            }
+          />
+
+          <span>〜</span>
+
+          <input
+            type="number"
+            min="1980"
+            max="2050"
+            value={rangeEnd}
+            onChange={(e) =>
+              setRangeEnd(e.target.value)
+            }
+          />
+        </div>
+
+        <div className="weekly-bulk-buttons">
+          <button
+            type="button"
+            onClick={() => applyRange(52)}
+          >
+            範囲を52号
+          </button>
+
+          <button
+            type="button"
+            onClick={() => applyRange(53)}
+          >
+            範囲を53号
+          </button>
+        </div>
+      </div>
+
+      <div className="weekly-year-list">
+        {years.map((year) => {
+          const selected =
+            getWeeklyFinalIssue(
+              magazine,
+              year
+            )
+
+          return (
+            <div
+              key={year}
+              ref={
+                year === currentYear
+                  ? currentYearRef
+                  : null
+              }
+              className={`weekly-year-row ${
+                year === currentYear
+                  ? 'current'
+                  : ''
+              }`}
+            >
+              <div className="weekly-year-label">
+                {year}年
+              </div>
+
+              <div className="weekly-issue-toggle">
+                <button
+                  type="button"
+                  className={
+                    selected === 52
+                      ? 'active'
+                      : ''
+                  }
+                  onClick={() =>
+                    updateWeeklyIssueRule(
+                      magazineId,
+                      year,
+                      52
+                    )
+                  }
+                >
+                  52号
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    selected === 53
+                      ? 'active'
+                      : ''
+                  }
+                  onClick={() =>
+                    updateWeeklyIssueRule(
+                      magazineId,
+                      year,
+                      53
+                    )
+                  }
+                >
+                  53号
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default WeeklyIssueRulesPage

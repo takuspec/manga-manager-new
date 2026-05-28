@@ -340,6 +340,7 @@ function useMangaData({
       releaseDate: 1,
       baseDate: todayString(),
       baseIssue: 1,
+      weeklyIssueRules: {},
       imageId: '',
       image: ''
     }
@@ -688,6 +689,54 @@ function useMangaData({
         })
       )
     }
+
+  const updateWeeklyIssueRule = (
+    magazineId,
+    year,
+    finalIssue
+  ) => {
+    const normalizedIssue =
+      Number(finalIssue) === 53
+        ? 53
+        : 52
+
+    setMagazineList((prevList) =>
+      prevList.map((magazine) => {
+        if (magazine.id !== magazineId) {
+          return magazine
+        }
+
+        return {
+          ...magazine,
+          weeklyIssueRules: {
+            ...(magazine.weeklyIssueRules || {}),
+            [year]: normalizedIssue
+          }
+        }
+      })
+    )
+  }
+
+  const updateWeeklyIssueRules = (
+    magazineId,
+    rules
+  ) => {
+    setMagazineList((prevList) =>
+      prevList.map((magazine) => {
+        if (magazine.id !== magazineId) {
+          return magazine
+        }
+
+        return {
+          ...magazine,
+          weeklyIssueRules: {
+            ...(magazine.weeklyIssueRules || {}),
+            ...rules
+          }
+        }
+      })
+    )
+  }
 
   const addIssue = (id) => {
     setSeriesList((prevList) =>
@@ -1152,6 +1201,8 @@ function useMangaData({
     saveCroppedMagazineImage,
     backupData,
     importData,
+    updateWeeklyIssueRule,
+    updateWeeklyIssueRules,
     updateHartaGroupDirect,
     handleImageUpload
   }

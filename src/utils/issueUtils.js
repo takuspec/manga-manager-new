@@ -27,6 +27,20 @@ export const has53Weeks = (year) => {
   )
 }
 
+export const getWeeklyFinalIssue = (
+  magazine,
+  year
+) => {
+  const finalIssue =
+    Number(
+      magazine?.weeklyIssueRules?.[year]
+    )
+
+  return finalIssue === 53
+    ? 53
+    : 52
+}
+
 export const HARTA_RELEASE_MONTHS = [
   2,
   3,
@@ -238,9 +252,10 @@ export const getIssuesPerYear = (
     return 12
   }
 
-  return has53Weeks(year)
-    ? 53
-    : 52
+  return getWeeklyFinalIssue(
+    magazine,
+    year
+  )
 }
 
 export const getIssueSerial = (
@@ -254,7 +269,7 @@ export const getIssueSerial = (
 
   let total = 0
 
-  for (let y = 2000; y < year; y++) {
+  for (let y = 1980; y < year; y++) {
     total += getIssuesPerYear(
       magazine,
       y
