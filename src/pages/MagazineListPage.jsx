@@ -3,6 +3,7 @@ import {
   getEstimatedLatestIssueInfo
 } from '../utils/issueUtils'
 import DataActionMenu from '../components/DataActionMenu'
+import ImageView from '../components/ImageView'
 
 function MagazineListPage({
   magazineList,
@@ -96,20 +97,10 @@ function MagazineListPage({
 
               <div className="magazine-cover">
 
-                {coverImage ? (
-
-                  <img
-                    src={coverImage}
-                    alt=""
-                  />
-
-                ) : (
-
-                  <div className="no-image">
-                    NO IMAGE
-                  </div>
-
-                )}
+                <ImageView
+                  imageId={coverImage.imageId}
+                  fallbackImage={coverImage.image}
+                />
 
               </div>
 

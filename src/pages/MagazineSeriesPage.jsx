@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ImageView from '../components/ImageView'
 
 import {
   formatIssue,
@@ -389,20 +390,10 @@ function MagazineSeriesPage({
             >
               <div className="series-cover-small">
 
-                {item.image ? (
-
-                  <img
-                    src={item.image}
-                    alt=""
-                  />
-
-                ) : (
-
-                  <div className="no-image">
-                    NO IMAGE
-                  </div>
-
-                )}
+                <ImageView
+                  imageId={item.imageId}
+                  fallbackImage={item.image}
+                />
 
               </div>
 
@@ -555,20 +546,10 @@ function MagazineSeriesPage({
 
               <div className="cover">
 
-                {item.image ? (
-
-                  <img
-                    src={item.image}
-                    alt=""
-                  />
-
-                ) : (
-
-                  <div className="no-image">
-                    NO IMAGE
-                  </div>
-
-                )}
+                <ImageView
+                  imageId={item.imageId}
+                  fallbackImage={item.image}
+                />
 
               </div>
 

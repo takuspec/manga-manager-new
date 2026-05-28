@@ -9,9 +9,189 @@ import {
   getNextPublishedIssue,
   getPrevPublishedIssue
 } from '../utils/issueUtils'
+import {
+  cleanupUnusedImages,
+  dataUrlToBlob,
+  deleteImage,
+  getImageBackupEntries,
+  getImageStorageStats,
+  restoreImageBackupEntries,
+  saveImageBlob
+} from '../utils/imageDb'
 
 const MAGAZINE_STORAGE_KEY = 'magazines-v3'
 const SERIES_STORAGE_KEY = 'series-v2'
+const IMAGE_MIGRATION_COMPLETE_KEY =
+  'image-migration-complete-v1'
+const LEGACY_IMAGE_MIGRATION_LIMIT = 5
+
+let hasShownStorageAlert = false
+
+function isImageDataUrl(value) {
+  return (
+    typeof value === 'string' &&
+    value.startsWith('data:image/')
+  )
+}
+
+async function saveImageValue(imageValue) {
+  if (!imageValue) {
+    return ''
+  }
+
+  if (imageValue instanceof Blob) {
+    return saveImageBlob(imageValue)
+  }
+
+  if (isImageDataUrl(imageValue)) {
+    return saveImageBlob(
+      dataUrlToBlob(imageValue)
+    )
+  }
+
+  return ''
+}
+
+function collectUsedImageIds(
+  magazineList,
+  seriesList
+) {
+  return [
+    ...magazineList.map((item) => {
+      return item.imageId
+    }),
+    ...seriesList.map((item) => {
+      return item.imageId
+    })
+  ].filter(Boolean)
+}
+
+function safeSetLocalStorage(
+  key,
+  value
+) {
+  try {
+    localStorage.setItem(
+      key,
+      value
+    )
+  } catch (error) {
+    console.error(error)
+
+    if (!hasShownStorageAlert) {
+      hasShownStorageAlert = true
+      window.alert(
+        '保存容量が上限に達しました。画像を減らすかバックアップしてください。'
+      )
+    }
+  }
+}
+
+function safeSetLocalStorageWithDiagnostics(
+  key,
+  value,
+  onError
+) {
+  const sizeKB =
+    new Blob([value]).size / 1024
+
+  console.log(
+    `${key} size KB:`,
+    sizeKB.toFixed(1)
+  )
+
+  if (value.includes('data:image/')) {
+    console.warn(
+      `${key} still contains image DataURL data.`
+    )
+  }
+
+  try {
+    localStorage.setItem(
+      key,
+      value
+    )
+  } catch (error) {
+    console.error(error)
+
+    if (!hasShownStorageAlert) {
+      hasShownStorageAlert = true
+      const message =
+        '保存容量が上限に達しました。画像を減らすかバックアップしてください。'
+
+      onError?.(message)
+
+      window.alert(message)
+    }
+  }
+}
+
+function waitForIdle() {
+  return new Promise((resolve) => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(resolve, {
+        timeout: 800
+      })
+      return
+    }
+
+    window.setTimeout(resolve, 0)
+  })
+}
+
+async function migrateLegacyImagesInListSafely(
+  list,
+  budget = {
+    count: 0,
+    limit: Infinity
+  }
+) {
+  let changed = false
+  let hasRemaining = false
+  const nextList = []
+
+  for (const item of list) {
+    if (
+      item.imageId ||
+      !isImageDataUrl(item.image)
+    ) {
+      nextList.push(item)
+      continue
+    }
+
+    if (budget.count >= budget.limit) {
+      hasRemaining = true
+      nextList.push(item)
+      continue
+    }
+
+    await waitForIdle()
+
+    try {
+      const imageId =
+        await saveImageValue(item.image)
+
+      budget.count += 1
+      changed = true
+
+      nextList.push({
+        ...item,
+        imageId,
+        image: ''
+      })
+    } catch (error) {
+      console.error(error)
+      hasRemaining = true
+      nextList.push(item)
+    }
+  }
+
+  return {
+    list: nextList,
+    changed,
+    hasRemaining
+  }
+}
 
 function useMangaData({
   navigate,
@@ -45,17 +225,105 @@ function useMangaData({
         : defaultSeries
     })
 
+  const [
+    storageErrorMessage,
+    setStorageErrorMessage
+  ] = useState('')
+
   useEffect(() => {
-    localStorage.setItem(
+    let cancelled = false
+
+    const migrateImages = async () => {
+      if (
+        localStorage.getItem(
+          IMAGE_MIGRATION_COMPLETE_KEY
+        ) === 'true'
+      ) {
+        return
+      }
+
+      const budget = {
+        count: 0,
+        limit: LEGACY_IMAGE_MIGRATION_LIMIT
+      }
+
+      const migratedMagazines =
+        await migrateLegacyImagesInListSafely(
+          magazineList,
+          budget
+        )
+
+      const migratedSeries =
+        await migrateLegacyImagesInListSafely(
+          seriesList,
+          budget
+        )
+
+      if (cancelled) {
+        return
+      }
+
+      if (migratedMagazines.changed) {
+        setMagazineList(
+          migratedMagazines.list
+        )
+      }
+
+      if (migratedSeries.changed) {
+        setSeriesList(
+          migratedSeries.list
+        )
+      }
+
+      await cleanupUnusedImages(
+        collectUsedImageIds(
+          migratedMagazines.list,
+          migratedSeries.list
+        )
+      )
+
+      const hasRemaining =
+        migratedMagazines.hasRemaining ||
+        migratedSeries.hasRemaining
+
+      if (!hasRemaining) {
+        localStorage.setItem(
+          IMAGE_MIGRATION_COMPLETE_KEY,
+          'true'
+        )
+      }
+
+      const stats =
+        await getImageStorageStats()
+
+      console.log(
+        'image storage:',
+        stats
+      )
+    }
+
+    migrateImages().catch((error) => {
+      console.error(error)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    safeSetLocalStorageWithDiagnostics(
       MAGAZINE_STORAGE_KEY,
-      JSON.stringify(magazineList)
+      JSON.stringify(magazineList),
+      setStorageErrorMessage
     )
   }, [magazineList])
 
   useEffect(() => {
-    localStorage.setItem(
+    safeSetLocalStorageWithDiagnostics(
       SERIES_STORAGE_KEY,
-      JSON.stringify(seriesList)
+      JSON.stringify(seriesList),
+      setStorageErrorMessage
     )
   }, [seriesList])
 
@@ -72,6 +340,7 @@ function useMangaData({
       releaseDate: 1,
       baseDate: todayString(),
       baseIssue: 1,
+      imageId: '',
       image: ''
     }
 
@@ -83,7 +352,7 @@ function useMangaData({
     setNewMagazineName('')
   }
 
-  const saveMagazineEdit = (
+  const saveMagazineEdit = async (
     magazineId,
     newName,
     frequency,
@@ -91,28 +360,64 @@ function useMangaData({
     releaseDate,
     currentIssueYear,
     currentIssue,
-    image
+    imageBlob,
+    oldImageId
   ) => {
+    const newImageId =
+      await saveImageValue(imageBlob)
+
     setMagazineList((prevList) =>
       prevList.map((magazine) => {
-        return magazine.id === magazineId
-          ? {
-              ...magazine,
-              name: newName,
-              frequency: frequency,
-              releaseDay: releaseDay,
-              releaseDate: releaseDate,
-              baseIssueYear: currentIssueYear,
-              baseIssue: currentIssue,
-              baseDate: todayString(),
-              image: image
-            }
-          : magazine
+        if (magazine.id !== magazineId) {
+          return magazine
+        }
+
+        return {
+          ...magazine,
+          name: newName,
+          frequency: frequency,
+          releaseDay: releaseDay,
+          releaseDate: releaseDate,
+          baseIssueYear: currentIssueYear,
+          baseIssue: currentIssue,
+          baseDate: todayString(),
+          ...(newImageId
+            ? {
+                imageId: newImageId,
+                image: ''
+              }
+            : {})
+        }
       })
     )
+
+    if (
+      newImageId &&
+      oldImageId &&
+      oldImageId !== newImageId
+    ) {
+      await deleteImage(oldImageId)
+    }
   }
 
   const deleteMagazine = (magazineId) => {
+    const imageIdsToDelete = [
+      ...magazineList
+        .filter((magazine) => {
+          return magazine.id === magazineId
+        })
+        .map((magazine) => {
+          return magazine.imageId
+        }),
+      ...seriesList
+        .filter((item) => {
+          return item.magazineId === magazineId
+        })
+        .map((item) => {
+          return item.imageId
+        })
+    ].filter(Boolean)
+
     setMagazineList((prevList) =>
       prevList.filter((magazine) => {
         return magazine.id !== magazineId
@@ -125,52 +430,83 @@ function useMangaData({
       })
     )
 
+    imageIdsToDelete.forEach((imageId) => {
+      deleteImage(imageId).catch((error) => {
+        console.error(error)
+      })
+    })
+
     navigate('/')
   }
 
   const handleMagazineImageUpload =
-    (e, magazineId) => {
+    async (e, magazineId) => {
       const file = e.target.files[0]
 
       if (!file) {
         return
       }
 
-      const reader = new FileReader()
+      const newImageId =
+        await saveImageBlob(file)
 
-      reader.onload = () => {
-        setMagazineList((prevList) =>
-          prevList.map((magazine) => {
-            return magazine.id === magazineId
-              ? {
-                  ...magazine,
-                  image: reader.result
-                }
-              : magazine
-          })
-        )
+      let oldImageId = ''
+
+      setMagazineList((prevList) =>
+        prevList.map((magazine) => {
+          if (magazine.id !== magazineId) {
+            return magazine
+          }
+
+          oldImageId =
+            magazine.imageId || ''
+
+          return {
+            ...magazine,
+            imageId: newImageId,
+            image: ''
+          }
+        })
+      )
+
+      if (oldImageId) {
+        await deleteImage(oldImageId)
       }
-
-      reader.readAsDataURL(file)
     }
 
-  const saveCroppedMagazineImage = (
+  const saveCroppedMagazineImage = async (
     magazineId,
-    croppedImage
+    croppedImage,
+    oldImageId
   ) => {
+    const newImageId =
+      await saveImageValue(croppedImage)
+
+    if (!newImageId) {
+      return
+    }
+
     setMagazineList((prevList) =>
       prevList.map((magazine) => {
         return magazine.id === magazineId
           ? {
               ...magazine,
-              image: croppedImage
+              imageId: newImageId,
+              image: ''
             }
           : magazine
       })
     )
+
+    if (
+      oldImageId &&
+      oldImageId !== newImageId
+    ) {
+      await deleteImage(oldImageId)
+    }
   }
 
-  const saveNewSeries = ({
+  const saveNewSeries = async ({
     magazineId,
     newSeriesTitle,
     newSeriesStartIssueYear,
@@ -219,6 +555,9 @@ function useMangaData({
           ).year
         : Number(newSeriesIssueYear)
 
+    const imageId =
+      await saveImageValue(newSeriesImage)
+
   const newSeries = {
     id: Date.now(),
     title: newSeriesTitle,
@@ -233,7 +572,8 @@ function useMangaData({
     hartaGroup: newSeriesHartaGroup,
 
     status: 'ongoing',
-    image: newSeriesImage
+    imageId: imageId,
+    image: ''
   }
 
     setSeriesList((prevList) => [
@@ -256,11 +596,22 @@ function useMangaData({
   }
 
   const deleteSeries = (id) => {
+    const oldImageId =
+      seriesList.find((item) => {
+        return item.id === id
+      })?.imageId
+
     setSeriesList((prevList) =>
       prevList.filter((item) => {
         return item.id !== id
       })
     )
+
+    if (oldImageId) {
+      deleteImage(oldImageId).catch((error) => {
+        console.error(error)
+      })
+    }
 
     navigate(-1)
   }
@@ -544,58 +895,93 @@ function useMangaData({
     setBulkIssueValue('')
   }
 
-  const handleImageUpload = (e, id) => {
+  const handleImageUpload = async (e, id) => {
     const file = e.target.files[0]
 
     if (!file) {
       return
     }
 
-    const reader = new FileReader()
+    const newImageId =
+      await saveImageBlob(file)
 
-    reader.onload = () => {
-      setSeriesList((prevList) =>
-        prevList.map((item) => {
-          return item.id === id
-            ? {
-                ...item,
-                image: reader.result
-              }
-            : item
-        })
-      )
-    }
+    const oldImageId =
+      seriesList.find((item) => {
+        return item.id === id
+      })?.imageId
 
-    reader.readAsDataURL(file)
-  }
-
-  const saveCroppedImage = (
-    id,
-    croppedImage
-  ) => {
     setSeriesList((prevList) =>
       prevList.map((item) => {
         return item.id === id
           ? {
               ...item,
-              image: croppedImage
+              imageId: newImageId,
+              image: ''
             }
           : item
       })
     )
+
+    if (oldImageId) {
+      await deleteImage(oldImageId)
+    }
   }
 
-  const backupData = () => {
+  const saveCroppedImage = async (
+    id,
+    croppedImage,
+    oldImageId
+  ) => {
+    const newImageId =
+      await saveImageValue(croppedImage)
+
+    if (!newImageId) {
+      return
+    }
+
+    setSeriesList((prevList) =>
+      prevList.map((item) => {
+        return item.id === id
+          ? {
+              ...item,
+              imageId: newImageId,
+              image: ''
+            }
+          : item
+      })
+    )
+
+    if (
+      oldImageId &&
+      oldImageId !== newImageId
+    ) {
+      await deleteImage(oldImageId)
+    }
+  }
+
+  const backupData = async () => {
+    const usedImageIds =
+      collectUsedImageIds(
+        magazineList,
+        seriesList
+      )
+
+    const images =
+      await getImageBackupEntries(
+        usedImageIds
+      )
+
     const backup = {
       app: 'manga-manager',
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       storageKeys: {
         magazines: MAGAZINE_STORAGE_KEY,
         series: SERIES_STORAGE_KEY
       },
       magazines: magazineList,
-      series: seriesList
+      series: seriesList,
+      images: images
     }
 
     const blob =
@@ -639,7 +1025,7 @@ function useMangaData({
       const reader =
         new FileReader()
 
-      reader.onload = () => {
+      reader.onload = async () => {
         try {
           const data =
             JSON.parse(reader.result)
@@ -665,20 +1051,65 @@ function useMangaData({
             )
           }
 
-          localStorage.setItem(
+          await restoreImageBackupEntries(
+            data.images || []
+          )
+
+          const nextMagazines =
+            await migrateLegacyImagesInListSafely(
+              importedMagazines,
+              {
+                count: 0,
+                limit: Infinity
+              }
+            )
+
+          const nextSeries =
+            await migrateLegacyImagesInListSafely(
+              importedSeries,
+              {
+                count: 0,
+                limit: Infinity
+              }
+            )
+
+          safeSetLocalStorageWithDiagnostics(
             MAGAZINE_STORAGE_KEY,
-            JSON.stringify(importedMagazines)
+            JSON.stringify(nextMagazines.list),
+            setStorageErrorMessage
           )
 
-          localStorage.setItem(
+          safeSetLocalStorageWithDiagnostics(
             SERIES_STORAGE_KEY,
-            JSON.stringify(importedSeries)
+            JSON.stringify(nextSeries.list),
+            setStorageErrorMessage
           )
 
-          setMagazineList(importedMagazines)
-          setSeriesList(importedSeries)
+          setMagazineList(nextMagazines.list)
+          setSeriesList(nextSeries.list)
           setSelectedSeriesIds([])
           setBulkIssueValue('')
+
+          await cleanupUnusedImages(
+            collectUsedImageIds(
+              nextMagazines.list,
+              nextSeries.list
+            )
+          )
+
+          if (
+            !nextMagazines.hasRemaining &&
+            !nextSeries.hasRemaining
+          ) {
+            localStorage.setItem(
+              IMAGE_MIGRATION_COMPLETE_KEY,
+              'true'
+            )
+          } else {
+            localStorage.removeItem(
+              IMAGE_MIGRATION_COMPLETE_KEY
+            )
+          }
 
           resolve()
         } catch (error) {
@@ -697,6 +1128,9 @@ function useMangaData({
   return {
     magazineList,
     seriesList,
+    storageErrorMessage,
+    clearStorageErrorMessage: () =>
+      setStorageErrorMessage(''),
     addMagazine,
     saveMagazineEdit,
     deleteMagazine,

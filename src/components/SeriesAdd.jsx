@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react'
 import ImageCropModal from './ImageCropModal'
+import ImageView from './ImageView'
 
 function SeriesAdd({
   newSeriesTitle,
@@ -81,16 +82,18 @@ function SeriesAdd({
       <div className="edit-page">
 
         <div className="cover large">
-          {newSeriesImage ? (
-            <img
-              src={newSeriesImage}
-              alt=""
-            />
-          ) : (
-            <div className="no-image">
-              NO IMAGE
-            </div>
-          )}
+          <ImageView
+            imageBlob={
+              newSeriesImage instanceof Blob
+                ? newSeriesImage
+                : null
+            }
+            fallbackImage={
+              typeof newSeriesImage === 'string'
+                ? newSeriesImage
+                : ''
+            }
+          />
         </div>
 
         <div className="image-upload-area">

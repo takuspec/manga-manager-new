@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ImageCropModal from '../components/ImageCropModal'
+import ImageView from '../components/ImageView'
 
 function MagazineEditPage({
   magazineList,
@@ -66,6 +67,11 @@ function MagazineEditPage({
     setEditMagazineImage
   ] = useState('')
 
+  const [
+    editMagazineImageBlob,
+    setEditMagazineImageBlob
+  ] = useState(null)
+
   const yearOptions =
     Array.from(
       { length: 11 },
@@ -82,6 +88,8 @@ function MagazineEditPage({
       setEditMagazineImage(
         magazine.image || ''
       )
+
+      setEditMagazineImageBlob(null)
 
       setEditFrequency(
         magazine.frequency ||
@@ -158,16 +166,11 @@ function MagazineEditPage({
 
         <div className="cover large">
 
-          {editMagazineImage ? (
-            <img
-              src={editMagazineImage}
-              alt=""
-            />
-          ) : (
-            <div className="no-image">
-              NO IMAGE
-            </div>
-          )}
+          <ImageView
+            imageId={magazine.imageId}
+            imageBlob={editMagazineImageBlob}
+            fallbackImage={editMagazineImage}
+          />
 
         </div>
 
@@ -358,8 +361,8 @@ function MagazineEditPage({
 
         <button
           className="save-button"
-          onClick={() => {
-            saveMagazineEdit(
+          onClick={async () => {
+            await saveMagazineEdit(
               magazine.id,
               editMagazineName,
               editFrequency,
@@ -367,7 +370,8 @@ function MagazineEditPage({
               editReleaseDate,
               editCurrentIssueYear,
               editCurrentIssue,
-              editMagazineImage
+              editMagazineImageBlob,
+              magazine.imageId
             )
             navigate(-1)
           }}
@@ -392,9 +396,7 @@ function MagazineEditPage({
         <ImageCropModal
           image={cropTargetImage}
           onSave={(croppedImage) => {
-            setEditMagazineImage(
-              croppedImage
-            )
+            setEditMagazineImageBlob(croppedImage)
 
             setShowCropModal(false)
             setCropTargetImage(null)

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ImageView from '../components/ImageView'
 import {
   formatIssueNumber
 } from '../utils/issueUtils'
@@ -166,20 +167,10 @@ function CompletedSeriesPage({
 
             <div className="cover">
 
-              {item.image ? (
-
-                <img
-                  src={item.image}
-                  alt=""
-                />
-
-              ) : (
-
-                <div className="no-image">
-                  NO IMAGE
-                </div>
-
-              )}
+              <ImageView
+                imageId={item.imageId}
+                fallbackImage={item.image}
+              />
 
             </div>
 

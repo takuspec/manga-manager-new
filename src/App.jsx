@@ -87,6 +87,8 @@ function App() {
   const {
     magazineList,
     seriesList,
+    storageErrorMessage,
+    clearStorageErrorMessage,
     addMagazine,
     saveMagazineEdit,
     deleteMagazine,
@@ -154,24 +156,57 @@ function App() {
   }
 
   const getMagazineCover = (magazine) => {
-    if (magazine.image) {
-      return magazine.image
+    if (
+      magazine.imageId ||
+      magazine.image
+    ) {
+      return {
+        imageId: magazine.imageId || '',
+        image: magazine.image || ''
+      }
     }
 
     const firstSeriesWithImage =
       seriesList.find((item) => {
         return (
           item.magazineId === magazine.id &&
-          item.image
+          (
+            item.imageId ||
+            item.image
+          )
         )
       })
 
     return firstSeriesWithImage
-      ? firstSeriesWithImage.image
-      : ''
+      ? {
+          imageId:
+            firstSeriesWithImage.imageId || '',
+          image:
+            firstSeriesWithImage.image || ''
+        }
+      : {
+          imageId: '',
+          image: ''
+        }
   }
 
   return (
+    <>
+    {storageErrorMessage && (
+      <div className="storage-error-banner">
+        <span>
+          {storageErrorMessage}
+        </span>
+
+        <button
+          type="button"
+          onClick={clearStorageErrorMessage}
+        >
+          閉じる
+        </button>
+      </div>
+    )}
+
     <Routes>
 
       <Route
@@ -354,6 +389,7 @@ function App() {
       />
 
     </Routes>
+    </>
   )
 }
 

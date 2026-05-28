@@ -1,4 +1,5 @@
 import ImageCropModal from './ImageCropModal'
+import ImageView from './ImageView'
 import { useEffect, useState } from 'react'
 import {
   getHartaYearMonthFromVolume
@@ -60,6 +61,11 @@ function SeriesEdit({
     useState(selectedSeries.image || '')
 
   const [
+    localImageBlob,
+    setLocalImageBlob
+  ] = useState(null)
+
+  const [
     localHartaGroup,
     setLocalHartaGroup
   ] = useState(
@@ -78,6 +84,8 @@ function SeriesEdit({
     setLocalImage(
       selectedSeries.image || ''
     )
+
+    setLocalImageBlob(null)
 
     setLocalStartIssueYear(
       selectedSeries.startIssueYear ||
@@ -100,7 +108,7 @@ function SeriesEdit({
     )
   }, [editTitle, selectedSeries])
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const startIssue =
       Number(localStartIssue)
 
@@ -144,9 +152,10 @@ function SeriesEdit({
       issue
     )
 
-    saveCroppedImage(
+    await saveCroppedImage(
       selectedSeries.id,
-      localImage
+      localImageBlob,
+      selectedSeries.imageId
     )
 
     updateHartaGroupDirect(
@@ -178,16 +187,11 @@ function SeriesEdit({
       <div className="edit-page">
 
         <div className="cover large">
-          {localImage ? (
-            <img
-              src={localImage}
-              alt=""
-            />
-          ) : (
-            <div className="no-image">
-              NO IMAGE
-            </div>
-          )}
+          <ImageView
+            imageId={selectedSeries.imageId}
+            imageBlob={localImageBlob}
+            fallbackImage={localImage}
+          />
         </div>
 
         <div className="image-upload-area">
@@ -329,7 +333,7 @@ function SeriesEdit({
           <ImageCropModal
             image={cropTargetImage}
             onSave={(croppedImage) => {
-              setLocalImage(croppedImage)
+              setLocalImageBlob(croppedImage)
 
               setShowCropModal(false)
               setCropTargetImage(null)

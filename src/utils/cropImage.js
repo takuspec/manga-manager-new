@@ -2,8 +2,25 @@ export default async function cropImage(
   imageSrc,
   crop
 ) {
+  const maxWidth = 600
+  const maxHeight = 800
+  const jpegQuality = 0.78
+
   const image =
     await createImage(imageSrc)
+
+  const scale =
+    Math.min(
+      1,
+      maxWidth / crop.width,
+      maxHeight / crop.height
+    )
+
+  const outputWidth =
+    Math.round(crop.width * scale)
+
+  const outputHeight =
+    Math.round(crop.height * scale)
 
   const canvas =
     document.createElement('canvas')
@@ -11,8 +28,14 @@ export default async function cropImage(
   const ctx =
     canvas.getContext('2d')
 
-  canvas.width = crop.width
-  canvas.height = crop.height
+  if (!ctx) {
+    throw new Error(
+      'Canvas context is not available'
+    )
+  }
+
+  canvas.width = outputWidth
+  canvas.height = outputHeight
 
   ctx.drawImage(
     image,
@@ -22,12 +45,29 @@ export default async function cropImage(
     crop.height,
     0,
     0,
-    crop.width,
-    crop.height
+    outputWidth,
+    outputHeight
   )
 
-  return canvas.toDataURL(
-    'image/jpeg'
+  return new Promise(
+    (resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(
+              new Error(
+                'Failed to create image blob'
+              )
+            )
+            return
+          }
+
+          resolve(blob)
+        },
+        'image/jpeg',
+        jpegQuality
+      )
+    }
   )
 }
 

@@ -1,4 +1,5 @@
 import DataActionMenu from '../components/DataActionMenu'
+import ImageView from '../components/ImageView'
 
 function CompletedPage({
   magazineList,
@@ -61,20 +62,10 @@ function CompletedPage({
 
               <div className="magazine-cover">
 
-                {coverImage ? (
-
-                  <img
-                    src={coverImage}
-                    alt=""
-                  />
-
-                ) : (
-
-                  <div className="no-image">
-                    NO IMAGE
-                  </div>
-
-                )}
+                <ImageView
+                  imageId={coverImage.imageId}
+                  fallbackImage={coverImage.image}
+                />
 
               </div>
 

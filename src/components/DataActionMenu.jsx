@@ -10,7 +10,7 @@ function DataActionMenu({
   const fileInputRef =
     useRef(null)
 
-  const handleBackup = () => {
+  const handleBackup = async () => {
     const ok =
       window.confirm(
         'バックアップしますか？'
@@ -20,8 +20,14 @@ function DataActionMenu({
       return
     }
 
-    onBackupData()
-    setIsOpen(false)
+    try {
+      await onBackupData()
+      setIsOpen(false)
+    } catch {
+      window.alert(
+        'バックアップに失敗しました。'
+      )
+    }
   }
 
   const handleImportButtonClick = () => {
