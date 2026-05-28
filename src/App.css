@@ -175,7 +175,8 @@ select {
 .view-mode-selector {
   position: relative;
   z-index: 70;
-  flex: 0 0 112px;
+  flex: 1;
+  min-width: 0;
 }
 
 .view-mode-button {
