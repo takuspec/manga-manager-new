@@ -110,6 +110,34 @@ function MagazineSeriesPage({
     )
   }
 
+  const shouldShowStartIssue =
+    sortMode === 'start'
+
+  const getReadIssueText = (item) => {
+    return formatIssue(
+      item.issueYear ||
+        new Date().getFullYear(),
+      item.issue,
+      selectedMagazine
+    )
+  }
+
+  const getStartIssueText = (item) => {
+    const startIssue =
+      Number(item.startIssue) || 0
+
+    if (!startIssue) {
+      return '-'
+    }
+
+    return formatIssue(
+      item.startIssueYear ||
+        new Date().getFullYear(),
+      startIssue,
+      selectedMagazine
+    )
+  }
+
   const createSortedSeries = () => {
     return seriesList
       .filter((item) => {
@@ -211,9 +239,7 @@ function MagazineSeriesPage({
     magazineId,
     sortMode,
     sortDirection,
-    showCompleted,
-    seriesList,
-    selectedMagazine
+    showCompleted
   ])
 
   const displaySeries =
@@ -224,7 +250,22 @@ function MagazineSeriesPage({
         })
       })
       .filter((item) => {
-        return Boolean(item)
+        if (!item) {
+          return false
+        }
+
+        if (item.magazineId !== magazineId) {
+          return false
+        }
+
+        if (
+          !showCompleted &&
+          item.status === 'completed'
+        ) {
+          return false
+        }
+
+        return true
       })
 
   return (
@@ -445,13 +486,18 @@ function MagazineSeriesPage({
                 <div className="series-issue">
                   読了：
                   <span>
-                    {formatIssue(
-                      item.issueYear || new Date().getFullYear(),
-                      item.issue,
-                      selectedMagazine
-                    )}
+                    {getReadIssueText(item)}
                   </span>
                 </div>
+
+                {shouldShowStartIssue && (
+                  <div className="series-start-issue">
+                    開始：
+                    <span>
+                      {getStartIssueText(item)}
+                    </span>
+                  </div>
+                )}
 
                 <div className="status-badge">
                   {item.status === 'completed'
@@ -551,6 +597,80 @@ function MagazineSeriesPage({
           )
         })
 
+      ) : viewMode === 'compact' ? (
+
+        <div className="series-compact-list">
+
+          {displaySeries.map((item) => {
+            const unreadCount =
+              getUnreadCount(item)
+
+            return (
+              <div
+                className={`series-compact-card ${
+                  item.status === 'completed'
+                    ? 'completed'
+                    : ''
+                }`}
+                key={item.id}
+                onClick={() =>
+                  navigate(
+                    `/series/${item.id}`
+                  )
+                }
+              >
+                <div className="series-compact-main">
+
+                  <div className="series-compact-title">
+                    {item.title}
+                  </div>
+
+                  <div className="series-compact-meta">
+                    <span>
+                      読了 {getReadIssueText(item)}
+                    </span>
+
+                    <span>
+                      {item.status === 'completed'
+                        ? '完結'
+                        : `未読 ${unreadCount}`}
+                    </span>
+
+                    {shouldShowStartIssue && (
+                      <span>
+                        開始 {getStartIssueText(item)}
+                      </span>
+                    )}
+                  </div>
+
+                </div>
+
+                <div className="series-compact-buttons">
+                  <button
+                    className="minus-button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      minusIssue(item.id)
+                    }}
+                  >
+                    -1
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      addIssue(item.id)
+                    }}
+                  >
+                    +1
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+
+        </div>
+
       ) : (
 
         <div className="grid">
@@ -597,13 +717,14 @@ function MagazineSeriesPage({
               </div>
 
               <div className="card-issue">
-                {formatIssue(
-                  item.issueYear ||
-                    new Date().getFullYear(),
-                  item.issue,
-                  selectedMagazine
-                )}
+                {getReadIssueText(item)}
               </div>
+
+              {shouldShowStartIssue && (
+                <div className="card-start-issue">
+                  開始 {getStartIssueText(item)}
+                </div>
+              )}
 
               <div className="card-unread">
                 {item.status === 'completed'
@@ -618,20 +739,45 @@ function MagazineSeriesPage({
 
       )}
 
-      <div className="bottom-nav">
+      <div className="bottom-nav series-bottom-nav">
 
         <button
-          onClick={() => {
-            setViewMode(
-              viewMode === 'list'
-                ? 'grid'
-                : 'list'
-            )
-          }}
+          className={
+            viewMode === 'list'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setViewMode('list')
+          }
         >
-          {viewMode === 'list'
-            ? 'グリッド表示'
-            : 'リスト表示'}
+          リスト
+        </button>
+
+        <button
+          className={
+            viewMode === 'grid'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setViewMode('grid')
+          }
+        >
+          グリッド
+        </button>
+
+        <button
+          className={
+            viewMode === 'compact'
+              ? 'active'
+              : ''
+          }
+          onClick={() =>
+            setViewMode('compact')
+          }
+        >
+          簡易
         </button>
 
         <button

@@ -148,6 +148,22 @@ select {
   font-size: 16px;
 }
 
+.bottom-nav button.active {
+  background: #1d4ed8;
+}
+
+.series-bottom-nav {
+  gap: 8px;
+  padding: 10px 12px
+    calc(10px + env(safe-area-inset-bottom));
+}
+
+.series-bottom-nav button {
+  min-height: 54px;
+  padding: 12px 8px;
+  font-size: 14px;
+}
+
 /* 雑誌一覧 */
 
 .magazine-add-row {
@@ -400,6 +416,17 @@ select {
   font-weight: 700;
 }
 
+.series-start-issue {
+  color: #9ca3af;
+  font-size: 13px;
+  margin: -4px 0 10px;
+}
+
+.series-start-issue span {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
 .status-badge {
   display: inline-block;
   padding: 6px 10px;
@@ -498,6 +525,13 @@ select {
   color: #9ca3af;
 }
 
+.card-start-issue {
+  padding: 0 8px 6px;
+  font-size: 11px;
+  color: #60a5fa;
+  font-weight: 700;
+}
+
 .card-unread {
   margin: 0 8px 8px;
   padding: 4px 6px;
@@ -507,6 +541,72 @@ select {
   font-size: 11px;
   font-weight: 800;
   text-align: center;
+}
+
+/* 簡易リスト */
+
+.series-compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.series-compact-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 64px;
+  padding: 9px 10px 9px 12px;
+  border-radius: 14px;
+  background: #1f2937;
+  border: 1px solid #263244;
+  cursor: pointer;
+}
+
+.series-compact-main {
+  min-width: 0;
+}
+
+.series-compact-title {
+  margin-bottom: 5px;
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.series-compact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.series-compact-meta span {
+  white-space: nowrap;
+}
+
+.series-compact-meta span:nth-child(n + 2) {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.series-compact-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.series-compact-buttons button {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .card.selected {
