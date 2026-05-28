@@ -94,6 +94,7 @@ function App() {
     addMagazine,
     saveMagazineEdit,
     deleteMagazine,
+    moveMagazine,
     handleMagazineImageUpload,
     saveNewSeries,
     deleteSeries,
@@ -234,6 +235,7 @@ function App() {
             }
             onBackupData={backupData}
             onImportData={importData}
+            moveMagazine={moveMagazine}
             navigate={navigate}
           />
         }

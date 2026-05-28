@@ -440,6 +440,35 @@ function useMangaData({
     navigate('/')
   }
 
+  const moveMagazine = (
+    fromIndex,
+    toIndex
+  ) => {
+    setMagazineList((prevList) => {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= prevList.length ||
+        toIndex >= prevList.length
+      ) {
+        return prevList
+      }
+
+      const nextList = [...prevList]
+      const [movedMagazine] =
+        nextList.splice(fromIndex, 1)
+
+      nextList.splice(
+        toIndex,
+        0,
+        movedMagazine
+      )
+
+      return nextList
+    })
+  }
+
   const handleMagazineImageUpload =
     async (e, magazineId) => {
       const file = e.target.files[0]
@@ -1183,6 +1212,7 @@ function useMangaData({
     addMagazine,
     saveMagazineEdit,
     deleteMagazine,
+    moveMagazine,
     handleMagazineImageUpload,
     saveNewSeries,
     deleteSeries,

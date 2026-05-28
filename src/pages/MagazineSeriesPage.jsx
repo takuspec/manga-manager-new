@@ -4,7 +4,8 @@ import ImageView from '../components/ImageView'
 import {
   formatIssue,
   getYearOptions,
-  getEstimatedLatestIssueInfo
+  getEstimatedLatestIssueInfo,
+  getIssueSerial
 } from '../utils/issueUtils'
 
 function MagazineSeriesPage({
@@ -87,6 +88,28 @@ function MagazineSeriesPage({
     setDisplaySeriesIds
   ] = useState([])
 
+  const getSafeIssueSerial = (
+    year,
+    issue
+  ) => {
+    const normalizedIssue =
+      Number(issue) || 0
+
+    if (!normalizedIssue) {
+      return 0
+    }
+
+    const normalizedYear =
+      Number(year) ||
+      new Date().getFullYear()
+
+    return getIssueSerial(
+      normalizedYear,
+      normalizedIssue,
+      selectedMagazine
+    )
+  }
+
   const createSortedSeries = () => {
     return seriesList
       .filter((item) => {
@@ -115,21 +138,34 @@ function MagazineSeriesPage({
 
           case 'title':
             result =
-              a.title.localeCompare(
-                b.title,
+              (a.title || '').localeCompare(
+                b.title || '',
                 'ja'
               )
             break
 
           case 'issue':
+          case 'read':
             result =
-              (
-                (a.issueYear || 0) * 100 +
-                (a.issue || 0)
+              getSafeIssueSerial(
+                a.issueYear,
+                a.issue
               ) -
-              (
-                (b.issueYear || 0) * 100 +
-                (b.issue || 0)
+              getSafeIssueSerial(
+                b.issueYear,
+                b.issue
+              )
+            break
+
+          case 'start':
+            result =
+              getSafeIssueSerial(
+                a.startIssueYear,
+                a.startIssue
+              ) -
+              getSafeIssueSerial(
+                b.startIssueYear,
+                b.startIssue
               )
             break
 
@@ -152,8 +188,8 @@ function MagazineSeriesPage({
             return 1
           }
 
-          return a.title.localeCompare(
-            b.title,
+          return (a.title || '').localeCompare(
+            b.title || '',
             'ja'
           )
         }
@@ -175,7 +211,9 @@ function MagazineSeriesPage({
     magazineId,
     sortMode,
     sortDirection,
-    showCompleted
+    showCompleted,
+    seriesList,
+    selectedMagazine
   ])
 
   const displaySeries =
@@ -262,12 +300,16 @@ function MagazineSeriesPage({
                 未読順
               </option>
 
+              <option value="read">
+                読了順
+              </option>
+
               <option value="title">
                 作品名順
               </option>
 
-              <option value="issue">
-                読了順
+              <option value="start">
+                開始号順
               </option>
 
             </select>

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import {
   formatIssue,
   getEstimatedLatestIssueInfo
@@ -15,8 +16,205 @@ function MagazineListPage({
   getMagazineCover,
   onBackupData,
   onImportData,
+  moveMagazine,
   navigate
 }) {
+  const [
+    draggingMagazineId,
+    setDraggingMagazineId
+  ] = useState(null)
+
+  const longPressTimerRef = useRef(null)
+  const draggingMagazineIdRef = useRef(null)
+  const draggingIndexRef = useRef(null)
+  const pointerStartYRef = useRef(0)
+  const hasDraggedRef = useRef(false)
+  const touchScrollLockedRef = useRef(false)
+  const touchMoveBlockerRef = useRef(
+    (event) => {
+      if (draggingMagazineIdRef.current) {
+        event.preventDefault()
+      }
+    }
+  )
+
+  const clearLongPressTimer = () => {
+    if (!longPressTimerRef.current) {
+      return
+    }
+
+    window.clearTimeout(
+      longPressTimerRef.current
+    )
+    longPressTimerRef.current = null
+  }
+
+  const lockTouchScroll = () => {
+    if (touchScrollLockedRef.current) {
+      return
+    }
+
+    document.addEventListener(
+      'touchmove',
+      touchMoveBlockerRef.current,
+      { passive: false }
+    )
+    touchScrollLockedRef.current = true
+  }
+
+  const unlockTouchScroll = () => {
+    if (!touchScrollLockedRef.current) {
+      return
+    }
+
+    document.removeEventListener(
+      'touchmove',
+      touchMoveBlockerRef.current
+    )
+    touchScrollLockedRef.current = false
+  }
+
+  useEffect(() => {
+    return () => {
+      clearLongPressTimer()
+      unlockTouchScroll()
+    }
+  }, [])
+
+  const isInteractiveTarget = (target) => {
+    return Boolean(
+      target?.closest?.(
+        'button, input, select, textarea, a'
+      )
+    )
+  }
+
+  const handleMagazinePointerDown = (
+    event,
+    magazineId,
+    index
+  ) => {
+    if (
+      !moveMagazine ||
+      isInteractiveTarget(event.target)
+    ) {
+      return
+    }
+
+    clearLongPressTimer()
+
+    const card = event.currentTarget
+    const pointerId = event.pointerId
+
+    pointerStartYRef.current =
+      event.clientY
+    hasDraggedRef.current = false
+
+    longPressTimerRef.current =
+      window.setTimeout(() => {
+        draggingMagazineIdRef.current =
+          magazineId
+        draggingIndexRef.current = index
+        hasDraggedRef.current = true
+        setDraggingMagazineId(magazineId)
+        lockTouchScroll()
+
+        try {
+          card.setPointerCapture?.(
+            pointerId
+          )
+        } catch {
+          // Pointer capture can fail if the browser already ended the touch.
+        }
+      }, 450)
+  }
+
+  const handleMagazinePointerMove = (
+    event
+  ) => {
+    if (!draggingMagazineIdRef.current) {
+      const movedY =
+        Math.abs(
+          event.clientY -
+            pointerStartYRef.current
+        )
+
+      if (movedY > 10) {
+        clearLongPressTimer()
+      }
+
+      return
+    }
+
+    event.preventDefault()
+
+    const target =
+      document.elementFromPoint(
+        event.clientX,
+        event.clientY
+      )
+
+    const targetCard =
+      target?.closest?.(
+        '[data-magazine-index]'
+      )
+
+    if (!targetCard) {
+      return
+    }
+
+    const targetIndex =
+      Number(
+        targetCard.dataset.magazineIndex
+      )
+
+    const currentIndex =
+      draggingIndexRef.current
+
+    if (
+      Number.isNaN(targetIndex) ||
+      targetIndex === currentIndex
+    ) {
+      return
+    }
+
+    moveMagazine(
+      currentIndex,
+      targetIndex
+    )
+
+    draggingIndexRef.current =
+      targetIndex
+  }
+
+  const finishMagazineDrag = (event) => {
+    clearLongPressTimer()
+
+    if (!draggingMagazineIdRef.current) {
+      return
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
+
+    try {
+      event.currentTarget.releasePointerCapture?.(
+        event.pointerId
+      )
+    } catch {
+      // Ignore release failures when capture was already cleared.
+    }
+
+    draggingMagazineIdRef.current = null
+    draggingIndexRef.current = null
+    setDraggingMagazineId(null)
+    unlockTouchScroll()
+
+    window.setTimeout(() => {
+      hasDraggedRef.current = false
+    }, 0)
+  }
+
   return (
     <div className="app">
 
@@ -55,7 +253,7 @@ function MagazineListPage({
 
       <div className="magazine-list">
 
-        {magazineList.map((magazine) => {
+        {magazineList.map((magazine, index) => {
           const magazineSeries =
             seriesList.filter((item) => {
               return (
@@ -90,12 +288,51 @@ function MagazineListPage({
           return (
             <div
               key={magazine.id}
-              className="magazine-list-card"
-              onClick={() =>
+              data-magazine-index={index}
+              className={`magazine-list-card ${
+                draggingMagazineId === magazine.id
+                  ? 'dragging'
+                  : ''
+              }`}
+              onPointerDown={(event) =>
+                handleMagazinePointerDown(
+                  event,
+                  magazine.id,
+                  index
+                )
+              }
+              onPointerMove={
+                handleMagazinePointerMove
+              }
+              onPointerUp={
+                finishMagazineDrag
+              }
+              onPointerCancel={
+                finishMagazineDrag
+              }
+              onContextMenu={(event) => {
+                if (
+                  draggingMagazineId ===
+                    magazine.id ||
+                  longPressTimerRef.current
+                ) {
+                  event.preventDefault()
+                }
+              }}
+              onClick={(event) => {
+                if (
+                  hasDraggedRef.current ||
+                  draggingMagazineIdRef.current
+                ) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  return
+                }
+
                 navigate(
                   `/magazine/${magazine.id}`
                 )
-              }
+              }}
             >
 
               <div className="magazine-cover">
@@ -142,6 +379,10 @@ function MagazineListPage({
 
               <button
                 className="magazine-menu-button"
+                onPointerDown={(e) => {
+                  e.stopPropagation()
+                  clearLongPressTimer()
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
 
