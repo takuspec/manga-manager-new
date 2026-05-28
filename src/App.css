@@ -138,6 +138,7 @@ select {
     calc(12px + env(safe-area-inset-bottom));
   background: #111827;
   border-top: 1px solid #374151;
+  z-index: 60;
 }
 
 .bottom-nav button {
@@ -162,6 +163,68 @@ select {
   min-height: 54px;
   padding: 12px 8px;
   font-size: 14px;
+}
+
+.view-mode-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: transparent;
+}
+
+.view-mode-selector {
+  position: relative;
+  z-index: 70;
+  flex: 0 0 112px;
+}
+
+.view-mode-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.view-mode-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: 128px;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #374151;
+  background: #111827;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.42);
+  z-index: 80;
+}
+
+.view-mode-menu-item {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.view-mode-menu-item.active {
+  background: rgba(37, 99, 235, 0.28);
+  color: white;
+}
+
+.view-mode-check {
+  width: 16px;
+  color: #60a5fa;
+  text-align: center;
+  font-weight: 900;
 }
 
 /* 雑誌一覧 */

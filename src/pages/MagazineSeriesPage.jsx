@@ -8,6 +8,27 @@ import {
   getIssueSerial
 } from '../utils/issueUtils'
 
+const viewModeOptions = [
+  {
+    value: 'list',
+    label: 'リスト'
+  },
+  {
+    value: 'grid',
+    label: 'グリッド'
+  },
+  {
+    value: 'compact',
+    label: '簡易'
+  }
+]
+
+const viewModeLabelMap = {
+  list: 'リスト',
+  grid: 'グリッド',
+  compact: '簡易'
+}
+
 function MagazineSeriesPage({
   magazineList,
   seriesList,
@@ -81,6 +102,11 @@ function MagazineSeriesPage({
   const [
     showSeriesControls,
     setShowSeriesControls
+  ] = useState(false)
+
+  const [
+    isViewModeMenuOpen,
+    setIsViewModeMenuOpen
   ] = useState(false)
 
   const [
@@ -739,46 +765,77 @@ function MagazineSeriesPage({
 
       )}
 
+      {isViewModeMenuOpen && (
+        <div
+          className="view-mode-menu-backdrop"
+          onClick={() =>
+            setIsViewModeMenuOpen(false)
+          }
+        />
+      )}
+
       <div className="bottom-nav series-bottom-nav">
 
-        <button
-          className={
-            viewMode === 'list'
-              ? 'active'
-              : ''
-          }
-          onClick={() =>
-            setViewMode('list')
+        <div
+          className="view-mode-selector"
+          onClick={(e) =>
+            e.stopPropagation()
           }
         >
-          リスト
-        </button>
+          {isViewModeMenuOpen && (
+            <div
+              className="view-mode-menu"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
+              {viewModeOptions.map((option) => {
+                const isSelected =
+                  viewMode === option.value
 
-        <button
-          className={
-            viewMode === 'grid'
-              ? 'active'
-              : ''
-          }
-          onClick={() =>
-            setViewMode('grid')
-          }
-        >
-          グリッド
-        </button>
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`view-mode-menu-item ${
+                      isSelected ? 'active' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setViewMode(option.value)
+                      setIsViewModeMenuOpen(false)
+                    }}
+                  >
+                    <span className="view-mode-check">
+                      {isSelected ? '✓' : ''}
+                    </span>
 
-        <button
-          className={
-            viewMode === 'compact'
-              ? 'active'
-              : ''
-          }
-          onClick={() =>
-            setViewMode('compact')
-          }
-        >
-          簡易
-        </button>
+                    <span>
+                      {option.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="view-mode-button"
+            onClick={() =>
+              setIsViewModeMenuOpen(
+                (isOpen) => !isOpen
+              )
+            }
+          >
+            {viewModeLabelMap[viewMode] ||
+              'リスト'}
+            {' '}
+            {isViewModeMenuOpen
+              ? '▲'
+              : '▼'}
+          </button>
+        </div>
 
         <button
           onClick={() =>
