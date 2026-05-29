@@ -457,7 +457,7 @@ function CompletedSeriesPage({
         />
       )}
 
-      <div className="bottom-nav completed-series-footer">
+      <div className="bottom-nav series-bottom-nav completed-series-footer">
 
         <div
           className="view-mode-selector completed-view-selector"

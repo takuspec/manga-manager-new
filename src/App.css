@@ -1229,20 +1229,6 @@ select.issue-number-select option {
   font-weight: 800;
 }
 
-.completed-series-footer {
-  gap: 8px;
-  padding: 10px 12px
-    calc(10px + env(safe-area-inset-bottom));
-}
-
-.completed-series-footer
-  > .view-mode-selector
-  > .view-mode-button {
-  min-height: 54px;
-  padding: 12px 8px;
-  font-size: 14px;
-}
-
 .completed-view-selector {
   flex: 0 0 112px;
 }
@@ -1259,6 +1245,9 @@ select.issue-number-select option {
 .completed-footer-label {
   display: block;
   min-width: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
