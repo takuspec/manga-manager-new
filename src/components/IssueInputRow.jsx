@@ -7,6 +7,7 @@ function IssueInputRow({
   issueOptions = [],
   showYear = true,
   useIssueSelect = false,
+  prefix = '',
   suffix = '号',
   emptyIssueValue = 0,
   className = '',
@@ -62,6 +63,13 @@ function IssueInputRow({
       )}
 
       <div className="issue-number-wrap">
+        {prefix &&
+          Number(issueValue) !== 0 && (
+            <span className="issue-number-prefix">
+              {prefix}
+            </span>
+          )}
+
         {useIssueSelect ? (
           <select
             className="issue-number-input issue-number-select"

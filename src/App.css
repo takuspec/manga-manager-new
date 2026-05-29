@@ -491,17 +491,35 @@ textarea {
 }
 
 .bulk-issue-input-row {
-  flex: 0 0 174px;
+  flex: 0 0 198px;
 }
 
 .bulk-issue-input-row .issue-year-select {
-  flex-basis: 94px;
+  flex-basis: 88px;
   padding-left: 8px;
   padding-right: 8px;
 }
 
 .bulk-issue-input-row .issue-number-wrap {
-  flex-basis: 82px;
+  flex-basis: 102px;
+}
+
+.bulk-issue-input-row select.issue-number-select {
+  min-width: 76px;
+  padding-left: 10px;
+  padding-right: 26px;
+}
+
+.bulk-issue-input-row.harta-issue-input-row {
+  flex-basis: 142px;
+}
+
+.bulk-issue-input-row.harta-issue-input-row .issue-number-wrap {
+  flex-basis: 142px;
+}
+
+.bulk-issue-input-row.harta-issue-input-row .issue-number-prefix {
+  font-size: 13px;
 }
 
 .series-tool-row {
@@ -1033,6 +1051,12 @@ textarea {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.issue-number-prefix {
+  flex: 0 0 auto;
+  color: #cbd5e1;
+  font-weight: 800;
 }
 
 .issue-number-input,

@@ -196,8 +196,9 @@ function SeriesAdd({
             onIssueChange={setNewSeriesStartIssue}
             yearOptions={yearOptions}
             issueOptions={startIssueOptions}
-            showYear={true}
+            showYear={!isHarta}
             useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
             onYearSelected={
               handleStartIssueYearChange
             }
@@ -214,8 +215,9 @@ function SeriesAdd({
             onIssueChange={setNewSeriesIssue}
             yearOptions={yearOptions}
             issueOptions={readIssueOptions}
-            showYear={true}
+            showYear={!isHarta}
             useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
             onYearSelected={
               handleIssueYearChange
             }

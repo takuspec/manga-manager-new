@@ -567,8 +567,14 @@ function MagazineSeriesPage({
                 yearOptions={yearOptions}
                 issueOptions={bulkIssueOptions}
                 useIssueSelect={!isHarta}
+                showYear={!isHarta}
+                prefix={isHarta ? 'volume' : ''}
                 emptyIssueValue=""
-                className="bulk-issue-input-row"
+                className={`bulk-issue-input-row ${
+                  isHarta
+                    ? 'harta-issue-input-row'
+                    : ''
+                }`}
                 onYearSelected={
                   handleBulkIssueYearChange
                 }

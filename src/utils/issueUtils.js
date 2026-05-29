@@ -406,6 +406,16 @@ export const formatIssueLabelParts = (
     }
   }
 
+  if (isHartaMagazine(magazine)) {
+    return {
+      isUnread: false,
+      label: '',
+      yearText: 'volume',
+      numberText: String(numericIssue),
+      suffixText: '号'
+    }
+  }
+
   return {
     isUnread: false,
     label: '',
@@ -432,6 +442,10 @@ export const formatIssueLabel = (
 
   if (parts.isUnread) {
     return parts.label
+  }
+
+  if (isHartaMagazine(magazine)) {
+    return `${parts.yearText} ${parts.numberText}${parts.suffixText}`
   }
 
   return `${parts.yearText}${parts.numberText}${parts.suffixText}`

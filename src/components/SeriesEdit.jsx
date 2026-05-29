@@ -288,8 +288,9 @@ function SeriesEdit({
             onIssueChange={setLocalStartIssue}
             yearOptions={yearOptions}
             issueOptions={startIssueOptions}
-            showYear={true}
+            showYear={!isHarta}
             useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
             onYearSelected={
               handleStartIssueYearChange
             }
@@ -306,8 +307,9 @@ function SeriesEdit({
             onIssueChange={setLocalIssue}
             yearOptions={yearOptions}
             issueOptions={readIssueOptions}
-            showYear={true}
+            showYear={!isHarta}
             useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
             onYearSelected={
               handleIssueYearChange
             }
