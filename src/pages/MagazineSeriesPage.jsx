@@ -842,7 +842,7 @@ function MagazineSeriesPage({
                     </span>
 
                     {shouldShowStartIssue && (
-                      <span>
+                      <span className="series-compact-start-issue">
                         開始 {renderStartIssueLabel(item)}
                       </span>
                     )}
@@ -939,7 +939,11 @@ function MagazineSeriesPage({
 
               {shouldShowStartIssue && (
                 <div className="card-start-issue">
-                  開始 {renderStartIssueLabel(item)}
+                  <span className="card-start-label">
+                    開始
+                  </span>
+
+                  {renderStartIssueLabel(item)}
                 </div>
               )}
 

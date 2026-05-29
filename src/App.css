@@ -788,9 +788,16 @@ textarea {
 
 .card-start-issue {
   padding: 0 8px 6px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
   font-size: 11px;
   color: #60a5fa;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .status-badge .harta-group-badge,
@@ -803,7 +810,14 @@ textarea {
 }
 
 .card-start-issue .issue-label {
+  min-width: 0;
   color: #60a5fa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-start-label {
+  flex: 0 0 auto;
 }
 
 .card-unread {
@@ -882,6 +896,15 @@ textarea {
 .series-compact-meta span:nth-child(n + 2) {
   color: #60a5fa;
   font-weight: 700;
+}
+
+.series-compact-meta .series-compact-start-issue {
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+.series-compact-start-issue .issue-label {
+  color: #9ca3af;
 }
 
 .series-compact-buttons {
