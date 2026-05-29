@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ImageCropModal from '../components/ImageCropModal'
 import ImageView from '../components/ImageView'
+import IssueInputRow from '../components/IssueInputRow'
 import {
   getYearOptions
 } from '../utils/issueUtils'
@@ -324,37 +325,13 @@ function MagazineEditPage({
 
           <div>現在の最新号</div>
 
-          <div className="issue-input-row">
-
-            <select
-              value={editCurrentIssueYear}
-              onChange={(e) =>
-                setEditCurrentIssueYear(
-                  Number(e.target.value)
-                )
-              }
-            >
-              {yearOptions.map((year) => (
-                <option
-                  key={year}
-                  value={year}
-                >
-                  {year}年
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="number"
-              value={editCurrentIssue}
-              onChange={(e) =>
-                setEditCurrentIssue(
-                  Number(e.target.value)
-                )
-              }
-            />
-
-          </div>
+          <IssueInputRow
+            yearValue={editCurrentIssueYear}
+            onYearChange={setEditCurrentIssueYear}
+            issueValue={editCurrentIssue}
+            onIssueChange={setEditCurrentIssue}
+            yearOptions={yearOptions}
+          />
 
         </div>
 
@@ -368,7 +345,7 @@ function MagazineEditPage({
               editReleaseDay,
               editReleaseDate,
               editCurrentIssueYear,
-              editCurrentIssue,
+              Number(editCurrentIssue),
               editMagazineImageBlob,
               magazine.imageId
             )

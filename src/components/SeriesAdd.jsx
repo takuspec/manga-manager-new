@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react'
 import ImageCropModal from './ImageCropModal'
 import ImageView from './ImageView'
+import IssueInputRow from './IssueInputRow'
 import {
   getYearOptions
 } from '../utils/issueUtils'
@@ -120,63 +121,28 @@ function SeriesAdd({
         <div className="edit-group">
           <div>連載開始</div>
 
-          {!isHarta && (
-          <select
-            value={newSeriesStartIssueYear}
-            onChange={(e) =>
-              setNewSeriesStartIssueYear(
-                Number(e.target.value)
-              )
-            }
-          >
-            {yearOptions.map((year) => (
-              <option
-                key={year}
-                value={year}
-              >
-                {year}年
-              </option>
-            ))}
-          </select>
-          )}
-
-          <input
-            type="number"
-            value={newSeriesStartIssue}
-            onChange={(e) =>
-              setNewSeriesStartIssue(
-                Number(e.target.value)
-              )
-            }
+          <IssueInputRow
+            yearValue={newSeriesStartIssueYear}
+            onYearChange={setNewSeriesStartIssueYear}
+            issueValue={newSeriesStartIssue}
+            onIssueChange={setNewSeriesStartIssue}
+            yearOptions={yearOptions}
+            showYear={!isHarta}
           />
         </div>
 
-        {!isHarta && (
-          <div className="edit-group">
-            <div>読了 / 完結号</div>
-
-            <select
-              value={newSeriesIssueYear}
-              onChange={(e) =>
-                setNewSeriesIssueYear(
-                  Number(e.target.value)
-                )
-              }
-            >
-              {yearOptions.map((year) => (
-                <option
-                  key={year}
-                  value={year}
-                >
-                  {year}年
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         <div className="edit-group">
-          <div>号数</div>
+          <div>読了 / 完結号</div>
+
+          <IssueInputRow
+            yearValue={newSeriesIssueYear}
+            onYearChange={setNewSeriesIssueYear}
+            issueValue={newSeriesIssue}
+            onIssueChange={setNewSeriesIssue}
+            yearOptions={yearOptions}
+            showYear={!isHarta}
+          />
+        </div>
 
         {isHarta && (
           <div className="edit-group">
@@ -204,15 +170,6 @@ function SeriesAdd({
             </select>
           </div>
         )}
-
-          <input
-            type="number"
-            value={newSeriesIssue}
-            onChange={(e) =>
-              setNewSeriesIssue(e.target.value)
-            }
-          />
-        </div>
 
         <button
           className="save-button"

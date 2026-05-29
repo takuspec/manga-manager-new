@@ -1,5 +1,6 @@
 import ImageCropModal from './ImageCropModal'
 import ImageView from './ImageView'
+import IssueInputRow from './IssueInputRow'
 import { useEffect, useState } from 'react'
 import {
   getHartaYearMonthFromVolume,
@@ -236,66 +237,26 @@ function SeriesEdit({
         <div className="edit-group">
           <div>連載開始</div>
 
-          {!isHarta && (
-          <select
-            value={localStartIssueYear}
-            onChange={(e) =>
-              setLocalStartIssueYear(
-                Number(e.target.value)
-              )
-            }
-          >
-            {yearOptions.map((year) => (
-              <option
-                key={year}
-                value={year}
-              >
-                {year}年
-              </option>
-            ))}
-          </select>
-          )}
-
-          <input
-            type="number"
-            value={localStartIssue}
-            onChange={(e) =>
-              setLocalStartIssue(
-                e.target.value
-              )
-            }
+          <IssueInputRow
+            yearValue={localStartIssueYear}
+            onYearChange={setLocalStartIssueYear}
+            issueValue={localStartIssue}
+            onIssueChange={setLocalStartIssue}
+            yearOptions={yearOptions}
+            showYear={!isHarta}
           />
         </div>
 
         <div className="edit-group">
           <div>読了 / 完結号</div>
 
-          {!isHarta && (
-          <select
-            value={localIssueYear}
-            onChange={(e) =>
-              setLocalIssueYear(
-                Number(e.target.value)
-              )
-            }
-          >
-            {yearOptions.map((year) => (
-              <option
-                key={year}
-                value={year}
-              >
-                {year}年
-              </option>
-            ))}
-          </select>
-          )}
-
-          <input
-            type="number"
-            value={localIssue}
-            onChange={(e) =>
-              setLocalIssue(e.target.value)
-            }
+          <IssueInputRow
+            yearValue={localIssueYear}
+            onYearChange={setLocalIssueYear}
+            issueValue={localIssue}
+            onIssueChange={setLocalIssue}
+            yearOptions={yearOptions}
+            showYear={!isHarta}
           />
         </div>
 

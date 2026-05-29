@@ -155,6 +155,41 @@ textarea {
   background: #1d4ed8;
 }
 
+.series-page {
+  height: 100dvh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px 20px 0;
+}
+
+.series-fixed-header {
+  flex-shrink: 0;
+  z-index: 20;
+  background: #111827;
+  padding-bottom: 4px;
+}
+
+.series-scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0 14px;
+}
+
+.series-fixed-footer {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  width: calc(100% + 40px);
+  max-width: none;
+  flex-shrink: 0;
+  margin: 0 -20px;
+}
+
 .series-bottom-nav {
   gap: 8px;
   padding: 10px 12px
@@ -395,14 +430,6 @@ textarea {
   margin-bottom: 16px;
 }
 
-.bulk-issue-box select {
-  width: 104px;
-}
-
-.bulk-issue-box input {
-  width: 64px;
-}
-
 .bulk-issue-box button {
   flex: 1;
   min-width: 0;
@@ -410,6 +437,20 @@ textarea {
   padding: 10px 8px;
   line-height: 1;
   white-space: nowrap;
+}
+
+.bulk-issue-input-row {
+  flex: 0 0 174px;
+}
+
+.bulk-issue-input-row .issue-year-select {
+  flex-basis: 94px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.bulk-issue-input-row .issue-number-wrap {
+  flex-basis: 72px;
 }
 
 .series-tool-row {
@@ -766,6 +807,43 @@ textarea {
 .edit-page select {
   width: 100%;
   font-size: 16px;
+}
+
+.issue-input-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.issue-year-select {
+  flex: 0 0 128px;
+  min-width: 0;
+}
+
+.issue-number-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.issue-number-input,
+.edit-page .issue-number-input {
+  width: 100%;
+  min-width: 0;
+  text-align: right;
+}
+
+.edit-page .issue-year-select {
+  width: auto;
+}
+
+.issue-number-suffix {
+  flex: 0 0 auto;
+  color: #cbd5e1;
+  font-weight: 800;
 }
 
 .save-button,

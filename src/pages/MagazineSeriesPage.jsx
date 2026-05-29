@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ImageView from '../components/ImageView'
 import SeriesActionPanel from '../components/SeriesActionPanel'
+import IssueInputRow from '../components/IssueInputRow'
 
 import {
   formatIssue,
@@ -333,65 +334,67 @@ function MagazineSeriesPage({
   }
 
   return (
-    <div className="app">
+    <div className="app series-page">
 
-      <div className="series-page-header">
+      <div className="series-fixed-header">
 
-        <button
-          className="back-button"
-          onClick={() =>
-            navigate(
-              '/',
-              { replace: true }
-            )
-          }
-        >
-          ← 戻る
-        </button>
+        <div className="series-page-header">
 
-        <div className="title series-page-title">
-          {selectedMagazine.name}
+          <button
+            className="back-button"
+            onClick={() =>
+              navigate(
+                '/',
+                { replace: true }
+              )
+            }
+          >
+            ← 戻る
+          </button>
+
+          <div className="title series-page-title">
+            {selectedMagazine.name}
+          </div>
+
+          <button
+            className="mode-button"
+            onClick={() =>
+              navigate(
+                `/magazine/${magazineId}/add`
+              )
+            }
+          >
+            作品追加
+          </button>
+
         </div>
 
-        <button
-          className="mode-button"
+        <div
+          className="latest-issue-box"
           onClick={() =>
-            navigate(
-              `/magazine/${magazineId}/add`
+            setShowSeriesControls(
+              !showSeriesControls
             )
           }
         >
-          作品追加
-        </button>
+          <span>
+            {showSeriesControls
+              ? '最新号'
+              : '最新号'}
+          </span>
 
-      </div>
+          <strong>
+            {formatIssue(
+              estimatedLatestIssue.year,
+              estimatedLatestIssue.issue,
+              selectedMagazine
+            )}
+          </strong>
+        </div>
 
-      <div
-        className="latest-issue-box"
-        onClick={() =>
-          setShowSeriesControls(
-            !showSeriesControls
-          )
-        }
-      >
-        <span>
-          {showSeriesControls
-            ? '最新号'
-            : '最新号'}
-        </span>
-
-        <strong>
-          {formatIssue(
-            estimatedLatestIssue.year,
-            estimatedLatestIssue.issue,
-            selectedMagazine
-          )}
-        </strong>
-      </div>
-
-      {showSeriesControls && (
-        <>
-          <div className="sort-row sort-row-with-button">
+        {showSeriesControls && (
+          <>
+            <div className="sort-row sort-row-with-button">
 
             <select
               value={sortMode}
@@ -435,37 +438,18 @@ function MagazineSeriesPage({
 
           </div>
 
-          {viewMode === 'grid' && (
+            {viewMode === 'grid' && (
 
-            <div className="bulk-issue-box">
+              <div className="bulk-issue-box">
 
-              <select
-                value={bulkIssueYear}
-                onChange={(e) =>
-                  setBulkIssueYear(
-                    Number(e.target.value)
-                  )
-                }
-              >
-                {yearOptions.map((year) => (
-                  <option
-                    key={year}
-                    value={year}
-                  >
-                    {year}年
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="number"
-                placeholder="号数"
-                value={bulkIssueValue}
-                onChange={(e) =>
-                  setBulkIssueValue(
-                    e.target.value
-                  )
-                }
+              <IssueInputRow
+                yearValue={bulkIssueYear}
+                onYearChange={setBulkIssueYear}
+                issueValue={bulkIssueValue}
+                onIssueChange={setBulkIssueValue}
+                yearOptions={yearOptions}
+                emptyIssueValue=""
+                className="bulk-issue-input-row"
               />
 
               <button
@@ -485,11 +469,11 @@ function MagazineSeriesPage({
                   : '全選択'}
               </button>
 
-            </div>
+              </div>
 
-          )}
+            )}
 
-          <div className="series-tool-row">
+            <div className="series-tool-row">
 
             <button
               className="bulk-button"
@@ -509,9 +493,13 @@ function MagazineSeriesPage({
               全連載 -1
             </button>
 
-          </div>
-        </>
-      )}
+            </div>
+          </>
+        )}
+
+      </div>
+
+      <div className="series-scroll-area">
 
       {viewMode === 'list' ? (
 
@@ -789,7 +777,9 @@ function MagazineSeriesPage({
         />
       )}
 
-      <div className="bottom-nav series-bottom-nav">
+      </div>
+
+      <div className="bottom-nav series-bottom-nav series-fixed-footer">
 
         <div
           className="view-mode-selector"
