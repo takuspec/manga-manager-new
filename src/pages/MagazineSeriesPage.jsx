@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import ImageView from '../components/ImageView'
 import SeriesActionPanel from '../components/SeriesActionPanel'
 import IssueInputRow from '../components/IssueInputRow'
+import IssueLabel from '../components/IssueLabel'
 
 import {
   clampIssueForYear,
-  formatIssue,
   getIssueOptions,
   getYearOptions,
   getEstimatedLatestIssueInfo,
@@ -144,16 +144,20 @@ function MagazineSeriesPage({
   const shouldShowStartIssue =
     sortMode === 'start'
 
-  const getReadIssueText = (item) => {
-    return formatIssue(
-      item.issueYear ||
-        new Date().getFullYear(),
-      item.issue,
-      selectedMagazine
+  const renderReadIssueLabel = (item) => {
+    return (
+      <IssueLabel
+        magazine={selectedMagazine}
+        year={
+          item.issueYear ||
+          new Date().getFullYear()
+        }
+        issue={item.issue}
+      />
     )
   }
 
-  const getStartIssueText = (item) => {
+  const renderStartIssueLabel = (item) => {
     const startIssue =
       Number(item.startIssue) || 0
 
@@ -161,11 +165,15 @@ function MagazineSeriesPage({
       return '-'
     }
 
-    return formatIssue(
-      item.startIssueYear ||
-        new Date().getFullYear(),
-      startIssue,
-      selectedMagazine
+    return (
+      <IssueLabel
+        magazine={selectedMagazine}
+        year={
+          item.startIssueYear ||
+          new Date().getFullYear()
+        }
+        issue={startIssue}
+      />
     )
   }
 
@@ -413,11 +421,11 @@ function MagazineSeriesPage({
           </span>
 
           <strong>
-            {formatIssue(
-              estimatedLatestIssue.year,
-              estimatedLatestIssue.issue,
-              selectedMagazine
-            )}
+            <IssueLabel
+              magazine={selectedMagazine}
+              year={estimatedLatestIssue.year}
+              issue={estimatedLatestIssue.issue}
+            />
           </strong>
         </div>
 
@@ -580,19 +588,21 @@ function MagazineSeriesPage({
                   {item.title}
                 </div>
 
-                <div className="series-issue">
-                  読了：
-                  <span>
-                    {getReadIssueText(item)}
+                <div className="series-issue issue-display-row">
+                  <span className="issue-display-label">
+                    読了：
                   </span>
+
+                  {renderReadIssueLabel(item)}
                 </div>
 
                 {shouldShowStartIssue && (
-                  <div className="series-start-issue">
-                    開始：
-                    <span>
-                      {getStartIssueText(item)}
+                  <div className="series-start-issue issue-display-row">
+                    <span className="issue-display-label">
+                      開始：
                     </span>
+
+                    {renderStartIssueLabel(item)}
                   </div>
                 )}
 
@@ -678,7 +688,7 @@ function MagazineSeriesPage({
 
                   <div className="series-compact-meta">
                     <span>
-                      読了 {getReadIssueText(item)}
+                      読了 {renderReadIssueLabel(item)}
                     </span>
 
                     <span>
@@ -689,7 +699,7 @@ function MagazineSeriesPage({
 
                     {shouldShowStartIssue && (
                       <span>
-                        開始 {getStartIssueText(item)}
+                        開始 {renderStartIssueLabel(item)}
                       </span>
                     )}
                   </div>
@@ -780,12 +790,12 @@ function MagazineSeriesPage({
               </div>
 
               <div className="card-issue">
-                {getReadIssueText(item)}
+                {renderReadIssueLabel(item)}
               </div>
 
               {shouldShowStartIssue && (
                 <div className="card-start-issue">
-                  開始 {getStartIssueText(item)}
+                  開始 {renderStartIssueLabel(item)}
                 </div>
               )}
 

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  formatIssue,
   getEstimatedLatestIssueInfo
 } from '../utils/issueUtils'
 import DataActionMenu from '../components/DataActionMenu'
 import ImageView from '../components/ImageView'
+import IssueLabel from '../components/IssueLabel'
 
 function MagazineListPage({
   magazineList,
@@ -353,11 +353,11 @@ function MagazineListPage({
                 <div className="magazine-stat">
                   最新号
                   <span>
-                    {formatIssue(
-                      latestIssue.year,
-                      latestIssue.issue,
-                      magazine
-                    )}
+                    <IssueLabel
+                      magazine={magazine}
+                      year={latestIssue.year}
+                      issue={latestIssue.issue}
+                    />
                   </span>
                 </div>
 

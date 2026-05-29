@@ -365,15 +365,11 @@ export const formatIssue = (
   issue,
   magazine
 ) => {
-  if (!issue || issue === 0) {
-    return '未読'
-  }
-
-  if (isHartaMagazine(magazine)) {
-    return `volume${issue}`
-  }
-
-  return `${year}年 ${issue}号`
+  return formatIssueLabel(
+    magazine,
+    year,
+    issue
+  )
 }
 
 export const formatIssueNumber = (
@@ -384,11 +380,61 @@ export const formatIssueNumber = (
     return '-'
   }
 
-  if (isHartaMagazine(magazine)) {
-    return `volume${issue}`
+  const suffix =
+    magazine?.frequency === 'monthly'
+      ? '月号'
+      : '号'
+
+  return `${issue}${suffix}`
+}
+
+export const formatIssueLabelParts = (
+  magazine,
+  year,
+  issue
+) => {
+  const numericIssue =
+    Number(issue) || 0
+
+  if (!numericIssue) {
+    return {
+      isUnread: true,
+      label: '未読',
+      yearText: '',
+      numberText: '',
+      suffixText: ''
+    }
   }
 
-  return `${issue}号`
+  return {
+    isUnread: false,
+    label: '',
+    yearText: `${year || '----'}年`,
+    numberText: String(numericIssue),
+    suffixText:
+      magazine?.frequency === 'monthly'
+        ? '月号'
+        : '号'
+  }
+}
+
+export const formatIssueLabel = (
+  magazine,
+  year,
+  issue
+) => {
+  const parts =
+    formatIssueLabelParts(
+      magazine,
+      year,
+      issue
+    )
+
+  if (parts.isUnread) {
+    return parts.label
+  }
+
+  return `${parts.yearText}${parts.numberText}${parts.suffixText}`
 }
 
 export const getEstimatedLatestIssue = (

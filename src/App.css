@@ -127,6 +127,42 @@ textarea {
   font-size: 16px;
 }
 
+.issue-label {
+  display: inline-grid;
+  grid-template-columns: auto minmax(3ch, max-content) auto;
+  column-gap: 2px;
+  align-items: baseline;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.issue-label-unread {
+  display: inline-block;
+}
+
+.issue-label-year,
+.issue-label-number,
+.issue-label-suffix {
+  min-width: 0;
+}
+
+.issue-label-number {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.issue-display-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.issue-display-label {
+  flex: 0 0 auto;
+}
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -347,6 +383,11 @@ textarea {
   font-weight: 700;
 }
 
+.magazine-stat .issue-label {
+  color: white;
+  font-weight: 700;
+}
+
 .magazine-menu-button {
   width: 40px;
   height: 40px;
@@ -400,6 +441,10 @@ textarea {
 .latest-issue-box strong {
   color: #60a5fa;
   font-size: 20px;
+}
+
+.latest-issue-box .issue-label {
+  color: #60a5fa;
 }
 
 .sort-row {
@@ -523,7 +568,7 @@ textarea {
   margin-bottom: 10px;
 }
 
-.series-issue span {
+.series-issue .issue-label {
   color: #60a5fa;
   font-weight: 700;
 }
@@ -534,7 +579,7 @@ textarea {
   margin: -4px 0 10px;
 }
 
-.series-start-issue span {
+.series-start-issue .issue-label {
   color: #60a5fa;
   font-weight: 700;
 }
@@ -637,11 +682,19 @@ textarea {
   color: #9ca3af;
 }
 
+.card-issue .issue-label {
+  color: #9ca3af;
+}
+
 .card-start-issue {
   padding: 0 8px 6px;
   font-size: 11px;
   color: #60a5fa;
   font-weight: 700;
+}
+
+.card-start-issue .issue-label {
+  color: #60a5fa;
 }
 
 .card-unread {
@@ -700,6 +753,11 @@ textarea {
 
 .series-compact-meta span {
   white-space: nowrap;
+}
+
+.series-compact-meta .issue-label {
+  color: #60a5fa;
+  font-weight: 700;
 }
 
 .series-compact-meta span:nth-child(n + 2) {

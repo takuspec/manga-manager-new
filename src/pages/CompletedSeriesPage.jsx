@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ImageView from '../components/ImageView'
-import {
-  formatIssueNumber
-} from '../utils/issueUtils'
+import IssueLabel from '../components/IssueLabel'
 
 const viewModeOptions = [
   {
@@ -72,34 +70,6 @@ function CompletedSeriesPage({
     return magazineList.find((magazineItem) => {
       return magazineItem.id === item.magazineId
     })
-  }
-
-  const getIssueText = (
-    item,
-    targetMagazine,
-    type
-  ) => {
-    const isHarta =
-      targetMagazine?.frequency === 'harta'
-
-    const issue =
-      type === 'start'
-        ? item.startIssue
-        : item.issue
-
-    const issueYear =
-      type === 'start'
-        ? item.startIssueYear
-        : item.issueYear
-
-    if (isHarta) {
-      return `volume${issue || '-'}`
-    }
-
-    return `${issueYear || '----'}年${formatIssueNumber(
-      issue,
-      targetMagazine
-    )}`
   }
 
   const magazineOptions = [
@@ -225,11 +195,11 @@ function CompletedSeriesPage({
           </span>
 
           <span className="completed-issue-value">
-            {getIssueText(
-              item,
-              targetMagazine,
-              'start'
-            )}
+            <IssueLabel
+              magazine={targetMagazine}
+              year={item.startIssueYear}
+              issue={item.startIssue}
+            />
           </span>
         </div>
 
@@ -239,11 +209,11 @@ function CompletedSeriesPage({
           </span>
 
           <span className="completed-issue-value">
-            {getIssueText(
-              item,
-              targetMagazine,
-              'end'
-            )}
+            <IssueLabel
+              magazine={targetMagazine}
+              year={item.issueYear}
+              issue={item.issue}
+            />
           </span>
         </div>
       </div>
