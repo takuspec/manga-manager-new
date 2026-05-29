@@ -227,6 +227,10 @@ function CompletedSeriesPage({
   ) => {
     return (
       <div className="completed-compact-issue">
+        <span className="completed-compact-label">
+          開始:
+        </span>
+
         <IssueLabel
           magazine={targetMagazine}
           year={item.startIssueYear}
@@ -235,6 +239,10 @@ function CompletedSeriesPage({
 
         <span className="completed-compact-arrow">
           →
+        </span>
+
+        <span className="completed-compact-label">
+          終了:
         </span>
 
         <IssueLabel

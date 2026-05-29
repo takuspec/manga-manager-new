@@ -295,9 +295,15 @@ textarea {
 
 .view-mode-check {
   width: 16px;
+  flex: 0 0 16px;
   color: #60a5fa;
   text-align: center;
   font-weight: 900;
+}
+
+.view-mode-menu-item span:last-child {
+  min-width: 0;
+  white-space: nowrap;
 }
 
 /* 雑誌一覧 */
@@ -1332,11 +1338,11 @@ select.issue-number-select option {
 .completed-compact-issue {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
   overflow: hidden;
   color: #60a5fa;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1.25;
   white-space: nowrap;
@@ -1346,6 +1352,12 @@ select.issue-number-select option {
   flex: 0 1 auto;
   min-width: 0;
   color: #60a5fa;
+}
+
+.completed-compact-label {
+  flex: 0 0 auto;
+  color: #9ca3af;
+  font-weight: 700;
 }
 
 .completed-compact-arrow {
