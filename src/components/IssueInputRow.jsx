@@ -103,7 +103,7 @@ function IssueInputRow({
           />
         )}
 
-        {Number(issueValue) !== 0 && (
+        {suffix && Number(issueValue) !== 0 && (
           <span className="issue-number-suffix">
             {suffix}
           </span>

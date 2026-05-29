@@ -569,6 +569,7 @@ function MagazineSeriesPage({
                 useIssueSelect={!isHarta}
                 showYear={!isHarta}
                 prefix={isHarta ? 'volume' : ''}
+                suffix={isHarta ? '' : undefined}
                 emptyIssueValue=""
                 className={`bulk-issue-input-row ${
                   isHarta

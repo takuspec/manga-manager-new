@@ -365,6 +365,7 @@ function MagazineEditPage({
             showYear={!isHarta}
             useIssueSelect={!isHarta}
             prefix={isHarta ? 'volume' : ''}
+            suffix={isHarta ? '' : undefined}
             onYearSelected={
               handleCurrentIssueYearChange
             }

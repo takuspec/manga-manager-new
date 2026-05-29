@@ -199,6 +199,7 @@ function SeriesAdd({
             showYear={!isHarta}
             useIssueSelect={!isHarta}
             prefix={isHarta ? 'volume' : ''}
+            suffix={isHarta ? '' : undefined}
             onYearSelected={
               handleStartIssueYearChange
             }
@@ -218,6 +219,7 @@ function SeriesAdd({
             showYear={!isHarta}
             useIssueSelect={!isHarta}
             prefix={isHarta ? 'volume' : ''}
+            suffix={isHarta ? '' : undefined}
             onYearSelected={
               handleIssueYearChange
             }

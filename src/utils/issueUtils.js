@@ -380,6 +380,10 @@ export const formatIssueNumber = (
     return '-'
   }
 
+  if (isHartaMagazine(magazine)) {
+    return `volume ${issue}`
+  }
+
   const suffix =
     magazine?.frequency === 'monthly'
       ? '月号'
@@ -412,7 +416,7 @@ export const formatIssueLabelParts = (
       label: '',
       yearText: 'volume',
       numberText: String(numericIssue),
-      suffixText: '号'
+      suffixText: ''
     }
   }
 
