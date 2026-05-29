@@ -221,6 +221,31 @@ function CompletedSeriesPage({
     )
   }
 
+  const renderCompactIssueInfo = (
+    item,
+    targetMagazine
+  ) => {
+    return (
+      <div className="completed-compact-issue">
+        <IssueLabel
+          magazine={targetMagazine}
+          year={item.startIssueYear}
+          issue={item.startIssue}
+        />
+
+        <span className="completed-compact-arrow">
+          →
+        </span>
+
+        <IssueLabel
+          magazine={targetMagazine}
+          year={item.issueYear}
+          issue={item.issue}
+        />
+      </div>
+    )
+  }
+
   const renderHartaGroupBadge = (
     item,
     targetMagazine
@@ -362,7 +387,7 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
-                  {renderIssueInfo(
+                  {renderCompactIssueInfo(
                     item,
                     itemMagazine
                   )}
@@ -380,7 +405,7 @@ function CompletedSeriesPage({
 
             return (
               <div
-                className="card"
+                className="card completed-grid-card"
                 key={item.id}
               >
 

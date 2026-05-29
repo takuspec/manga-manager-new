@@ -685,6 +685,10 @@ function MagazineSeriesPage({
                 )
                   ? 'selected'
                   : ''
+              } ${
+                menuSeriesId === item.id
+                  ? 'expanded'
+                  : ''
               }`}
               key={item.id}
               onClick={(e) => {
@@ -798,6 +802,10 @@ function MagazineSeriesPage({
                 className={`series-compact-card ${
                   item.status === 'completed'
                     ? 'completed'
+                    : ''
+                } ${
+                  menuSeriesId === item.id
+                    ? 'expanded'
                     : ''
                 }`}
                 key={item.id}

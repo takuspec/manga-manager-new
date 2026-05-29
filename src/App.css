@@ -618,6 +618,20 @@ textarea {
   margin-bottom: 8px;
 }
 
+.series-list-card .series-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.series-list-card.expanded .series-title,
+.series-compact-card.expanded .series-compact-title {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+
 .series-issue {
   color: #9ca3af;
   font-size: 15px;
@@ -1135,6 +1149,9 @@ select.issue-number-select option {
   flex: 1;
   min-width: 0;
   margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .completed-title-row .harta-group-badge {
@@ -1179,7 +1196,7 @@ select.issue-number-select option {
   margin: 0;
   padding: 0 8px 4px;
   font-size: 12px;
-  text-align: left;
+  text-align: center;
 }
 
 .series-compact-card .completed-series-magazine {
@@ -1290,6 +1307,51 @@ select.issue-number-select option {
 .card .completed-issue-row {
   gap: 6px;
   font-size: 12px;
+}
+
+.completed-grid-card .completed-issue-info {
+  gap: 2px;
+  padding: 0 6px 8px;
+}
+
+.completed-grid-card .completed-issue-row {
+  gap: 3px;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.completed-grid-card .completed-issue-value {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.completed-grid-card .issue-label {
+  column-gap: 1px;
+}
+
+.completed-compact-issue {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  color: #60a5fa;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.completed-compact-issue .issue-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: #60a5fa;
+}
+
+.completed-compact-arrow {
+  flex: 0 0 auto;
+  color: #9ca3af;
+  font-weight: 700;
 }
 
 .completed-issue-label {
