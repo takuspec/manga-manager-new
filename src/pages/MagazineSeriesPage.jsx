@@ -468,6 +468,12 @@ function MagazineSeriesPage({
               />
 
               <button
+                onClick={bulkChangeSelectedIssue}
+              >
+                選択変更
+              </button>
+
+              <button
                 type="button"
                 onClick={
                   toggleDisplaySeriesSelection
@@ -476,12 +482,6 @@ function MagazineSeriesPage({
                 {areAllDisplaySeriesSelected
                   ? '全解除'
                   : '全選択'}
-              </button>
-
-              <button
-                onClick={bulkChangeSelectedIssue}
-              >
-                選択作品を変更
               </button>
 
             </div>
@@ -687,11 +687,15 @@ function MagazineSeriesPage({
                     : ''
                 }`}
                 key={item.id}
-                onClick={() =>
-                  navigate(
-                    `/series/${item.id}`
+                onClick={(e) => {
+                  e.stopPropagation()
+
+                  setMenuSeriesId(
+                    menuSeriesId === item.id
+                      ? null
+                      : item.id
                   )
-                }
+                }}
               >
                 <div className="series-compact-main">
 
@@ -740,63 +744,67 @@ function MagazineSeriesPage({
                   </button>
                 </div>
 
-                <div className="series-compact-actions">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      navigate(
-                        `/series/${item.id}`
-                      )
-                    }}
-                  >
-                    編集
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-
-                      const ok =
-                        window.confirm(
-                          item.status === 'completed'
-                            ? `「${item.title}」を連載中に戻しますか？`
-                            : `「${item.title}」を完結にしますか？`
+                {menuSeriesId === item.id && (
+                  <div className="series-compact-actions">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(
+                          `/series/${item.id}`
                         )
+                      }}
+                    >
+                      編集
+                    </button>
 
-                      if (!ok) {
-                        return
-                      }
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
 
-                      toggleStatus(item.id)
-                    }}
-                  >
-                    {item.status === 'completed'
-                      ? '連載中'
-                      : '完結'}
-                  </button>
+                        const ok =
+                          window.confirm(
+                            item.status === 'completed'
+                              ? `「${item.title}」を連載中に戻しますか？`
+                              : `「${item.title}」を完結にしますか？`
+                          )
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
+                        if (!ok) {
+                          return
+                        }
 
-                      const ok =
-                        window.confirm(
-                          `「${item.title}」を削除しますか？`
-                        )
+                        toggleStatus(item.id)
+                        setMenuSeriesId(null)
+                      }}
+                    >
+                      {item.status === 'completed'
+                        ? '連載中に戻す'
+                        : '完結にする'}
+                    </button>
 
-                      if (!ok) {
-                        return
-                      }
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
 
-                      deleteSeries(item.id)
-                    }}
-                  >
-                    削除
-                  </button>
-                </div>
+                        const ok =
+                          window.confirm(
+                            `「${item.title}」を削除しますか？`
+                          )
+
+                        if (!ok) {
+                          return
+                        }
+
+                        deleteSeries(item.id)
+                        setMenuSeriesId(null)
+                      }}
+                    >
+                      削除
+                    </button>
+                  </div>
+                )}
               </div>
             )
           })}

@@ -390,21 +390,26 @@ textarea {
 
 .bulk-issue-box {
   display: flex;
-  gap: 10px;
+  align-items: stretch;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
 .bulk-issue-box select {
-  width: 110px;
+  width: 104px;
 }
 
 .bulk-issue-box input {
-  width: 72px;
+  width: 64px;
 }
 
 .bulk-issue-box button {
   flex: 1;
   min-width: 0;
+  min-height: 46px;
+  padding: 10px 8px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .series-tool-row {
