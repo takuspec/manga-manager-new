@@ -938,6 +938,140 @@ select.issue-number-select option {
   opacity: 0.9;
 }
 
+.completed-all-cover .no-image {
+  color: #dbeafe;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+/* 完結 作品一覧 */
+
+.completed-series-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.completed-series-list-card {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: #1f2937;
+  border: 1px solid #263244;
+}
+
+.completed-series-list-card .series-cover-small {
+  width: 84px;
+  height: 112px;
+}
+
+.completed-series-info {
+  min-width: 0;
+}
+
+.completed-series-list-card .series-title {
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.completed-series-magazine {
+  margin: -2px 0 6px;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card .completed-series-magazine {
+  margin: 0;
+  padding: 0 8px 2px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.series-compact-card .completed-series-magazine {
+  margin: -1px 0 4px;
+}
+
+.completed-series-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.completed-series-meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.completed-series-meta span:nth-child(2) {
+  color: #60a5fa;
+  font-weight: 800;
+}
+
+.completed-series-footer {
+  gap: 8px;
+  padding: 10px 12px
+    calc(10px + env(safe-area-inset-bottom));
+}
+
+.completed-series-footer
+  > .view-mode-selector
+  > .view-mode-button {
+  min-height: 54px;
+  padding: 12px 8px;
+  font-size: 14px;
+}
+
+.completed-view-selector {
+  flex: 0 0 112px;
+}
+
+.completed-magazine-selector {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.completed-magazine-selector .view-mode-button {
+  min-width: 0;
+}
+
+.completed-footer-label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.completed-magazine-menu {
+  left: auto;
+  right: 0;
+  width: min(260px, calc(100vw - 40px));
+  max-height: min(380px, 70dvh);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.completed-magazine-menu .view-mode-menu-item span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* 完結 作品カード */
 
 .completed-issue-row {

@@ -9,6 +9,11 @@ function CompletedPage({
   onImportData,
   navigate
 }) {
+  const totalCompletedCount =
+    seriesList.filter((item) => {
+      return item.status === 'completed'
+    }).length
+
   const completedMagazines =
     magazineList
       .map((magazine) => {
@@ -44,6 +49,42 @@ function CompletedPage({
       </div>
 
       <div className="completed-magazine-list">
+
+        {totalCompletedCount > 0 && (
+          <div
+            className="completed-magazine-card completed-all-card"
+            onClick={() =>
+              navigate('/completed/all')
+            }
+          >
+
+            <div className="magazine-cover completed-all-cover">
+              <div className="no-image">
+                ALL
+              </div>
+            </div>
+
+            <div className="magazine-info">
+
+              <div className="magazine-title">
+                全雑誌
+              </div>
+
+              <div className="magazine-stat">
+                完結作品
+                <span>
+                  {totalCompletedCount}作品
+                </span>
+              </div>
+
+            </div>
+
+            <div className="completed-magazine-arrow">
+              ›
+            </div>
+
+          </div>
+        )}
 
         {completedMagazines.map((magazine) => {
           const coverImage =
