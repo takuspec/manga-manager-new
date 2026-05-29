@@ -237,8 +237,11 @@ function CompletedSeriesPage({
           issue={item.startIssue}
         />
 
-        <span className="completed-compact-arrow">
-          →
+        <span
+          className="completed-compact-spacer"
+          aria-hidden="true"
+        >
+          {' '}
         </span>
 
         <span className="completed-compact-label">

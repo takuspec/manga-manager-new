@@ -1355,6 +1355,10 @@ select.issue-number-select option {
   font-weight: 700;
 }
 
+.completed-compact-spacer {
+  flex: 0 0 8px;
+}
+
 .completed-issue-label {
   flex: 0 0 auto;
   color: #9ca3af;
