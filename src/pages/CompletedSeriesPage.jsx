@@ -237,24 +237,6 @@ function CompletedSeriesPage({
     )
   }
 
-  const renderCompletedStatus = (
-    item,
-    targetMagazine
-  ) => {
-    return (
-      <div className="status-badge completed-status-badge">
-        {renderHartaGroupBadge(
-          item,
-          targetMagazine
-        )}
-
-        <span>
-          完結
-        </span>
-      </div>
-    )
-  }
-
   return (
     <div className="app">
 
@@ -333,16 +315,18 @@ function CompletedSeriesPage({
                 </div>
 
                 <div className="completed-series-info">
-                  <div className="series-title">
-                    {item.title}
+                  <div className="completed-title-row">
+                    <div className="series-title">
+                      {item.title}
+                    </div>
+
+                    {renderHartaGroupBadge(
+                      item,
+                      itemMagazine
+                    )}
                   </div>
 
                   {renderMagazineName(item)}
-
-                  {renderCompletedStatus(
-                    item,
-                    itemMagazine
-                  )}
 
                   {renderIssueInfo(
                     item,
@@ -365,16 +349,18 @@ function CompletedSeriesPage({
                 key={item.id}
               >
                 <div className="series-compact-main">
-                  <div className="series-compact-title">
-                    {item.title}
+                  <div className="completed-title-row">
+                    <div className="series-compact-title">
+                      {item.title}
+                    </div>
+
+                    {renderHartaGroupBadge(
+                      item,
+                      itemMagazine
+                    )}
                   </div>
 
                   {renderMagazineName(item)}
-
-                  {renderCompletedStatus(
-                    item,
-                    itemMagazine
-                  )}
 
                   {renderIssueInfo(
                     item,
@@ -407,16 +393,18 @@ function CompletedSeriesPage({
 
                 </div>
 
-                <div className="card-title">
-                  {item.title}
+                <div className="completed-title-row completed-grid-title-row">
+                  <div className="card-title">
+                    {item.title}
+                  </div>
+
+                  {renderHartaGroupBadge(
+                    item,
+                    itemMagazine
+                  )}
                 </div>
 
                 {renderMagazineName(item)}
-
-                {renderCompletedStatus(
-                  item,
-                  itemMagazine
-                )}
 
                 {renderIssueInfo(
                   item,

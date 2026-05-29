@@ -753,8 +753,7 @@ textarea {
 
 .status-badge .harta-group-badge,
 .card-unread .harta-group-badge,
-.series-compact-status .harta-group-badge,
-.completed-status-badge .harta-group-badge {
+.series-compact-status .harta-group-badge {
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
@@ -1122,11 +1121,48 @@ select.issue-number-select option {
   min-width: 0;
 }
 
+.completed-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin-bottom: 8px;
+}
+
+.completed-title-row .series-title,
+.completed-title-row .series-compact-title,
+.completed-title-row .card-title {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.completed-title-row .harta-group-badge {
+  flex: 0 0 auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+}
+
+.completed-grid-title-row {
+  padding: 8px 8px 2px;
+  margin-bottom: 0;
+}
+
+.completed-grid-title-row .card-title {
+  padding: 0;
+}
+
 .completed-series-list-card .series-title {
   margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.completed-series-list-card .completed-title-row .series-title {
+  margin-bottom: 0;
 }
 
 .completed-series-magazine {
@@ -1141,32 +1177,13 @@ select.issue-number-select option {
 
 .card .completed-series-magazine {
   margin: 0;
-  padding: 0 8px 2px;
-  font-size: 11px;
-  text-align: center;
+  padding: 0 8px 4px;
+  font-size: 12px;
+  text-align: left;
 }
 
 .series-compact-card .completed-series-magazine {
   margin: -1px 0 4px;
-}
-
-.completed-status-badge {
-  margin-bottom: 8px;
-}
-
-.card .completed-status-badge {
-  display: flex;
-  width: calc(100% - 16px);
-  justify-content: center;
-  margin: 0 8px 6px;
-  padding: 4px 6px;
-  font-size: 11px;
-}
-
-.series-compact-main .completed-status-badge {
-  margin-bottom: 6px;
-  padding: 5px 9px;
-  font-size: 12px;
 }
 
 .completed-series-meta {
@@ -1271,8 +1288,8 @@ select.issue-number-select option {
 }
 
 .card .completed-issue-row {
-  gap: 4px;
-  font-size: 10px;
+  gap: 6px;
+  font-size: 12px;
 }
 
 .completed-issue-label {
