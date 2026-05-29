@@ -10,6 +10,9 @@ import {
   getPrevPublishedIssue
 } from '../utils/issueUtils'
 import {
+  normalizeHartaGroup
+} from '../utils/hartaGroups'
+import {
   cleanupUnusedImages,
   dataUrlToBlob,
   deleteImage,
@@ -909,6 +912,118 @@ function useMangaData({
     )
   }
 
+  const bulkAddIssueByHartaGroups = (
+    magazineId,
+    selectedGroups = []
+  ) => {
+    const targetMagazine =
+      magazineList.find((magazine) => {
+        return magazine.id === magazineId
+      })
+
+    const targetGroups =
+      new Set(
+        selectedGroups.map((group) => {
+          return normalizeHartaGroup(group)
+        })
+      )
+
+    if (
+      !targetMagazine ||
+      targetMagazine.frequency !== 'harta' ||
+      targetGroups.size === 0
+    ) {
+      return
+    }
+
+    setSeriesList((prevList) =>
+      prevList.map((item) => {
+        if (
+          item.magazineId !== magazineId ||
+          item.status !== 'ongoing' ||
+          !targetGroups.has(
+            normalizeHartaGroup(
+              item.hartaGroup
+            )
+          )
+        ) {
+          return item
+        }
+
+        const next =
+          getNextPublishedIssue(
+            item,
+            item.issueYear ||
+              new Date().getFullYear(),
+            item.issue,
+            targetMagazine
+          )
+
+        return {
+          ...item,
+          issueYear: next.year,
+          issue: next.issue
+        }
+      })
+    )
+  }
+
+  const bulkMinusIssueByHartaGroups = (
+    magazineId,
+    selectedGroups = []
+  ) => {
+    const targetMagazine =
+      magazineList.find((magazine) => {
+        return magazine.id === magazineId
+      })
+
+    const targetGroups =
+      new Set(
+        selectedGroups.map((group) => {
+          return normalizeHartaGroup(group)
+        })
+      )
+
+    if (
+      !targetMagazine ||
+      targetMagazine.frequency !== 'harta' ||
+      targetGroups.size === 0
+    ) {
+      return
+    }
+
+    setSeriesList((prevList) =>
+      prevList.map((item) => {
+        if (
+          item.magazineId !== magazineId ||
+          item.status !== 'ongoing' ||
+          !targetGroups.has(
+            normalizeHartaGroup(
+              item.hartaGroup
+            )
+          )
+        ) {
+          return item
+        }
+
+        const prev =
+          getPrevPublishedIssue(
+            item,
+            item.issueYear ||
+              new Date().getFullYear(),
+            item.issue,
+            targetMagazine
+          )
+
+        return {
+          ...item,
+          issueYear: prev.year,
+          issue: prev.issue
+        }
+      })
+    )
+  }
+
   const toggleStatus = (id) => {
     setSeriesList((prevList) =>
       prevList.map((item) => {
@@ -1223,6 +1338,8 @@ function useMangaData({
     minusIssue,
     bulkAddIssue,
     bulkMinusIssue,
+    bulkAddIssueByHartaGroups,
+    bulkMinusIssueByHartaGroups,
     toggleStatus,
     toggleSeriesSelection,
     bulkChangeSelectedIssue,

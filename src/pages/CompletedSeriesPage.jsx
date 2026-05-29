@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ImageView from '../components/ImageView'
 import IssueLabel from '../components/IssueLabel'
+import HartaGroupBadge from '../components/HartaGroupBadge'
 
 const viewModeOptions = [
   {
@@ -220,6 +221,18 @@ function CompletedSeriesPage({
     )
   }
 
+  const renderHartaGroupBadge = (
+    item,
+    targetMagazine
+  ) => {
+    return (
+      <HartaGroupBadge
+        magazine={targetMagazine}
+        series={item}
+      />
+    )
+  }
+
   return (
     <div className="app">
 
@@ -304,6 +317,11 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
+                  {renderHartaGroupBadge(
+                    item,
+                    itemMagazine
+                  )}
+
                   {renderIssueInfo(
                     item,
                     itemMagazine
@@ -330,6 +348,11 @@ function CompletedSeriesPage({
                   </div>
 
                   {renderMagazineName(item)}
+
+                  {renderHartaGroupBadge(
+                    item,
+                    itemMagazine
+                  )}
 
                   {renderIssueInfo(
                     item,
@@ -367,6 +390,11 @@ function CompletedSeriesPage({
                 </div>
 
                 {renderMagazineName(item)}
+
+                {renderHartaGroupBadge(
+                  item,
+                  itemMagazine
+                )}
 
                 {renderIssueInfo(
                   item,

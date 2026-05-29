@@ -3,6 +3,7 @@ import ImageView from '../components/ImageView'
 import SeriesActionPanel from '../components/SeriesActionPanel'
 import IssueInputRow from '../components/IssueInputRow'
 import IssueLabel from '../components/IssueLabel'
+import HartaGroupBadge from '../components/HartaGroupBadge'
 
 import {
   clampIssueForYear,
@@ -11,6 +12,10 @@ import {
   getEstimatedLatestIssueInfo,
   getIssueSerial
 } from '../utils/issueUtils'
+import {
+  HARTA_GROUP_OPTIONS,
+  normalizeHartaGroup
+} from '../utils/hartaGroups'
 
 const viewModeOptions = [
   {
@@ -58,6 +63,8 @@ function MagazineSeriesPage({
   minusIssue,
   bulkAddIssue,
   bulkMinusIssue,
+  bulkAddIssueByHartaGroups,
+  bulkMinusIssueByHartaGroups,
   bulkChangeSelectedIssue,
   toggleSeriesSelection,
   toggleStatus,
@@ -119,6 +126,11 @@ function MagazineSeriesPage({
     setDisplaySeriesIds
   ] = useState([])
 
+  const [
+    selectedHartaGroups,
+    setSelectedHartaGroups
+  ] = useState([])
+
   const getSafeIssueSerial = (
     year,
     issue
@@ -143,6 +155,23 @@ function MagazineSeriesPage({
 
   const shouldShowStartIssue =
     sortMode === 'start'
+
+  const isHarta =
+    selectedMagazine.frequency === 'harta'
+
+  const hasSelectedHartaGroups =
+    isHarta &&
+    selectedHartaGroups.length > 0
+
+  const shouldShowByHartaGroup = (item) => {
+    if (!hasSelectedHartaGroups) {
+      return true
+    }
+
+    return selectedHartaGroups.includes(
+      normalizeHartaGroup(item.hartaGroup)
+    )
+  }
 
   const renderReadIssueLabel = (item) => {
     return (
@@ -188,6 +217,10 @@ function MagazineSeriesPage({
           !showCompleted &&
           item.status === 'completed'
         ) {
+          return false
+        }
+
+        if (!shouldShowByHartaGroup(item)) {
           return false
         }
 
@@ -278,7 +311,14 @@ function MagazineSeriesPage({
     magazineId,
     sortMode,
     sortDirection,
-    showCompleted
+    showCompleted,
+    selectedHartaGroups
+  ])
+
+  useEffect(() => {
+    setSelectedHartaGroups([])
+  }, [
+    magazineId
   ])
 
   const displaySeries =
@@ -304,6 +344,10 @@ function MagazineSeriesPage({
           return false
         }
 
+        if (!shouldShowByHartaGroup(item)) {
+          return false
+        }
+
         return true
       })
 
@@ -315,9 +359,6 @@ function MagazineSeriesPage({
       .map((item) => {
       return item.id
       })
-
-  const isHarta =
-    selectedMagazine.frequency === 'harta'
 
   const bulkIssueOptions =
     getIssueOptions(
@@ -368,6 +409,45 @@ function MagazineSeriesPage({
         ])
       )
     })
+  }
+
+  const toggleHartaGroup = (group) => {
+    setSelectedHartaGroups((prevGroups) => {
+      if (prevGroups.includes(group)) {
+        return prevGroups.filter((item) => {
+          return item !== group
+        })
+      }
+
+      return [
+        ...prevGroups,
+        group
+      ]
+    })
+  }
+
+  const handleHartaBulkAdd = () => {
+    if (selectedHartaGroups.length === 0) {
+      window.alert('区分を選択してください')
+      return
+    }
+
+    bulkAddIssueByHartaGroups(
+      magazineId,
+      selectedHartaGroups
+    )
+  }
+
+  const handleHartaBulkMinus = () => {
+    if (selectedHartaGroups.length === 0) {
+      window.alert('区分を選択してください')
+      return
+    }
+
+    bulkMinusIssueByHartaGroups(
+      magazineId,
+      selectedHartaGroups
+    )
   }
 
   return (
@@ -515,7 +595,50 @@ function MagazineSeriesPage({
 
             )}
 
-            <div className="series-tool-row">
+            {isHarta ? (
+              <div className="harta-group-bulk-actions">
+                {HARTA_GROUP_OPTIONS.map((option) => {
+                  const isSelected =
+                    selectedHartaGroups.includes(
+                      option.value
+                    )
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`harta-group-toggle ${
+                        isSelected ? 'active' : ''
+                      }`}
+                      onClick={() =>
+                        toggleHartaGroup(
+                          option.value
+                        )
+                      }
+                    >
+                      {option.label}
+                    </button>
+                  )
+                })}
+
+                <button
+                  type="button"
+                  className="harta-group-step"
+                  onClick={handleHartaBulkAdd}
+                >
+                  +1
+                </button>
+
+                <button
+                  type="button"
+                  className="harta-group-step minus-button"
+                  onClick={handleHartaBulkMinus}
+                >
+                  -1
+                </button>
+              </div>
+            ) : (
+              <div className="series-tool-row">
 
             <button
               className="bulk-button"
@@ -535,7 +658,8 @@ function MagazineSeriesPage({
               全連載 -1
             </button>
 
-            </div>
+              </div>
+            )}
           </>
         )}
 
@@ -587,6 +711,11 @@ function MagazineSeriesPage({
                 <div className="series-title">
                   {item.title}
                 </div>
+
+                <HartaGroupBadge
+                  magazine={selectedMagazine}
+                  series={item}
+                />
 
                 <div className="series-issue issue-display-row">
                   <span className="issue-display-label">
@@ -685,6 +814,11 @@ function MagazineSeriesPage({
                   <div className="series-compact-title">
                     {item.title}
                   </div>
+
+                  <HartaGroupBadge
+                    magazine={selectedMagazine}
+                    series={item}
+                  />
 
                   <div className="series-compact-meta">
                     <span>
@@ -788,6 +922,11 @@ function MagazineSeriesPage({
               <div className="card-title">
                 {item.title}
               </div>
+
+              <HartaGroupBadge
+                magazine={selectedMagazine}
+                series={item}
+              />
 
               <div className="card-issue">
                 {renderReadIssueLabel(item)}

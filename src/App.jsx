@@ -107,6 +107,8 @@ function App() {
     minusIssue,
     bulkAddIssue,
     bulkMinusIssue,
+    bulkAddIssueByHartaGroups,
+    bulkMinusIssueByHartaGroups,
     toggleStatus,
     toggleSeriesSelection,
     bulkChangeSelectedIssue,
@@ -273,6 +275,12 @@ function App() {
             minusIssue={minusIssue}
             bulkAddIssue={bulkAddIssue}
             bulkMinusIssue={bulkMinusIssue}
+            bulkAddIssueByHartaGroups={
+              bulkAddIssueByHartaGroups
+            }
+            bulkMinusIssueByHartaGroups={
+              bulkMinusIssueByHartaGroups
+            }
             bulkChangeSelectedIssue={
               bulkChangeSelectedIssue
             }

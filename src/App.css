@@ -510,6 +510,76 @@ textarea {
   line-height: 1.2;
 }
 
+.harta-group-bulk-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(44px, 1fr)) 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.harta-group-toggle,
+.harta-group-step {
+  min-height: 48px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  line-height: 1;
+}
+
+.harta-group-toggle {
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #cbd5e1;
+}
+
+.harta-group-toggle.active {
+  border-color: #60a5fa;
+  background: #2563eb;
+  color: white;
+}
+
+.harta-group-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.harta-group-ru {
+  border-color: rgba(45, 212, 191, 0.35);
+  background: rgba(20, 184, 166, 0.18);
+  color: #5eead4;
+}
+
+.harta-group-ta {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
+.series-info .harta-group-badge,
+.completed-series-info .harta-group-badge {
+  margin: -2px 0 8px;
+}
+
+.series-compact-main .harta-group-badge {
+  margin: -1px 0 5px;
+}
+
+.card > .harta-group-badge {
+  display: flex;
+  margin: 0 auto 5px;
+}
+
 .minus-button {
   background: #1e3a8a;
 }
