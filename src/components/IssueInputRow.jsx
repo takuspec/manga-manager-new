@@ -64,7 +64,7 @@ function IssueInputRow({
       <div className="issue-number-wrap">
         {useIssueSelect ? (
           <select
-            className="issue-number-input"
+            className="issue-number-input issue-number-select"
             value={Number(issueValue) || 0}
             onChange={(e) =>
               onIssueChange(

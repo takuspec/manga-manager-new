@@ -450,7 +450,7 @@ textarea {
 }
 
 .bulk-issue-input-row .issue-number-wrap {
-  flex-basis: 72px;
+  flex-basis: 82px;
 }
 
 .series-tool-row {
@@ -834,6 +834,27 @@ textarea {
   width: 100%;
   min-width: 0;
   text-align: right;
+}
+
+select.issue-number-select,
+.edit-page select.issue-number-select {
+  min-width: 68px;
+  min-height: 46px;
+  padding: 10px 30px 10px 12px;
+  line-height: normal;
+  text-align: left;
+  text-align-last: center;
+  overflow: visible;
+  appearance: auto;
+  -webkit-appearance: menulist;
+}
+
+select.issue-number-select option {
+  background: white;
+  color: #111827;
+  font-size: 16px;
+  line-height: normal;
+  text-align: left;
 }
 
 .edit-page .issue-year-select {

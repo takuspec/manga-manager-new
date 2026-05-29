@@ -489,7 +489,7 @@ function MagazineSeriesPage({
               <button
                 onClick={bulkChangeSelectedIssue}
               >
-                選択変更
+                一括変更
               </button>
 
               <button
