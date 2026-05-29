@@ -680,13 +680,20 @@ textarea {
 
 .series-issue {
   color: #9ca3af;
-  font-size: 15px;
-  margin-bottom: 10px;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
 .series-issue .issue-label {
   color: #60a5fa;
   font-weight: 700;
+}
+
+.series-issue .issue-label-year,
+.series-start-issue .issue-label-year,
+.card-issue .issue-label-year,
+.card-start-issue .issue-label-year {
+  min-width: max-content;
 }
 
 .series-start-issue {
@@ -796,13 +803,22 @@ textarea {
 
 .card-issue {
   padding: 0 8px 2px;
-  font-size: 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  min-width: 0;
+  font-size: 11px;
   color: #9ca3af;
+  font-weight: 700;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .card-issue .issue-label {
+  max-width: 100%;
   color: #9ca3af;
+  overflow: hidden;
 }
 
 .card-start-issue {
