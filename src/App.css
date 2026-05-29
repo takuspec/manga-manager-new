@@ -566,20 +566,6 @@ textarea {
   color: #fcd34d;
 }
 
-.series-info .harta-group-badge,
-.completed-series-info .harta-group-badge {
-  margin: -2px 0 8px;
-}
-
-.series-compact-main .harta-group-badge {
-  margin: -1px 0 5px;
-}
-
-.card > .harta-group-badge {
-  display: flex;
-  margin: 0 auto 5px;
-}
-
 .minus-button {
   background: #1e3a8a;
 }
@@ -655,7 +641,9 @@ textarea {
 }
 
 .status-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(37, 99, 235, 0.25);
@@ -763,6 +751,16 @@ textarea {
   font-weight: 700;
 }
 
+.status-badge .harta-group-badge,
+.card-unread .harta-group-badge,
+.series-compact-status .harta-group-badge,
+.completed-status-badge .harta-group-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+}
+
 .card-start-issue .issue-label {
   color: #60a5fa;
 }
@@ -770,6 +768,10 @@ textarea {
 .card-unread {
   margin: 0 8px 8px;
   padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   border-radius: 999px;
   background: rgba(37, 99, 235, 0.25);
   color: #60a5fa;
@@ -823,6 +825,12 @@ textarea {
 
 .series-compact-meta span {
   white-space: nowrap;
+}
+
+.series-compact-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .series-compact-meta .issue-label {
@@ -1078,23 +1086,36 @@ select.issue-number-select option {
 .completed-series-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 .completed-series-list-card {
+  position: relative;
   display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 14px;
   align-items: center;
-  padding: 12px;
-  border-radius: 18px;
-  background: #1f2937;
+  padding: 14px;
+  margin-bottom: 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #1f2937, #111827);
   border: 1px solid #263244;
 }
 
+.completed-series-list-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 999px;
+  background: #2563eb;
+}
+
 .completed-series-list-card .series-cover-small {
-  width: 84px;
-  height: 112px;
+  width: 92px;
+  height: 124px;
 }
 
 .completed-series-info {
@@ -1102,7 +1123,7 @@ select.issue-number-select option {
 }
 
 .completed-series-list-card .series-title {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1127,6 +1148,25 @@ select.issue-number-select option {
 
 .series-compact-card .completed-series-magazine {
   margin: -1px 0 4px;
+}
+
+.completed-status-badge {
+  margin-bottom: 8px;
+}
+
+.card .completed-status-badge {
+  display: flex;
+  width: calc(100% - 16px);
+  justify-content: center;
+  margin: 0 8px 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+
+.series-compact-main .completed-status-badge {
+  margin-bottom: 6px;
+  padding: 5px 9px;
+  font-size: 12px;
 }
 
 .completed-series-meta {
@@ -1213,6 +1253,10 @@ select.issue-number-select option {
 .completed-series-info .completed-issue-info,
 .series-compact-main .completed-issue-info {
   padding: 0;
+}
+
+.completed-series-info .completed-issue-row {
+  font-size: 13px;
 }
 
 .completed-issue-row {

@@ -712,11 +712,6 @@ function MagazineSeriesPage({
                   {item.title}
                 </div>
 
-                <HartaGroupBadge
-                  magazine={selectedMagazine}
-                  series={item}
-                />
-
                 <div className="series-issue issue-display-row">
                   <span className="issue-display-label">
                     読了：
@@ -736,9 +731,16 @@ function MagazineSeriesPage({
                 )}
 
                 <div className="status-badge">
-                  {item.status === 'completed'
-                    ? '完結'
-                    : `未読 ${unreadCount}`}
+                  <HartaGroupBadge
+                    magazine={selectedMagazine}
+                    series={item}
+                  />
+
+                  <span>
+                    {item.status === 'completed'
+                      ? '完結'
+                      : `未読 ${unreadCount}`}
+                  </span>
                 </div>
 
               </div>
@@ -815,17 +817,17 @@ function MagazineSeriesPage({
                     {item.title}
                   </div>
 
-                  <HartaGroupBadge
-                    magazine={selectedMagazine}
-                    series={item}
-                  />
-
                   <div className="series-compact-meta">
                     <span>
                       読了 {renderReadIssueLabel(item)}
                     </span>
 
-                    <span>
+                    <span className="series-compact-status">
+                      <HartaGroupBadge
+                        magazine={selectedMagazine}
+                        series={item}
+                      />
+
                       {item.status === 'completed'
                         ? '完結'
                         : `未読 ${unreadCount}`}
@@ -923,11 +925,6 @@ function MagazineSeriesPage({
                 {item.title}
               </div>
 
-              <HartaGroupBadge
-                magazine={selectedMagazine}
-                series={item}
-              />
-
               <div className="card-issue">
                 {renderReadIssueLabel(item)}
               </div>
@@ -939,9 +936,16 @@ function MagazineSeriesPage({
               )}
 
               <div className="card-unread">
-                {item.status === 'completed'
-                  ? '完結'
-                  : `未読 ${getUnreadCount(item)}`}
+                <HartaGroupBadge
+                  magazine={selectedMagazine}
+                  series={item}
+                />
+
+                <span>
+                  {item.status === 'completed'
+                    ? '完結'
+                    : `未読 ${getUnreadCount(item)}`}
+                </span>
               </div>
 
             </div>

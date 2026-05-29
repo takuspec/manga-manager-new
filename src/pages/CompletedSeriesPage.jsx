@@ -225,11 +225,33 @@ function CompletedSeriesPage({
     item,
     targetMagazine
   ) => {
+    if (isAllMagazines) {
+      return null
+    }
+
     return (
       <HartaGroupBadge
         magazine={targetMagazine}
         series={item}
       />
+    )
+  }
+
+  const renderCompletedStatus = (
+    item,
+    targetMagazine
+  ) => {
+    return (
+      <div className="status-badge completed-status-badge">
+        {renderHartaGroupBadge(
+          item,
+          targetMagazine
+        )}
+
+        <span>
+          完結
+        </span>
+      </div>
     )
   }
 
@@ -317,7 +339,7 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
-                  {renderHartaGroupBadge(
+                  {renderCompletedStatus(
                     item,
                     itemMagazine
                   )}
@@ -349,7 +371,7 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
-                  {renderHartaGroupBadge(
+                  {renderCompletedStatus(
                     item,
                     itemMagazine
                   )}
@@ -391,7 +413,7 @@ function CompletedSeriesPage({
 
                 {renderMagazineName(item)}
 
-                {renderHartaGroupBadge(
+                {renderCompletedStatus(
                   item,
                   itemMagazine
                 )}
