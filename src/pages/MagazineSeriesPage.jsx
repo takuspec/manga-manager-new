@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ImageView from '../components/ImageView'
+import SeriesActionPanel from '../components/SeriesActionPanel'
 
 import {
   formatIssue,
@@ -606,65 +607,15 @@ function MagazineSeriesPage({
               </div>
 
               {menuSeriesId === item.id && (
-
-                <div
-                  className="series-popup-menu"
-                  onClick={(e) =>
-                    e.stopPropagation()
+                <SeriesActionPanel
+                  item={item}
+                  navigate={navigate}
+                  toggleStatus={toggleStatus}
+                  deleteSeries={deleteSeries}
+                  onClose={() =>
+                    setMenuSeriesId(null)
                   }
-                >
-
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/series/${item.id}`
-                      )
-                    }
-                  >
-                    編集
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      const ok =
-                        window.confirm(
-                          item.status === 'completed'
-                            ? `「${item.title}」を連載中に戻しますか？`
-                            : `「${item.title}」を完結にしますか？`
-                        )
-
-                      if (!ok) {
-                        return
-                      }
-
-                      toggleStatus(item.id)
-                      setMenuSeriesId(null)
-                    }}
-                  >
-                    {item.status === 'completed'
-                      ? '連載中に戻す'
-                      : '完結にする'}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      const ok =
-                        window.confirm(
-                          `「${item.title}」を削除しますか？`
-                        )
-
-                      if (!ok) {
-                        return
-                      }
-
-                      deleteSeries(item.id)
-                      setMenuSeriesId(null)
-                    }}
-                  >
-                    削除
-                  </button>
-
-                </div>
+                />
               )}
 
             </div>
@@ -745,65 +696,15 @@ function MagazineSeriesPage({
                 </div>
 
                 {menuSeriesId === item.id && (
-                  <div className="series-compact-actions">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        navigate(
-                          `/series/${item.id}`
-                        )
-                      }}
-                    >
-                      編集
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-
-                        const ok =
-                          window.confirm(
-                            item.status === 'completed'
-                              ? `「${item.title}」を連載中に戻しますか？`
-                              : `「${item.title}」を完結にしますか？`
-                          )
-
-                        if (!ok) {
-                          return
-                        }
-
-                        toggleStatus(item.id)
-                        setMenuSeriesId(null)
-                      }}
-                    >
-                      {item.status === 'completed'
-                        ? '連載中に戻す'
-                        : '完結にする'}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-
-                        const ok =
-                          window.confirm(
-                            `「${item.title}」を削除しますか？`
-                          )
-
-                        if (!ok) {
-                          return
-                        }
-
-                        deleteSeries(item.id)
-                        setMenuSeriesId(null)
-                      }}
-                    >
-                      削除
-                    </button>
-                  </div>
+                  <SeriesActionPanel
+                    item={item}
+                    navigate={navigate}
+                    toggleStatus={toggleStatus}
+                    deleteSeries={deleteSeries}
+                    onClose={() =>
+                      setMenuSeriesId(null)
+                    }
+                  />
                 )}
               </div>
             )

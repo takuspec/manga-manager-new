@@ -680,22 +680,6 @@ textarea {
   font-weight: 800;
 }
 
-.series-compact-actions {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.series-compact-actions button {
-  min-height: 40px;
-  padding: 8px 6px;
-  border-radius: 10px;
-  background: #182235;
-  font-size: 13px;
-  font-weight: 800;
-}
-
 .card.selected {
   border: 2px solid #3b82f6;
   background: linear-gradient(135deg, #1e3a8a, #111827);
