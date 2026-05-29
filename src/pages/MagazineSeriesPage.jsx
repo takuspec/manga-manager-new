@@ -843,7 +843,11 @@ function MagazineSeriesPage({
 
                     {shouldShowStartIssue && (
                       <span className="series-compact-start-issue">
-                        開始 {renderStartIssueLabel(item)}
+                        <span className="series-compact-start-label">
+                          開始
+                        </span>
+                        {' '}
+                        {renderStartIssueLabel(item)}
                       </span>
                     )}
                   </div>

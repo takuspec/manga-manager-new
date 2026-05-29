@@ -777,9 +777,10 @@ textarea {
 }
 
 .card-issue {
-  padding: 0 8px 8px;
+  padding: 0 8px 2px;
   font-size: 12px;
   color: #9ca3af;
+  line-height: 1.2;
 }
 
 .card-issue .issue-label {
@@ -787,7 +788,7 @@ textarea {
 }
 
 .card-start-issue {
-  padding: 0 8px 6px;
+  padding: 0 8px 4px;
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -796,6 +797,7 @@ textarea {
   font-size: 11px;
   color: #60a5fa;
   font-weight: 700;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -821,8 +823,8 @@ textarea {
 }
 
 .card-unread {
-  margin: 0 8px 8px;
-  padding: 4px 6px;
+  margin: 0 8px 6px;
+  padding: 3px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -899,12 +901,16 @@ textarea {
 }
 
 .series-compact-meta .series-compact-start-issue {
-  color: #9ca3af;
+  color: #60a5fa;
   font-weight: 700;
 }
 
-.series-compact-start-issue .issue-label {
+.series-compact-start-label {
   color: #9ca3af;
+}
+
+.series-compact-start-issue .issue-label {
+  color: #60a5fa;
 }
 
 .series-compact-buttons {
