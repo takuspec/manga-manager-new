@@ -258,6 +258,87 @@ export const getIssuesPerYear = (
   )
 }
 
+export const getIssueOptions = (
+  magazine,
+  year = new Date().getFullYear(),
+  {
+    includeUnread = false
+  } = {}
+) => {
+  const options = []
+
+  if (includeUnread) {
+    options.push({
+      value: 0,
+      label: '未読'
+    })
+  }
+
+  if (!magazine) {
+    return options
+  }
+
+  if (isHartaMagazine(magazine)) {
+    return options
+  }
+
+  const maxIssue =
+    getIssuesPerYear(
+      magazine,
+      Number(year) ||
+        new Date().getFullYear()
+    )
+
+  for (let issue = 1; issue <= maxIssue; issue += 1) {
+    options.push({
+      value: issue,
+      label: String(issue)
+    })
+  }
+
+  return options
+}
+
+export const clampIssueForYear = (
+  magazine,
+  year,
+  issue,
+  {
+    includeUnread = false
+  } = {}
+) => {
+  const numericIssue =
+    Number(issue) || 0
+
+  if (!magazine) {
+    return numericIssue
+  }
+
+  if (isHartaMagazine(magazine)) {
+    return numericIssue
+  }
+
+  if (includeUnread && numericIssue === 0) {
+    return 0
+  }
+
+  const maxIssue =
+    getIssuesPerYear(
+      magazine,
+      Number(year) ||
+        new Date().getFullYear()
+    )
+
+  if (numericIssue <= 0) {
+    return includeUnread ? 0 : 1
+  }
+
+  return Math.min(
+    numericIssue,
+    maxIssue
+  )
+}
+
 export const getIssueSerial = (
   year,
   issue,

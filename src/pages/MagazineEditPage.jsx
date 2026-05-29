@@ -3,6 +3,8 @@ import ImageCropModal from '../components/ImageCropModal'
 import ImageView from '../components/ImageView'
 import IssueInputRow from '../components/IssueInputRow'
 import {
+  clampIssueForYear,
+  getIssueOptions,
   getYearOptions
 } from '../utils/issueUtils'
 
@@ -78,6 +80,34 @@ function MagazineEditPage({
 
   const yearOptions =
     getYearOptions()
+
+  const editedMagazine = magazine
+    ? {
+        ...magazine,
+        frequency: editFrequency
+      }
+    : null
+
+  const currentIssueOptions =
+    getIssueOptions(
+      editedMagazine,
+      editCurrentIssueYear
+    )
+
+  const isHarta =
+    editFrequency === 'harta'
+
+  const handleCurrentIssueYearChange = (year) => {
+    setEditCurrentIssueYear(year)
+
+    setEditCurrentIssue(
+      clampIssueForYear(
+        editedMagazine,
+        year,
+        editCurrentIssue
+      )
+    )
+  }
 
   useEffect(() => {
     if (magazine) {
@@ -331,6 +361,11 @@ function MagazineEditPage({
             issueValue={editCurrentIssue}
             onIssueChange={setEditCurrentIssue}
             yearOptions={yearOptions}
+            issueOptions={currentIssueOptions}
+            useIssueSelect={!isHarta}
+            onYearSelected={
+              handleCurrentIssueYearChange
+            }
           />
 
         </div>

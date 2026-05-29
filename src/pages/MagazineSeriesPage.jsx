@@ -4,7 +4,9 @@ import SeriesActionPanel from '../components/SeriesActionPanel'
 import IssueInputRow from '../components/IssueInputRow'
 
 import {
+  clampIssueForYear,
   formatIssue,
+  getIssueOptions,
   getYearOptions,
   getEstimatedLatestIssueInfo,
   getIssueSerial
@@ -303,8 +305,35 @@ function MagazineSeriesPage({
         return item.status !== 'completed'
       })
       .map((item) => {
-        return item.id
+      return item.id
       })
+
+  const isHarta =
+    selectedMagazine.frequency === 'harta'
+
+  const bulkIssueOptions =
+    getIssueOptions(
+      selectedMagazine,
+      bulkIssueYear,
+      {
+        includeUnread: true
+      }
+    )
+
+  const handleBulkIssueYearChange = (year) => {
+    setBulkIssueYear(year)
+
+    setBulkIssueValue(
+      clampIssueForYear(
+        selectedMagazine,
+        year,
+        bulkIssueValue,
+        {
+          includeUnread: true
+        }
+      )
+    )
+  }
 
   const areAllDisplaySeriesSelected =
     selectableDisplaySeriesIds.length > 0 &&
@@ -448,8 +477,13 @@ function MagazineSeriesPage({
                 issueValue={bulkIssueValue}
                 onIssueChange={setBulkIssueValue}
                 yearOptions={yearOptions}
+                issueOptions={bulkIssueOptions}
+                useIssueSelect={!isHarta}
                 emptyIssueValue=""
                 className="bulk-issue-input-row"
+                onYearSelected={
+                  handleBulkIssueYearChange
+                }
               />
 
               <button

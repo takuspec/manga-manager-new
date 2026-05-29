@@ -4,10 +4,13 @@ function IssueInputRow({
   issueValue,
   onIssueChange,
   yearOptions = [],
+  issueOptions = [],
   showYear = true,
+  useIssueSelect = false,
   suffix = '号',
   emptyIssueValue = 0,
-  className = ''
+  className = '',
+  onYearSelected
 }) {
   const handleIssueFocus = () => {
     const currentValue =
@@ -35,11 +38,17 @@ function IssueInputRow({
         <select
           className="issue-year-select"
           value={yearValue}
-          onChange={(e) =>
-            onYearChange(
+          onChange={(e) => {
+            const nextYear =
               Number(e.target.value)
-            )
-          }
+
+            if (onYearSelected) {
+              onYearSelected(nextYear)
+              return
+            }
+
+            onYearChange(nextYear)
+          }}
         >
           {yearOptions.map((year) => (
             <option
@@ -53,21 +62,44 @@ function IssueInputRow({
       )}
 
       <div className="issue-number-wrap">
-        <input
-          className="issue-number-input"
-          type="number"
-          inputMode="numeric"
-          value={issueValue ?? ''}
-          onFocus={handleIssueFocus}
-          onBlur={handleIssueBlur}
-          onChange={(e) =>
-            onIssueChange(e.target.value)
-          }
-        />
+        {useIssueSelect ? (
+          <select
+            className="issue-number-input"
+            value={Number(issueValue) || 0}
+            onChange={(e) =>
+              onIssueChange(
+                Number(e.target.value)
+              )
+            }
+          >
+            {issueOptions.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            className="issue-number-input"
+            type="number"
+            inputMode="numeric"
+            value={issueValue ?? ''}
+            onFocus={handleIssueFocus}
+            onBlur={handleIssueBlur}
+            onChange={(e) =>
+              onIssueChange(e.target.value)
+            }
+          />
+        )}
 
-        <span className="issue-number-suffix">
-          {suffix}
-        </span>
+        {Number(issueValue) !== 0 && (
+          <span className="issue-number-suffix">
+            {suffix}
+          </span>
+        )}
       </div>
     </div>
   )

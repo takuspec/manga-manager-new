@@ -1,8 +1,12 @@
 ﻿import { useState } from 'react'
 import ImageCropModal from './ImageCropModal'
+import { useEffect } from 'react'
 import ImageView from './ImageView'
 import IssueInputRow from './IssueInputRow'
 import {
+  clampIssueForYear,
+  getEstimatedLatestIssueInfo,
+  getIssueOptions,
   getYearOptions
 } from '../utils/issueUtils'
 
@@ -31,6 +35,21 @@ function SeriesAdd({
   const isHarta =
     magazine?.frequency === 'harta'
 
+  const startIssueOptions =
+    getIssueOptions(
+      magazine,
+      newSeriesStartIssueYear
+    )
+
+  const readIssueOptions =
+    getIssueOptions(
+      magazine,
+      newSeriesIssueYear,
+      {
+        includeUnread: true
+      }
+    )
+
   const [
     showCropModal,
     setShowCropModal
@@ -40,6 +59,55 @@ function SeriesAdd({
     cropTargetImage,
     setCropTargetImage
   ] = useState(null)
+
+  useEffect(() => {
+    if (!magazine) {
+      return
+    }
+
+    const latest =
+      getEstimatedLatestIssueInfo(magazine)
+
+    setNewSeriesStartIssueYear(
+      latest.year
+    )
+    setNewSeriesStartIssue(
+      latest.issue
+    )
+    setNewSeriesIssueYear(
+      latest.year
+    )
+    setNewSeriesIssue(
+      latest.issue
+    )
+  }, [magazine?.id])
+
+  const handleStartIssueYearChange = (year) => {
+    setNewSeriesStartIssueYear(year)
+
+    setNewSeriesStartIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        newSeriesStartIssue
+      )
+    )
+  }
+
+  const handleIssueYearChange = (year) => {
+    setNewSeriesIssueYear(year)
+
+    setNewSeriesIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        newSeriesIssue,
+        {
+          includeUnread: true
+        }
+      )
+    )
+  }
 
   const handleImageChange = (e) => {
     const file =
@@ -127,7 +195,12 @@ function SeriesAdd({
             issueValue={newSeriesStartIssue}
             onIssueChange={setNewSeriesStartIssue}
             yearOptions={yearOptions}
-            showYear={!isHarta}
+            issueOptions={startIssueOptions}
+            showYear={true}
+            useIssueSelect={!isHarta}
+            onYearSelected={
+              handleStartIssueYearChange
+            }
           />
         </div>
 
@@ -140,7 +213,12 @@ function SeriesAdd({
             issueValue={newSeriesIssue}
             onIssueChange={setNewSeriesIssue}
             yearOptions={yearOptions}
-            showYear={!isHarta}
+            issueOptions={readIssueOptions}
+            showYear={true}
+            useIssueSelect={!isHarta}
+            onYearSelected={
+              handleIssueYearChange
+            }
           />
         </div>
 

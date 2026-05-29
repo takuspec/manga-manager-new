@@ -3,6 +3,8 @@ import ImageView from './ImageView'
 import IssueInputRow from './IssueInputRow'
 import { useEffect, useState } from 'react'
 import {
+  clampIssueForYear,
+  getIssueOptions,
   getHartaYearMonthFromVolume,
   getYearOptions
 } from '../utils/issueUtils'
@@ -54,6 +56,21 @@ function SeriesEdit({
 
   const [localIssue, setLocalIssue] =
     useState(selectedSeries.issue)
+
+  const startIssueOptions =
+    getIssueOptions(
+      magazine,
+      localStartIssueYear
+    )
+
+  const readIssueOptions =
+    getIssueOptions(
+      magazine,
+      localIssueYear,
+      {
+        includeUnread: true
+      }
+    )
 
   const [localImage, setLocalImage] =
     useState(selectedSeries.image || '')
@@ -164,6 +181,33 @@ function SeriesEdit({
     setSelectedSeries(null)
   }
 
+  const handleStartIssueYearChange = (year) => {
+    setLocalStartIssueYear(year)
+
+    setLocalStartIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        localStartIssue
+      )
+    )
+  }
+
+  const handleIssueYearChange = (year) => {
+    setLocalIssueYear(year)
+
+    setLocalIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        localIssue,
+        {
+          includeUnread: true
+        }
+      )
+    )
+  }
+
   return (
     <div className="app">
 
@@ -243,7 +287,12 @@ function SeriesEdit({
             issueValue={localStartIssue}
             onIssueChange={setLocalStartIssue}
             yearOptions={yearOptions}
-            showYear={!isHarta}
+            issueOptions={startIssueOptions}
+            showYear={true}
+            useIssueSelect={!isHarta}
+            onYearSelected={
+              handleStartIssueYearChange
+            }
           />
         </div>
 
@@ -256,7 +305,12 @@ function SeriesEdit({
             issueValue={localIssue}
             onIssueChange={setLocalIssue}
             yearOptions={yearOptions}
-            showYear={!isHarta}
+            issueOptions={readIssueOptions}
+            showYear={true}
+            useIssueSelect={!isHarta}
+            onYearSelected={
+              handleIssueYearChange
+            }
           />
         </div>
 
