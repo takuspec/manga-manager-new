@@ -258,6 +258,9 @@ function App() {
             menuSeriesId={menuSeriesId}
             setMenuSeriesId={setMenuSeriesId}
             selectedSeriesIds={selectedSeriesIds}
+            setSelectedSeriesIds={
+              setSelectedSeriesIds
+            }
             bulkIssueValue={bulkIssueValue}
             setBulkIssueValue={setBulkIssueValue}
             bulkIssueYear={bulkIssueYear}

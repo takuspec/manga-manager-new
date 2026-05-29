@@ -27,6 +27,10 @@ function SeriesEditPage({
     })
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [seriesId])
+
+  useEffect(() => {
     if (selectedSeries) {
       setEditTitle(
         selectedSeries.title

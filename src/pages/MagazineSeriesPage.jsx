@@ -43,6 +43,7 @@ function MagazineSeriesPage({
   menuSeriesId,
   setMenuSeriesId,
   selectedSeriesIds,
+  setSelectedSeriesIds,
   bulkIssueYear,
   setBulkIssueYear,
   bulkIssueValue,
@@ -294,6 +295,42 @@ function MagazineSeriesPage({
         return true
       })
 
+  const selectableDisplaySeriesIds =
+    displaySeries
+      .filter((item) => {
+        return item.status !== 'completed'
+      })
+      .map((item) => {
+        return item.id
+      })
+
+  const areAllDisplaySeriesSelected =
+    selectableDisplaySeriesIds.length > 0 &&
+    selectableDisplaySeriesIds.every((id) => {
+      return selectedSeriesIds.includes(id)
+    })
+
+  const toggleDisplaySeriesSelection = () => {
+    if (!setSelectedSeriesIds) {
+      return
+    }
+
+    setSelectedSeriesIds((prevIds) => {
+      if (areAllDisplaySeriesSelected) {
+        return prevIds.filter((id) => {
+          return !selectableDisplaySeriesIds.includes(id)
+        })
+      }
+
+      return Array.from(
+        new Set([
+          ...prevIds,
+          ...selectableDisplaySeriesIds
+        ])
+      )
+    })
+  }
+
   return (
     <div className="app">
 
@@ -429,6 +466,17 @@ function MagazineSeriesPage({
                   )
                 }
               />
+
+              <button
+                type="button"
+                onClick={
+                  toggleDisplaySeriesSelection
+                }
+              >
+                {areAllDisplaySeriesSelected
+                  ? '全解除'
+                  : '全選択'}
+              </button>
 
               <button
                 onClick={bulkChangeSelectedIssue}
@@ -581,8 +629,8 @@ function MagazineSeriesPage({
                       const ok =
                         window.confirm(
                           item.status === 'completed'
-                            ? '連載中に戻しますか？'
-                            : 'この作品を完結にしますか？'
+                            ? `「${item.title}」を連載中に戻しますか？`
+                            : `「${item.title}」を完結にしますか？`
                         )
 
                       if (!ok) {
@@ -689,6 +737,64 @@ function MagazineSeriesPage({
                     }}
                   >
                     +1
+                  </button>
+                </div>
+
+                <div className="series-compact-actions">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigate(
+                        `/series/${item.id}`
+                      )
+                    }}
+                  >
+                    編集
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+
+                      const ok =
+                        window.confirm(
+                          item.status === 'completed'
+                            ? `「${item.title}」を連載中に戻しますか？`
+                            : `「${item.title}」を完結にしますか？`
+                        )
+
+                      if (!ok) {
+                        return
+                      }
+
+                      toggleStatus(item.id)
+                    }}
+                  >
+                    {item.status === 'completed'
+                      ? '連載中'
+                      : '完結'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+
+                      const ok =
+                        window.confirm(
+                          `「${item.title}」を削除しますか？`
+                        )
+
+                      if (!ok) {
+                        return
+                      }
+
+                      deleteSeries(item.id)
+                    }}
+                  >
+                    削除
                   </button>
                 </div>
               </div>
