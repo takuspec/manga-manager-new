@@ -1074,19 +1074,48 @@ select.issue-number-select option {
 
 /* 完結 作品カード */
 
+.completed-issue-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 8px 8px;
+}
+
+.completed-series-info .completed-issue-info,
+.series-compact-main .completed-issue-info {
+  padding: 0;
+}
+
 .completed-issue-row {
-  display: grid;
-  grid-template-columns: 24px 48px 26px;
-  column-gap: 2px;
+  display: flex;
+  gap: 6px;
   align-items: center;
-  padding: 0 4px 2px;
+  min-width: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.card .completed-issue-row {
+  gap: 4px;
   font-size: 10px;
-  line-height: 1.2;
 }
 
 .completed-issue-label {
+  flex: 0 0 auto;
   color: #9ca3af;
   text-align: left;
+  white-space: nowrap;
+}
+
+.completed-issue-value {
+  min-width: 0;
+  color: #60a5fa;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

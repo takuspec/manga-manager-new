@@ -96,7 +96,7 @@ function CompletedSeriesPage({
       return `volume${issue || '-'}`
     }
 
-    return `${issueYear || '----'}年 ${formatIssueNumber(
+    return `${issueYear || '----'}年${formatIssueNumber(
       issue,
       targetMagazine
     )}`
@@ -213,6 +213,43 @@ function CompletedSeriesPage({
     )
   }
 
+  const renderIssueInfo = (
+    item,
+    targetMagazine
+  ) => {
+    return (
+      <div className="completed-issue-info">
+        <div className="completed-issue-row">
+          <span className="completed-issue-label">
+            開始
+          </span>
+
+          <span className="completed-issue-value">
+            {getIssueText(
+              item,
+              targetMagazine,
+              'start'
+            )}
+          </span>
+        </div>
+
+        <div className="completed-issue-row">
+          <span className="completed-issue-label">
+            終了
+          </span>
+
+          <span className="completed-issue-value">
+            {getIssueText(
+              item,
+              targetMagazine,
+              'end'
+            )}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="app">
 
@@ -297,23 +334,10 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
-                  <div className="completed-series-meta">
-                    <span>
-                      開始 {getIssueText(
-                        item,
-                        itemMagazine,
-                        'start'
-                      )}
-                    </span>
-
-                    <span>
-                      終了 {getIssueText(
-                        item,
-                        itemMagazine,
-                        'end'
-                      )}
-                    </span>
-                  </div>
+                  {renderIssueInfo(
+                    item,
+                    itemMagazine
+                  )}
                 </div>
               </div>
             )
@@ -337,23 +361,10 @@ function CompletedSeriesPage({
 
                   {renderMagazineName(item)}
 
-                  <div className="series-compact-meta">
-                    <span>
-                      開始 {getIssueText(
-                        item,
-                        itemMagazine,
-                        'start'
-                      )}
-                    </span>
-
-                    <span>
-                      終了 {getIssueText(
-                        item,
-                        itemMagazine,
-                        'end'
-                      )}
-                    </span>
-                  </div>
+                  {renderIssueInfo(
+                    item,
+                    itemMagazine
+                  )}
                 </div>
               </div>
             )
@@ -387,13 +398,10 @@ function CompletedSeriesPage({
 
                 {renderMagazineName(item)}
 
-                <div className="card-issue">
-                  終了 {getIssueText(
-                    item,
-                    itemMagazine,
-                    'end'
-                  )}
-                </div>
+                {renderIssueInfo(
+                  item,
+                  itemMagazine
+                )}
               </div>
             )
           })}
