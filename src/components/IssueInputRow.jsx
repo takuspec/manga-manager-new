@@ -9,6 +9,7 @@ function IssueInputRow({
   useIssueSelect = false,
   prefix = '',
   suffix = '号',
+  issuePlaceholder = '',
   emptyIssueValue = 0,
   className = '',
   onYearSelected
@@ -94,7 +95,13 @@ function IssueInputRow({
             className="issue-number-input"
             type="number"
             inputMode="numeric"
-            value={issueValue ?? ''}
+            placeholder={issuePlaceholder}
+            value={
+              issuePlaceholder &&
+              Number(issueValue) === 0
+                ? ''
+                : issueValue ?? ''
+            }
             onFocus={handleIssueFocus}
             onBlur={handleIssueBlur}
             onChange={(e) =>

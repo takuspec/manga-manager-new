@@ -18,6 +18,7 @@ function SeriesEdit({
   saveEdit,
   updateIssueDirect,
   updateIssueYearDirect,
+  updateCompletedIssueDirect,
   updateStartIssueDirect,
   updateHartaGroupDirect,
   handleImageUpload,
@@ -57,6 +58,22 @@ function SeriesEdit({
   const [localIssue, setLocalIssue] =
     useState(selectedSeries.issue)
 
+  const [
+    localCompletedIssueYear,
+    setLocalCompletedIssueYear
+  ] = useState(
+    selectedSeries.completedIssueYear ||
+      selectedSeries.issueYear ||
+      new Date().getFullYear()
+  )
+
+  const [
+    localCompletedIssue,
+    setLocalCompletedIssue
+  ] = useState(
+    selectedSeries.completedIssue || 0
+  )
+
   const startIssueOptions =
     getIssueOptions(
       magazine,
@@ -69,6 +86,16 @@ function SeriesEdit({
       localIssueYear,
       {
         includeUnread: true
+      }
+    )
+
+  const completedIssueOptions =
+    getIssueOptions(
+      magazine,
+      localCompletedIssueYear,
+      {
+        includeUnread: true,
+        unreadLabel: '未完'
       }
     )
 
@@ -118,6 +145,16 @@ function SeriesEdit({
 
     setLocalIssue(selectedSeries.issue)
 
+    setLocalCompletedIssueYear(
+      selectedSeries.completedIssueYear ||
+        selectedSeries.issueYear ||
+        new Date().getFullYear()
+    )
+
+    setLocalCompletedIssue(
+      selectedSeries.completedIssue || 0
+    )
+
     setLocalHartaGroup(
       selectedSeries.hartaGroup || 'ha'
     )
@@ -129,6 +166,9 @@ function SeriesEdit({
 
     const issue =
       Number(localIssue)
+
+    const completedIssue =
+      Number(localCompletedIssue) || 0
 
     const startIssueYear =
       isHarta && startIssue > 0
@@ -143,6 +183,13 @@ function SeriesEdit({
             issue
           ).year
         : Number(localIssueYear)
+
+    const completedIssueYear =
+      isHarta && completedIssue > 0
+        ? getHartaYearMonthFromVolume(
+            completedIssue
+          ).year
+        : Number(localCompletedIssueYear)
 
     setEditTitle(localTitle)
 
@@ -165,6 +212,12 @@ function SeriesEdit({
     updateIssueDirect(
       selectedSeries.id,
       issue
+    )
+
+    updateCompletedIssueDirect(
+      selectedSeries.id,
+      completedIssueYear,
+      completedIssue
     )
 
     await saveCroppedImage(
@@ -201,6 +254,21 @@ function SeriesEdit({
         magazine,
         year,
         localIssue,
+        {
+          includeUnread: true
+        }
+      )
+    )
+  }
+
+  const handleCompletedIssueYearChange = (year) => {
+    setLocalCompletedIssueYear(year)
+
+    setLocalCompletedIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        localCompletedIssue,
         {
           includeUnread: true
         }
@@ -299,7 +367,7 @@ function SeriesEdit({
         </div>
 
         <div className="edit-group">
-          <div>読了 / 完結号</div>
+          <div>読了</div>
 
           <IssueInputRow
             yearValue={localIssueYear}
@@ -314,6 +382,27 @@ function SeriesEdit({
             suffix={isHarta ? '' : undefined}
             onYearSelected={
               handleIssueYearChange
+            }
+          />
+        </div>
+
+        <div className="edit-group">
+          <div>完結</div>
+
+          <IssueInputRow
+            yearValue={localCompletedIssueYear}
+            onYearChange={setLocalCompletedIssueYear}
+            issueValue={localCompletedIssue}
+            onIssueChange={setLocalCompletedIssue}
+            yearOptions={yearOptions}
+            issueOptions={completedIssueOptions}
+            showYear={!isHarta}
+            useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
+            suffix={isHarta ? '' : undefined}
+            issuePlaceholder={isHarta ? '未完' : ''}
+            onYearSelected={
+              handleCompletedIssueYearChange
             }
           />
         </div>

@@ -262,7 +262,8 @@ export const getIssueOptions = (
   magazine,
   year = new Date().getFullYear(),
   {
-    includeUnread = false
+    includeUnread = false,
+    unreadLabel = '未読'
   } = {}
 ) => {
   const options = []
@@ -270,7 +271,7 @@ export const getIssueOptions = (
   if (includeUnread) {
     options.push({
       value: 0,
-      label: '未読'
+      label: unreadLabel
     })
   }
 
@@ -754,10 +755,24 @@ export const getUnreadIssueCount = (
     series.issueYear ||
     new Date().getFullYear()
 
-  const latestSerial =
+  const completedIssue =
+    Number(series.completedIssue) || 0
+
+  const target =
+    completedIssue > 0
+      ? {
+          year:
+            series.completedIssueYear ||
+            series.issueYear ||
+            latest.year,
+          issue: completedIssue
+        }
+      : latest
+
+  const targetSerial =
     getIssueSerial(
-      latest.year,
-      latest.issue,
+      target.year,
+      target.issue,
       magazine
     )
 
@@ -768,19 +783,19 @@ export const getUnreadIssueCount = (
       magazine
     )
 
-  if (latestSerial <= readSerial) {
+  if (targetSerial <= readSerial) {
     return 0
   }
 
   if (!isHartaMagazine(magazine)) {
-    return latestSerial - readSerial
+    return targetSerial - readSerial
   }
 
   let count = 0
 
   for (
     let volume = readSerial + 1;
-    volume <= latestSerial;
+    volume <= targetSerial;
     volume += 1
   ) {
     if (

@@ -149,12 +149,12 @@ function CompletedSeriesPage({
 
         if (sortMode === 'end') {
           const aEnd =
-            (a.issueYear || 0) * 100 +
-            (a.issue || 0)
+            (a.completedIssueYear || 0) * 100 +
+            (a.completedIssue || 0)
 
           const bEnd =
-            (b.issueYear || 0) * 100 +
-            (b.issue || 0)
+            (b.completedIssueYear || 0) * 100 +
+            (b.completedIssue || 0)
 
           result = aEnd - bEnd
         }
@@ -188,6 +188,24 @@ function CompletedSeriesPage({
     item,
     targetMagazine
   ) => {
+    const renderEndIssueLabel = () => {
+      if (!Number(item.completedIssue)) {
+        return (
+          <span className="issue-label issue-label-unread">
+            ----
+          </span>
+        )
+      }
+
+      return (
+        <IssueLabel
+          magazine={targetMagazine}
+          year={item.completedIssueYear}
+          issue={item.completedIssue}
+        />
+      )
+    }
+
     return (
       <div className="completed-issue-info">
         <div className="completed-issue-row">
@@ -210,11 +228,7 @@ function CompletedSeriesPage({
           </span>
 
           <span className="completed-issue-value">
-            <IssueLabel
-              magazine={targetMagazine}
-              year={item.issueYear}
-              issue={item.issue}
-            />
+            {renderEndIssueLabel()}
           </span>
         </div>
       </div>
@@ -225,6 +239,24 @@ function CompletedSeriesPage({
     item,
     targetMagazine
   ) => {
+    const renderEndIssueLabel = () => {
+      if (!Number(item.completedIssue)) {
+        return (
+          <span className="issue-label issue-label-unread">
+            ----
+          </span>
+        )
+      }
+
+      return (
+        <IssueLabel
+          magazine={targetMagazine}
+          year={item.completedIssueYear}
+          issue={item.completedIssue}
+        />
+      )
+    }
+
     return (
       <div className="completed-compact-issue">
         <span className="completed-compact-label">
@@ -248,11 +280,7 @@ function CompletedSeriesPage({
           終了:
         </span>
 
-        <IssueLabel
-          magazine={targetMagazine}
-          year={item.issueYear}
-          issue={item.issue}
-        />
+        {renderEndIssueLabel()}
       </div>
     )
   }

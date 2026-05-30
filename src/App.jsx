@@ -76,6 +76,16 @@ function App() {
     useState(0)
 
   const [
+    newSeriesCompletedIssueYear,
+    setNewSeriesCompletedIssueYear
+  ] = useState(new Date().getFullYear())
+
+  const [
+    newSeriesCompletedIssue,
+    setNewSeriesCompletedIssue
+  ] = useState(0)
+
+  const [
     newSeriesHartaGroup,
     setNewSeriesHartaGroup
   ] = useState('ha')
@@ -103,6 +113,7 @@ function App() {
     saveEdit,
     updateIssueDirect,
     updateIssueYearDirect,
+    updateCompletedIssueDirect,
     addIssue,
     minusIssue,
     bulkAddIssue,
@@ -383,6 +394,18 @@ function App() {
             setNewSeriesIssueYear={setNewSeriesIssueYear}
             newSeriesIssue={newSeriesIssue}
             setNewSeriesIssue={setNewSeriesIssue}
+            newSeriesCompletedIssueYear={
+              newSeriesCompletedIssueYear
+            }
+            setNewSeriesCompletedIssueYear={
+              setNewSeriesCompletedIssueYear
+            }
+            newSeriesCompletedIssue={
+              newSeriesCompletedIssue
+            }
+            setNewSeriesCompletedIssue={
+              setNewSeriesCompletedIssue
+            }
             newSeriesImage={newSeriesImage}
             setNewSeriesImage={setNewSeriesImage}
             newSeriesHartaGroup={newSeriesHartaGroup}
@@ -395,6 +418,8 @@ function App() {
                 newSeriesStartIssue,
                 newSeriesIssueYear,
                 newSeriesIssue,
+                newSeriesCompletedIssueYear,
+                newSeriesCompletedIssue,
                 newSeriesImage,
                 newSeriesHartaGroup,
                 setNewSeriesTitle,
@@ -402,6 +427,8 @@ function App() {
                 setNewSeriesStartIssue,
                 setNewSeriesIssueYear,
                 setNewSeriesIssue,
+                setNewSeriesCompletedIssueYear,
+                setNewSeriesCompletedIssue,
                 setNewSeriesHartaGroup,
                 setNewSeriesImage
               })
@@ -422,6 +449,9 @@ function App() {
             saveEdit={saveEdit}
             updateIssueDirect={updateIssueDirect}
             updateIssueYearDirect={updateIssueYearDirect}
+            updateCompletedIssueDirect={
+              updateCompletedIssueDirect
+            }
             updateStartIssueDirect={updateStartIssueDirect}
             updateHartaGroupDirect={updateHartaGroupDirect}
             handleImageUpload={handleImageUpload}

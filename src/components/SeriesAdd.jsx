@@ -21,6 +21,10 @@ function SeriesAdd({
   setNewSeriesIssueYear,
   newSeriesIssue,
   setNewSeriesIssue,
+  newSeriesCompletedIssueYear,
+  setNewSeriesCompletedIssueYear,
+  newSeriesCompletedIssue,
+  setNewSeriesCompletedIssue,
   newSeriesImage,
   setNewSeriesImage,
   saveNewSeries,
@@ -47,6 +51,16 @@ function SeriesAdd({
       newSeriesIssueYear,
       {
         includeUnread: true
+      }
+    )
+
+  const completedIssueOptions =
+    getIssueOptions(
+      magazine,
+      newSeriesCompletedIssueYear,
+      {
+        includeUnread: true,
+        unreadLabel: '未完'
       }
     )
 
@@ -80,6 +94,10 @@ function SeriesAdd({
     setNewSeriesIssue(
       latest.issue
     )
+    setNewSeriesCompletedIssueYear(
+      latest.year
+    )
+    setNewSeriesCompletedIssue(0)
   }, [magazine?.id])
 
   const handleStartIssueYearChange = (year) => {
@@ -102,6 +120,21 @@ function SeriesAdd({
         magazine,
         year,
         newSeriesIssue,
+        {
+          includeUnread: true
+        }
+      )
+    )
+  }
+
+  const handleCompletedIssueYearChange = (year) => {
+    setNewSeriesCompletedIssueYear(year)
+
+    setNewSeriesCompletedIssue(
+      clampIssueForYear(
+        magazine,
+        year,
+        newSeriesCompletedIssue,
         {
           includeUnread: true
         }
@@ -207,7 +240,7 @@ function SeriesAdd({
         </div>
 
         <div className="edit-group">
-          <div>読了 / 完結号</div>
+          <div>読了</div>
 
           <IssueInputRow
             yearValue={newSeriesIssueYear}
@@ -222,6 +255,27 @@ function SeriesAdd({
             suffix={isHarta ? '' : undefined}
             onYearSelected={
               handleIssueYearChange
+            }
+          />
+        </div>
+
+        <div className="edit-group">
+          <div>完結</div>
+
+          <IssueInputRow
+            yearValue={newSeriesCompletedIssueYear}
+            onYearChange={setNewSeriesCompletedIssueYear}
+            issueValue={newSeriesCompletedIssue}
+            onIssueChange={setNewSeriesCompletedIssue}
+            yearOptions={yearOptions}
+            issueOptions={completedIssueOptions}
+            showYear={!isHarta}
+            useIssueSelect={!isHarta}
+            prefix={isHarta ? 'volume' : ''}
+            suffix={isHarta ? '' : undefined}
+            issuePlaceholder={isHarta ? '未完' : ''}
+            onYearSelected={
+              handleCompletedIssueYearChange
             }
           />
         </div>

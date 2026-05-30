@@ -15,6 +15,10 @@ function SeriesAddPage({
   setNewSeriesIssueYear,
   newSeriesIssue,
   setNewSeriesIssue,
+  newSeriesCompletedIssueYear,
+  setNewSeriesCompletedIssueYear,
+  newSeriesCompletedIssue,
+  setNewSeriesCompletedIssue,
   newSeriesImage,
   setNewSeriesImage,
   saveNewSeries,
@@ -62,6 +66,18 @@ function SeriesAddPage({
       setNewSeriesIssueYear={setNewSeriesIssueYear}
       newSeriesIssue={newSeriesIssue}
       setNewSeriesIssue={setNewSeriesIssue}
+      newSeriesCompletedIssueYear={
+        newSeriesCompletedIssueYear
+      }
+      setNewSeriesCompletedIssueYear={
+        setNewSeriesCompletedIssueYear
+      }
+      newSeriesCompletedIssue={
+        newSeriesCompletedIssue
+      }
+      setNewSeriesCompletedIssue={
+        setNewSeriesCompletedIssue
+      }
       newSeriesImage={newSeriesImage}
       newSeriesHartaGroup={newSeriesHartaGroup}
       setNewSeriesHartaGroup={setNewSeriesHartaGroup}

@@ -10,6 +10,7 @@ function SeriesEditPage({
   saveEdit,
   updateIssueDirect,
   updateIssueYearDirect,
+  updateCompletedIssueDirect,
   updateStartIssueDirect,
   updateHartaGroupDirect,
   handleImageUpload,
@@ -76,6 +77,9 @@ function SeriesEditPage({
       }
       updateIssueYearDirect={
         updateIssueYearDirect
+      }
+      updateCompletedIssueDirect={
+        updateCompletedIssueDirect
       }
       updateStartIssueDirect={
         updateStartIssueDirect

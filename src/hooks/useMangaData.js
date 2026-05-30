@@ -69,6 +69,42 @@ function collectUsedImageIds(
   ].filter(Boolean)
 }
 
+function normalizeSeriesItem(item) {
+  const hasCompletedIssue =
+    Object.prototype.hasOwnProperty.call(
+      item,
+      'completedIssue'
+    )
+
+  const hasCompletedIssueYear =
+    Object.prototype.hasOwnProperty.call(
+      item,
+      'completedIssueYear'
+    )
+
+  const fallbackYear =
+    item.issueYear ||
+    new Date().getFullYear()
+
+  const fallbackIssue =
+    item.status === 'completed'
+      ? Number(item.issue) || 0
+      : 0
+
+  return {
+    ...item,
+    completedIssueYear:
+      hasCompletedIssueYear &&
+      item.completedIssueYear
+        ? item.completedIssueYear
+        : fallbackYear,
+    completedIssue:
+      hasCompletedIssue
+        ? Number(item.completedIssue) || 0
+        : fallbackIssue
+  }
+}
+
 function safeSetLocalStorage(
   key,
   value
@@ -224,8 +260,8 @@ function useMangaData({
         )
 
       return saved
-        ? JSON.parse(saved)
-        : defaultSeries
+        ? JSON.parse(saved).map(normalizeSeriesItem)
+        : defaultSeries.map(normalizeSeriesItem)
     })
 
   const [
@@ -546,6 +582,8 @@ function useMangaData({
     newSeriesStartIssue,
     newSeriesIssueYear,
     newSeriesIssue,
+    newSeriesCompletedIssueYear,
+    newSeriesCompletedIssue,
     newSeriesImage,
     setNewSeriesTitle,
     setNewSeriesHartaGroup,
@@ -553,6 +591,8 @@ function useMangaData({
     setNewSeriesStartIssue,
     setNewSeriesIssueYear,
     setNewSeriesIssue,
+    setNewSeriesCompletedIssueYear,
+    setNewSeriesCompletedIssue,
     newSeriesHartaGroup,
     setNewSeriesImage
   }) => {
@@ -574,6 +614,9 @@ function useMangaData({
     const issue =
       Number(newSeriesIssue)
 
+    const completedIssue =
+      Number(newSeriesCompletedIssue) || 0
+
     const startIssueYear =
       isHarta && startIssue > 0
         ? getHartaYearMonthFromVolume(
@@ -588,6 +631,13 @@ function useMangaData({
           ).year
         : Number(newSeriesIssueYear)
 
+    const completedIssueYear =
+      isHarta && completedIssue > 0
+        ? getHartaYearMonthFromVolume(
+            completedIssue
+          ).year
+        : Number(newSeriesCompletedIssueYear)
+
     const imageId =
       await saveImageValue(newSeriesImage)
 
@@ -601,6 +651,9 @@ function useMangaData({
 
     issueYear: issueYear,
     issue: issue,
+
+    completedIssueYear: completedIssueYear,
+    completedIssue: completedIssue,
 
     hartaGroup: newSeriesHartaGroup,
 
@@ -619,6 +672,8 @@ function useMangaData({
     setNewSeriesStartIssue(1)
     setNewSeriesIssueYear(new Date().getFullYear())
     setNewSeriesIssue(0)
+    setNewSeriesCompletedIssueYear(new Date().getFullYear())
+    setNewSeriesCompletedIssue(0)
     setNewSeriesHartaGroup('ha')
     setNewSeriesImage('')
 
@@ -687,6 +742,21 @@ function useMangaData({
             ? {
                 ...item,
                 issueYear: value
+              }
+            : item
+        })
+      )
+    }
+
+  const updateCompletedIssueDirect =
+    (id, year, issue) => {
+      setSeriesList((prevList) =>
+        prevList.map((item) => {
+          return item.id === id
+            ? {
+                ...item,
+                completedIssueYear: year,
+                completedIssue: Number(issue) || 0
               }
             : item
         })
@@ -1266,6 +1336,11 @@ function useMangaData({
               }
             )
 
+          const normalizedSeries =
+            nextSeries.list.map(
+              normalizeSeriesItem
+            )
+
           safeSetLocalStorageWithDiagnostics(
             MAGAZINE_STORAGE_KEY,
             JSON.stringify(nextMagazines.list),
@@ -1274,19 +1349,19 @@ function useMangaData({
 
           safeSetLocalStorageWithDiagnostics(
             SERIES_STORAGE_KEY,
-            JSON.stringify(nextSeries.list),
+            JSON.stringify(normalizedSeries),
             setStorageErrorMessage
           )
 
           setMagazineList(nextMagazines.list)
-          setSeriesList(nextSeries.list)
+          setSeriesList(normalizedSeries)
           setSelectedSeriesIds([])
           setBulkIssueValue('')
 
           await cleanupUnusedImages(
             collectUsedImageIds(
               nextMagazines.list,
-              nextSeries.list
+              normalizedSeries
             )
           )
 
@@ -1334,6 +1409,7 @@ function useMangaData({
     saveEdit,
     updateIssueDirect,
     updateIssueYearDirect,
+    updateCompletedIssueDirect,
     addIssue,
     minusIssue,
     bulkAddIssue,
