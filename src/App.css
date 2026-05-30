@@ -822,11 +822,11 @@ textarea {
 }
 
 .card-start-issue {
-  padding: 0 8px 4px;
+  padding: 0 4px 4px;
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   font-size: 11px;
   color: #60a5fa;
@@ -847,9 +847,15 @@ textarea {
 
 .card-start-issue .issue-label {
   min-width: 0;
+  grid-template-columns: auto minmax(2ch, max-content) auto;
+  column-gap: 1px;
   color: #60a5fa;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-start-issue .issue-label-number {
+  min-width: 2ch;
 }
 
 .card-start-label {
