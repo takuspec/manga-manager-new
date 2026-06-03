@@ -304,6 +304,8 @@ function CompletedSeriesPage({
   return (
     <div className="app">
 
+      <div className="completed-header-sticky">
+
       <div className="series-page-header">
 
         <button
@@ -357,6 +359,8 @@ function CompletedSeriesPage({
             ? '昇順'
             : '降順'}
         </button>
+
+      </div>
 
       </div>
 

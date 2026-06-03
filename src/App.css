@@ -1330,6 +1330,16 @@ select.issue-number-select option {
   flex: 0 0 112px;
 }
 
+.completed-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: -16px -20px 0;
+  padding: max(16px, env(safe-area-inset-top)) 20px 0;
+  background: #111827;
+  box-shadow: 0 1px 0 rgba(55, 65, 81, 0.7);
+}
+
 .completed-magazine-selector {
   flex: 1 1 auto;
   min-width: 0;
