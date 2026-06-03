@@ -30,6 +30,9 @@ function App() {
   const [viewMode, setViewMode] =
     useState('list')
 
+  const [showImages, setShowImages] =
+    useState(true)
+
   const [sortMode, setSortMode] =
     useState('unread')
 
@@ -262,6 +265,8 @@ function App() {
             seriesList={seriesList}
             viewMode={viewMode}
             setViewMode={setViewMode}
+            showImages={showImages}
+            setShowImages={setShowImages}
             sortMode={sortMode}
             setSortMode={setSortMode}
             sortDirection={sortDirection}

@@ -25,24 +25,32 @@ const viewModeOptions = [
   {
     value: 'grid',
     label: 'グリッド'
-  },
-  {
-    value: 'compact',
-    label: '簡易'
   }
 ]
 
 const viewModeLabelMap = {
   list: 'リスト',
-  grid: 'グリッド',
-  compact: '簡易'
+  grid: 'グリッド'
 }
+
+const imageModeOptions = [
+  {
+    value: true,
+    label: '画像あり'
+  },
+  {
+    value: false,
+    label: '画像なし'
+  }
+]
 
 function MagazineSeriesPage({
   magazineList,
   seriesList,
   viewMode,
   setViewMode,
+  showImages,
+  setShowImages,
   sortMode,
   setSortMode,
   sortDirection,
@@ -122,6 +130,11 @@ function MagazineSeriesPage({
   ] = useState(false)
 
   const [
+    isImageModeMenuOpen,
+    setIsImageModeMenuOpen
+  ] = useState(false)
+
+  const [
     displaySeriesIds,
     setDisplaySeriesIds
   ] = useState([])
@@ -130,6 +143,16 @@ function MagazineSeriesPage({
     selectedHartaGroups,
     setSelectedHartaGroups
   ] = useState([])
+
+  const currentViewMode =
+    viewMode === 'compact'
+      ? 'list'
+      : viewMode
+
+  const currentShowImages =
+    viewMode === 'compact'
+      ? false
+      : showImages
 
   const getSafeIssueSerial = (
     year,
@@ -300,6 +323,19 @@ function MagazineSeriesPage({
 
       })
   }
+
+  useEffect(() => {
+    if (viewMode !== 'compact') {
+      return
+    }
+
+    setViewMode('list')
+    setShowImages(false)
+  }, [
+    viewMode,
+    setViewMode,
+    setShowImages
+  ])
 
   useEffect(() => {
     setDisplaySeriesIds(
@@ -555,7 +591,7 @@ function MagazineSeriesPage({
 
           </div>
 
-            {viewMode === 'grid' && (
+            {currentViewMode === 'grid' && (
 
               <div className="bulk-issue-box">
 
@@ -674,7 +710,7 @@ function MagazineSeriesPage({
 
       <div className="series-scroll-area">
 
-      {viewMode === 'list' ? (
+      {currentViewMode === 'list' && currentShowImages ? (
 
         displaySeries.map((item) => {
           const unreadCount =
@@ -796,7 +832,7 @@ function MagazineSeriesPage({
           )
         })
 
-      ) : viewMode === 'compact' ? (
+      ) : currentViewMode === 'list' ? (
 
         <div className="series-compact-list">
 
@@ -901,7 +937,13 @@ function MagazineSeriesPage({
 
       ) : (
 
-        <div className="grid">
+        <div
+          className={`grid ${
+            currentShowImages
+              ? ''
+              : 'grid-no-images'
+          }`}
+        >
 
           {displaySeries.map((item) => (
 
@@ -916,6 +958,10 @@ function MagazineSeriesPage({
                 )
                   ? 'selected'
                   : ''
+              } ${
+                currentShowImages
+                  ? ''
+                  : 'card-no-image'
               }`}
               key={item.id}
               onClick={() => {
@@ -931,14 +977,16 @@ function MagazineSeriesPage({
               }}
             >
 
-              <div className="cover">
+              {currentShowImages && (
+                <div className="cover">
 
-                <ImageView
-                  imageId={item.imageId}
-                  fallbackImage={item.image}
-                />
+                  <ImageView
+                    imageId={item.imageId}
+                    fallbackImage={item.image}
+                  />
 
-              </div>
+                </div>
+              )}
 
               <div className="card-title">
                 {item.title}
@@ -978,12 +1026,13 @@ function MagazineSeriesPage({
 
       )}
 
-      {isViewModeMenuOpen && (
+      {(isViewModeMenuOpen || isImageModeMenuOpen) && (
         <div
           className="view-mode-menu-backdrop"
-          onClick={() =>
+          onClick={() => {
             setIsViewModeMenuOpen(false)
-          }
+            setIsImageModeMenuOpen(false)
+          }}
         />
       )}
 
@@ -1037,16 +1086,80 @@ function MagazineSeriesPage({
           <button
             type="button"
             className="view-mode-button"
-            onClick={() =>
+            onClick={() => {
+              setIsImageModeMenuOpen(false)
               setIsViewModeMenuOpen(
                 (isOpen) => !isOpen
               )
-            }
+            }}
           >
-            {viewModeLabelMap[viewMode] ||
+            {viewModeLabelMap[currentViewMode] ||
               'リスト'}
             {' '}
             {isViewModeMenuOpen
+              ? '▲'
+              : '▼'}
+          </button>
+        </div>
+
+        <div
+          className="view-mode-selector image-mode-selector"
+          onClick={(e) =>
+            e.stopPropagation()
+          }
+        >
+          {isImageModeMenuOpen && (
+            <div
+              className="view-mode-menu"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
+              {imageModeOptions.map((option) => {
+                const isSelected =
+                  currentShowImages === option.value
+
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    className={`view-mode-menu-item ${
+                      isSelected ? 'active' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowImages(option.value)
+                      setIsImageModeMenuOpen(false)
+                    }}
+                  >
+                    <span className="view-mode-check">
+                      {isSelected ? '✓' : ''}
+                    </span>
+
+                    <span>
+                      {option.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="view-mode-button"
+            onClick={() => {
+              setIsViewModeMenuOpen(false)
+              setIsImageModeMenuOpen(
+                (isOpen) => !isOpen
+              )
+            }}
+          >
+            {currentShowImages
+              ? '画像あり'
+              : '画像なし'}
+            {' '}
+            {isImageModeMenuOpen
               ? '▲'
               : '▼'}
           </button>

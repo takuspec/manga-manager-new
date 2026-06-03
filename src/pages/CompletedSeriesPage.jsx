@@ -12,18 +12,24 @@ const viewModeOptions = [
   {
     value: 'grid',
     label: 'グリッド'
-  },
-  {
-    value: 'compact',
-    label: '簡易'
   }
 ]
 
 const viewModeLabelMap = {
   list: 'リスト',
-  grid: 'グリッド',
-  compact: '簡易'
+  grid: 'グリッド'
 }
+
+const imageModeOptions = [
+  {
+    value: true,
+    label: '画像あり'
+  },
+  {
+    value: false,
+    label: '画像なし'
+  }
+]
 
 function CompletedSeriesPage({
   magazineList,
@@ -57,9 +63,17 @@ function CompletedSeriesPage({
   const [viewMode, setViewMode] =
     useState('grid')
 
+  const [showImages, setShowImages] =
+    useState(true)
+
   const [
     isViewModeMenuOpen,
     setIsViewModeMenuOpen
+  ] = useState(false)
+
+  const [
+    isImageModeMenuOpen,
+    setIsImageModeMenuOpen
   ] = useState(false)
 
   const [
@@ -166,6 +180,7 @@ function CompletedSeriesPage({
 
   const closeMenus = () => {
     setIsViewModeMenuOpen(false)
+    setIsImageModeMenuOpen(false)
     setIsMagazineMenuOpen(false)
   }
 
@@ -364,7 +379,7 @@ function CompletedSeriesPage({
 
       </div>
 
-      {viewMode === 'list' ? (
+      {viewMode === 'list' && showImages ? (
         <div className="completed-series-list">
           {completedSeries.map((item) => {
             const itemMagazine =
@@ -405,7 +420,7 @@ function CompletedSeriesPage({
             )
           })}
         </div>
-      ) : viewMode === 'compact' ? (
+      ) : viewMode === 'list' ? (
         <div className="series-compact-list">
           {completedSeries.map((item) => {
             const itemMagazine =
@@ -440,7 +455,13 @@ function CompletedSeriesPage({
           })}
         </div>
       ) : (
-        <div className="grid">
+        <div
+          className={`grid ${
+            showImages
+              ? ''
+              : 'grid-no-images'
+          }`}
+        >
 
           {completedSeries.map((item) => {
             const itemMagazine =
@@ -448,18 +469,24 @@ function CompletedSeriesPage({
 
             return (
               <div
-                className="card completed-grid-card"
+                className={`card completed-grid-card ${
+                  showImages
+                    ? ''
+                    : 'card-no-image'
+                }`}
                 key={item.id}
               >
 
-                <div className="cover">
+                {showImages && (
+                  <div className="cover">
 
-                  <ImageView
-                    imageId={item.imageId}
-                    fallbackImage={item.image}
-                  />
+                    <ImageView
+                      imageId={item.imageId}
+                      fallbackImage={item.image}
+                    />
 
-                </div>
+                  </div>
+                )}
 
                 <div className="completed-title-row completed-grid-title-row">
                   <div className="card-title">
@@ -485,7 +512,9 @@ function CompletedSeriesPage({
         </div>
       )}
 
-      {(isViewModeMenuOpen || isMagazineMenuOpen) && (
+      {(isViewModeMenuOpen ||
+        isImageModeMenuOpen ||
+        isMagazineMenuOpen) && (
         <div
           className="view-mode-menu-backdrop"
           onClick={closeMenus}
@@ -541,6 +570,7 @@ function CompletedSeriesPage({
             type="button"
             className="view-mode-button"
             onClick={() => {
+              setIsImageModeMenuOpen(false)
               setIsMagazineMenuOpen(false)
               setIsViewModeMenuOpen(
                 (isOpen) => !isOpen
@@ -551,6 +581,70 @@ function CompletedSeriesPage({
               'グリッド'}
             {' '}
             {isViewModeMenuOpen
+              ? '▲'
+              : '▼'}
+          </button>
+        </div>
+
+        <div
+          className="view-mode-selector image-mode-selector"
+          onClick={(e) =>
+            e.stopPropagation()
+          }
+        >
+          {isImageModeMenuOpen && (
+            <div
+              className="view-mode-menu"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
+              {imageModeOptions.map((option) => {
+                const isSelected =
+                  showImages === option.value
+
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    className={`view-mode-menu-item ${
+                      isSelected ? 'active' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowImages(option.value)
+                      setIsImageModeMenuOpen(false)
+                    }}
+                  >
+                    <span className="view-mode-check">
+                      {isSelected ? '✓' : ''}
+                    </span>
+
+                    <span>
+                      {option.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="view-mode-button"
+            onClick={() => {
+              setIsViewModeMenuOpen(false)
+              setIsMagazineMenuOpen(false)
+              setIsImageModeMenuOpen(
+                (isOpen) => !isOpen
+              )
+            }}
+          >
+            {showImages
+              ? '画像あり'
+              : '画像なし'}
+            {' '}
+            {isImageModeMenuOpen
               ? '▲'
               : '▼'}
           </button>
@@ -607,6 +701,7 @@ function CompletedSeriesPage({
             className="view-mode-button"
             onClick={() => {
               setIsViewModeMenuOpen(false)
+              setIsImageModeMenuOpen(false)
               setIsMagazineMenuOpen(
                 (isOpen) => !isOpen
               )

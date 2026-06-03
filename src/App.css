@@ -251,6 +251,10 @@ textarea {
   flex: 0 0 112px;
 }
 
+.image-mode-selector {
+  flex: 0 0 112px;
+}
+
 .view-mode-button {
   width: 100%;
   display: flex;
@@ -761,11 +765,39 @@ textarea {
   gap: 10px;
 }
 
+.grid-no-images {
+  align-items: stretch;
+}
+
 .card {
   background: #1f2937;
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.card-no-image {
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 6px 8px;
+}
+
+.card-no-image .card-title {
+  padding: 0 4px 5px;
+}
+
+.card-no-image .card-issue {
+  padding: 0 4px 3px;
+}
+
+.card-no-image .card-start-issue {
+  padding: 0 2px 5px;
+}
+
+.card-no-image .card-unread {
+  margin: 4px 2px 0;
 }
 
 .cover {
