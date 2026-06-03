@@ -1340,6 +1340,10 @@ select.issue-number-select option {
   box-shadow: 0 1px 0 rgba(55, 65, 81, 0.7);
 }
 
+.completed-header-sticky .sort-row {
+  margin-bottom: 24px;
+}
+
 .completed-magazine-selector {
   flex: 1 1 auto;
   min-width: 0;
