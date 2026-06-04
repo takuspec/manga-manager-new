@@ -177,7 +177,8 @@ function MagazineSeriesPage({
   }
 
   const shouldShowStartIssue =
-    sortMode === 'start'
+    sortMode === 'start' ||
+    sortMode === 'duration'
 
   const isHarta =
     selectedMagazine.frequency === 'harta'
@@ -226,6 +227,25 @@ function MagazineSeriesPage({
         }
         issue={startIssue}
       />
+    )
+  }
+
+  const getSeriesDurationSerial = (item) => {
+    const readSerial =
+      getSafeIssueSerial(
+        item.issueYear,
+        item.issue
+      )
+
+    const startSerial =
+      getSafeIssueSerial(
+        item.startIssueYear,
+        item.startIssue
+      )
+
+    return Math.max(
+      0,
+      readSerial - startSerial
     )
   }
 
@@ -290,6 +310,12 @@ function MagazineSeriesPage({
                 b.startIssueYear,
                 b.startIssue
               )
+            break
+
+          case 'duration':
+            result =
+              getSeriesDurationSerial(a) -
+              getSeriesDurationSerial(b)
             break
 
           default:
@@ -571,6 +597,10 @@ function MagazineSeriesPage({
 
               <option value="start">
                 開始号順
+              </option>
+
+              <option value="duration">
+                連載期間順
               </option>
 
             </select>
