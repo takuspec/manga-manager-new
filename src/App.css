@@ -718,8 +718,13 @@ textarea {
 
 .status-badge {
   order: 4;
+  width: fit-content;
+  max-width: 100%;
+  align-self: center;
+  margin: 0 auto;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
@@ -828,7 +833,7 @@ textarea {
 }
 
 .card-no-image .card-unread {
-  margin: 4px 2px 0;
+  margin: 4px auto 0;
 }
 
 .cover {
@@ -926,7 +931,9 @@ textarea {
 }
 
 .card-unread {
-  margin: 0 8px 6px;
+  width: fit-content;
+  max-width: calc(100% - 16px);
+  margin: 0 auto 6px;
   padding: 3px 6px;
   display: flex;
   align-items: center;
