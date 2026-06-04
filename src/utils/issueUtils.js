@@ -1,7 +1,203 @@
 export const todayString = () => {
-  return new Date()
-    .toISOString()
-    .slice(0, 10)
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(
+    today.getMonth() + 1
+  ).padStart(2, '0')
+  const date = String(
+    today.getDate()
+  ).padStart(2, '0')
+
+  return `${year}-${month}-${date}`
+}
+
+const MS_PER_DAY =
+  1000 * 60 * 60 * 24
+
+const startOfDay = (date) => {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  )
+}
+
+const parseLocalDate = (value) => {
+  if (!value) {
+    return null
+  }
+
+  if (value instanceof Date) {
+    return startOfDay(value)
+  }
+
+  const [
+    year,
+    month,
+    date
+  ] = String(value)
+    .split('-')
+    .map(Number)
+
+  if (!year || !month || !date) {
+    return null
+  }
+
+  return new Date(
+    year,
+    month - 1,
+    date
+  )
+}
+
+const getLastDayOfMonth = (
+  year,
+  month
+) => {
+  return new Date(
+    year,
+    month,
+    0
+  ).getDate()
+}
+
+const getSafeReleaseDate = (
+  releaseDate = 1
+) => {
+  const numericReleaseDate =
+    Number(releaseDate) || 1
+
+  return Math.min(
+    31,
+    Math.max(1, numericReleaseDate)
+  )
+}
+
+const createReleaseDate = (
+  year,
+  month,
+  releaseDate = 1
+) => {
+  const safeReleaseDate =
+    getSafeReleaseDate(releaseDate)
+
+  return new Date(
+    year,
+    month - 1,
+    Math.min(
+      safeReleaseDate,
+      getLastDayOfMonth(year, month)
+    )
+  )
+}
+
+const getWeeklyReleaseCountAfterDate = (
+  baseDate,
+  releaseDay = 1,
+  today = new Date()
+) => {
+  const base =
+    startOfDay(baseDate)
+
+  const current =
+    startOfDay(today)
+
+  if (current <= base) {
+    return 0
+  }
+
+  const numericReleaseDay =
+    Number(releaseDay)
+
+  const safeReleaseDay =
+    numericReleaseDay >= 0 &&
+    numericReleaseDay <= 6
+      ? numericReleaseDay
+      : 1
+
+  let daysUntilRelease =
+    (
+      safeReleaseDay -
+      base.getDay() +
+      7
+    ) % 7
+
+  if (daysUntilRelease === 0) {
+    daysUntilRelease = 7
+  }
+
+  const firstReleaseDate =
+    new Date(
+      base.getFullYear(),
+      base.getMonth(),
+      base.getDate() + daysUntilRelease
+    )
+
+  if (firstReleaseDate > current) {
+    return 0
+  }
+
+  return (
+    Math.floor(
+      (
+        current -
+        firstReleaseDate
+      ) / MS_PER_DAY / 7
+    ) + 1
+  )
+}
+
+const getMonthlyReleaseCountAfterDate = (
+  baseDate,
+  releaseDate = 1,
+  today = new Date()
+) => {
+  const base =
+    startOfDay(baseDate)
+
+  const current =
+    startOfDay(today)
+
+  if (current <= base) {
+    return 0
+  }
+
+  let count = 0
+  let year =
+    base.getFullYear()
+  let month =
+    base.getMonth() + 1
+
+  while (
+    year < current.getFullYear() ||
+    (
+      year === current.getFullYear() &&
+      month <= current.getMonth() + 1
+    )
+  ) {
+    const candidateDate =
+      createReleaseDate(
+        year,
+        month,
+        releaseDate
+      )
+
+    if (
+      candidateDate > base &&
+      candidateDate <= current
+    ) {
+      count += 1
+    }
+
+    month += 1
+
+    if (month > 12) {
+      month = 1
+      year += 1
+    }
+  }
+
+  return count
 }
 
 export const getYearOptions = () => {
@@ -136,19 +332,30 @@ export const getLatestHartaReleaseInfo = (
   releaseDate = 1,
   today = new Date()
 ) => {
-  const safeReleaseDate =
-    releaseDate || 1
-
   let year =
     today.getFullYear()
 
   let month =
     today.getMonth() + 1
 
-  while (
-    !isHartaReleaseMonth(month) ||
-    today.getDate() < safeReleaseDate
-  ) {
+  const current =
+    startOfDay(today)
+
+  while (true) {
+    const releaseDay =
+      createReleaseDate(
+        year,
+        month,
+        releaseDate
+      )
+
+    if (
+      isHartaReleaseMonth(month) &&
+      releaseDay <= current
+    ) {
+      break
+    }
+
     month -= 1
 
     if (month < 1) {
@@ -172,36 +379,49 @@ export const getHartaReleaseCountAfterDate = (
   releaseDate = 1,
   today = new Date()
 ) => {
-  const safeReleaseDate =
-    releaseDate || 1
+  const base =
+    startOfDay(baseDate)
 
-  let count = 0
+  const current =
+    startOfDay(today)
+
+  if (current <= base) {
+    return 0
+  }
+
   let year =
-    baseDate.getFullYear()
+    base.getFullYear()
   let month =
-    baseDate.getMonth() + 1
+    base.getMonth() + 1
+  let count = 0
 
-  while (true) {
+  while (
+    year < current.getFullYear() ||
+    (
+      year === current.getFullYear() &&
+      month <= current.getMonth() + 1
+    )
+  ) {
+    const candidateDate =
+      createReleaseDate(
+        year,
+        month,
+        releaseDate
+      )
+
+    if (
+      isHartaReleaseMonth(month) &&
+      candidateDate > base &&
+      candidateDate <= current
+    ) {
+      count += 1
+    }
+
     month += 1
 
     if (month > 12) {
       month = 1
       year += 1
-    }
-
-    const candidateDate =
-      new Date(
-        year,
-        month - 1,
-        safeReleaseDate
-      )
-
-    if (candidateDate > today) {
-      break
-    }
-
-    if (isHartaReleaseMonth(month)) {
-      count += 1
     }
   }
 
@@ -457,12 +677,14 @@ export const formatIssueLabel = (
 }
 
 export const getEstimatedLatestIssue = (
-  magazine
+  magazine,
+  targetDate = new Date()
 ) => {
   if (!magazine.baseDate) {
     if (isHartaMagazine(magazine)) {
       return getLatestHartaReleaseInfo(
-        magazine.releaseDate
+        magazine.releaseDate,
+        targetDate
       ).issue
     }
 
@@ -470,10 +692,14 @@ export const getEstimatedLatestIssue = (
   }
 
   const baseDate =
-    new Date(magazine.baseDate)
+    parseLocalDate(magazine.baseDate)
 
   const today =
-    new Date()
+    startOfDay(targetDate)
+
+  if (!baseDate) {
+    return magazine.baseIssue || 1
+  }
 
   if (today < baseDate) {
     return magazine.baseIssue || 1
@@ -495,53 +721,44 @@ export const getEstimatedLatestIssue = (
   }
 
   if (magazine.frequency === 'monthly') {
-    let months =
-      (
-        today.getFullYear() -
-        baseDate.getFullYear()
-      ) * 12 +
-      (
-        today.getMonth() -
-        baseDate.getMonth()
+    const releaseCount =
+      getMonthlyReleaseCountAfterDate(
+        baseDate,
+        magazine.releaseDate,
+        today
       )
 
-    if (
-      today.getDate() <
-      magazine.releaseDate
-    ) {
-      months -= 1
-    }
-
     return Math.max(
-      (magazine.baseIssue || 1) + months,
+      (magazine.baseIssue || 1) +
+        releaseCount,
       magazine.baseIssue || 1
     )
   }
 
-  const diffDays =
-    Math.floor(
-      (today - baseDate) /
-        (
-          1000 *
-          60 *
-          60 *
-          24
-        )
+  const releaseCount =
+    getWeeklyReleaseCountAfterDate(
+      baseDate,
+      magazine.releaseDay,
+      today
     )
 
   return Math.max(
     (magazine.baseIssue || 1) +
-      Math.floor(diffDays / 7),
+      releaseCount,
     magazine.baseIssue || 1
   )
 }
 
 export const getEstimatedLatestIssueInfo = (
-  magazine
+  magazine,
+  targetDate = new Date()
 ) => {
   if (isHartaMagazine(magazine)) {
     const issue =
-      getEstimatedLatestIssue(magazine)
+      getEstimatedLatestIssue(
+        magazine,
+        targetDate
+      )
 
     const { year } =
       getHartaYearMonthFromVolume(issue)
@@ -553,7 +770,10 @@ export const getEstimatedLatestIssueInfo = (
   }
 
   const estimatedIssue =
-    getEstimatedLatestIssue(magazine)
+    getEstimatedLatestIssue(
+      magazine,
+      targetDate
+    )
 
   let issueYear =
     magazine.baseIssueYear ||
@@ -783,18 +1003,39 @@ export const getUnreadIssueCount = (
       magazine
     )
 
-  if (targetSerial <= readSerial) {
+  const startIssue =
+    Number(series.startIssue) || 0
+
+  const startSerial =
+    startIssue
+      ? getIssueSerial(
+          series.startIssueYear ||
+            readYear,
+          startIssue,
+          magazine
+        )
+      : 0
+
+  const effectiveReadSerial =
+    startSerial
+      ? Math.max(
+          readSerial,
+          startSerial - 1
+        )
+      : readSerial
+
+  if (targetSerial <= effectiveReadSerial) {
     return 0
   }
 
   if (!isHartaMagazine(magazine)) {
-    return targetSerial - readSerial
+    return targetSerial - effectiveReadSerial
   }
 
   let count = 0
 
   for (
-    let volume = readSerial + 1;
+    let volume = effectiveReadSerial + 1;
     volume <= targetSerial;
     volume += 1
   ) {
