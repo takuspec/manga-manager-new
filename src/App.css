@@ -744,7 +744,8 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .series-status-badge-row .status-badge,
@@ -861,7 +862,12 @@ textarea {
 
 .series-scroll-area .card .series-status-badge-row {
   order: 5;
-  max-width: calc(100% - 12px);
+  max-width: 100%;
+  gap: 3px;
+}
+
+.series-scroll-area .card .series-status-badge-row .card-unread {
+  padding: 3px 5px;
 }
 
 .card-no-image {

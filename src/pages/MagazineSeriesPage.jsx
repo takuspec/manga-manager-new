@@ -279,7 +279,7 @@ function MagazineSeriesPage({
       getSeriesPeriodSerial(item)
 
     if (isHarta) {
-      return `連載 ${diff}号分`
+      return `${diff}号分`
     }
 
     if (selectedMagazine.frequency === 'monthly') {
@@ -288,7 +288,7 @@ function MagazineSeriesPage({
       const months =
         diff % 12
 
-      return `連載 ${years}年${months}か月`
+      return `${years}年${months}か月`
     }
 
     const years =
@@ -296,7 +296,7 @@ function MagazineSeriesPage({
     const weeks =
       diff % 52
 
-    return `連載 ${years}年${weeks}週`
+    return `${years}年${weeks}週`
   }
 
   const renderStatusText = (
