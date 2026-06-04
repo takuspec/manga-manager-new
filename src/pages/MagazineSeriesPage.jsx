@@ -514,6 +514,60 @@ function MagazineSeriesPage({
       return item.id
       })
 
+  const latestIssueSerial =
+    getIssueSerial(
+      estimatedLatestIssue.year,
+      estimatedLatestIssue.issue,
+      selectedMagazine
+    )
+
+  const normalizeBulkIssueValue = (
+    year,
+    issue
+  ) => {
+    if (issue === '') {
+      return ''
+    }
+
+    const clampedIssue =
+      clampIssueForYear(
+        selectedMagazine,
+        year,
+        issue,
+        {
+          includeUnread: true
+        }
+      )
+
+    const numericIssue =
+      Number(clampedIssue) || 0
+
+    if (!numericIssue || isHarta) {
+      return clampedIssue
+    }
+
+    const issueSerial =
+      getIssueSerial(
+        Number(year) ||
+          estimatedLatestIssue.year,
+        numericIssue,
+        selectedMagazine
+      )
+
+    if (issueSerial <= latestIssueSerial) {
+      return numericIssue
+    }
+
+    if (
+      Number(year) ===
+      estimatedLatestIssue.year
+    ) {
+      return estimatedLatestIssue.issue
+    }
+
+    return 0
+  }
+
   const bulkIssueOptions =
     getIssueOptions(
       selectedMagazine,
@@ -521,19 +575,31 @@ function MagazineSeriesPage({
       {
         includeUnread: true
       }
-    )
+    ).filter((option) => {
+      const issue =
+        Number(option.value) || 0
+
+      if (!issue || isHarta) {
+        return true
+      }
+
+      return (
+        getIssueSerial(
+          Number(bulkIssueYear) ||
+            estimatedLatestIssue.year,
+          issue,
+          selectedMagazine
+        ) <= latestIssueSerial
+      )
+    })
 
   const handleBulkIssueYearChange = (year) => {
     setBulkIssueYear(year)
 
     setBulkIssueValue(
-      clampIssueForYear(
-        selectedMagazine,
+      normalizeBulkIssueValue(
         year,
-        bulkIssueValue,
-        {
-          includeUnread: true
-        }
+        bulkIssueValue
       )
     )
   }
@@ -720,8 +786,20 @@ function MagazineSeriesPage({
               <IssueInputRow
                 yearValue={bulkIssueYear}
                 onYearChange={setBulkIssueYear}
-                issueValue={bulkIssueValue}
-                onIssueChange={setBulkIssueValue}
+                issueValue={
+                  normalizeBulkIssueValue(
+                    bulkIssueYear,
+                    bulkIssueValue
+                  )
+                }
+                onIssueChange={(value) =>
+                  setBulkIssueValue(
+                    normalizeBulkIssueValue(
+                      bulkIssueYear,
+                      value
+                    )
+                  )
+                }
                 yearOptions={yearOptions}
                 issueOptions={bulkIssueOptions}
                 useIssueSelect={!isHarta}

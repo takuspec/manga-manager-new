@@ -5,8 +5,10 @@ import {
 } from '../data/defaultData'
 import {
   todayString,
+  getEstimatedLatestIssueInfo,
   getHartaYearMonthFromVolume,
   getIssueSerial,
+  getNextIssue,
   getNextPublishedIssue,
   getPrevPublishedIssue
 } from '../utils/issueUtils'
@@ -466,6 +468,32 @@ function useMangaData({
     }
   }
 
+  const getLatestReadableIssueForSeries = (
+    series,
+    magazine
+  ) => {
+    const latest =
+      getEstimatedLatestIssueInfo(magazine)
+
+    if (magazine?.frequency !== 'harta') {
+      return latest
+    }
+
+    const afterLatest =
+      getNextIssue(
+        latest.year,
+        latest.issue,
+        magazine
+      )
+
+    return getPrevPublishedIssue(
+      series,
+      afterLatest.year,
+      afterLatest.issue,
+      magazine
+    )
+  }
+
   const normalizeReadIssueForSeries = (
     series,
     magazine,
@@ -491,12 +519,18 @@ function useMangaData({
       }
     }
 
-    if (!magazine || !start) {
+    if (!magazine) {
       return {
         year: normalizedYear,
         issue: numericIssue
       }
     }
+
+    const latest =
+      getLatestReadableIssueForSeries(
+        series,
+        magazine
+      )
 
     const readSerial =
       getIssueSerial(
@@ -505,6 +539,22 @@ function useMangaData({
         magazine
       )
 
+    const latestSerial =
+      getIssueSerial(
+        latest.year,
+        latest.issue,
+        magazine
+      )
+
+    if (!start) {
+      return readSerial > latestSerial
+        ? latest
+        : {
+            year: normalizedYear,
+            issue: numericIssue
+          }
+    }
+
     const startSerial =
       getIssueSerial(
         start.year,
@@ -512,8 +562,19 @@ function useMangaData({
         magazine
       )
 
+    if (latestSerial < startSerial) {
+      return {
+        year: start.year,
+        issue: 0
+      }
+    }
+
     if (readSerial < startSerial) {
       return start
+    }
+
+    if (readSerial > latestSerial) {
+      return latest
     }
 
     return {
@@ -533,7 +594,12 @@ function useMangaData({
       Number(series.issue) || 0
 
     if (!currentIssue && start) {
-      return start
+      return normalizeReadIssueForSeries(
+        series,
+        magazine,
+        start.year,
+        start.issue
+      )
     }
 
     if (!magazine) {
