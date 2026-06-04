@@ -864,6 +864,11 @@ textarea {
   order: 6;
 }
 
+.grid > .series-popup-menu {
+  grid-column: 1 / -1;
+  margin: 0 0 10px;
+}
+
 .series-scroll-area .card .series-status-badge-row {
   order: 5;
   max-width: 100%;

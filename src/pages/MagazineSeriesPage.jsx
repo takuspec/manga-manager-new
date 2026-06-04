@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react'
+import {
+  Fragment,
+  useEffect,
+  useState
+} from 'react'
 import ImageView from '../components/ImageView'
 import SeriesActionPanel from '../components/SeriesActionPanel'
 import IssueInputRow from '../components/IssueInputRow'
@@ -513,6 +517,32 @@ function MagazineSeriesPage({
       .map((item) => {
       return item.id
       })
+
+  const gridColumnCount = 3
+
+  const expandedGridIndex =
+    displaySeries.findIndex((item) => {
+      return item.id === menuSeriesId
+    })
+
+  const expandedGridItem =
+    expandedGridIndex >= 0
+      ? displaySeries[expandedGridIndex]
+      : null
+
+  const expandedGridRowEndIndex =
+    expandedGridIndex >= 0
+      ? Math.min(
+          displaySeries.length - 1,
+          Math.floor(
+            expandedGridIndex /
+              gridColumnCount
+          ) *
+            gridColumnCount +
+            gridColumnCount -
+            1
+        )
+      : -1
 
   const latestIssueSerial =
     getIssueSerial(
@@ -1133,109 +1163,114 @@ function MagazineSeriesPage({
           }`}
         >
 
-          {displaySeries.map((item) => (
+          {displaySeries.map((item, index) => (
 
-            <div
-              className={`card ${
-                item.status === 'completed'
-                  ? 'completed'
-                  : ''
-              } ${
-                selectedSeriesIds.includes(
-                  item.id
-                )
-                  ? 'selected'
-                  : ''
-              } ${
-                menuSeriesId === item.id
-                  ? 'expanded'
-                  : ''
-              } ${
-                currentShowImages
-                  ? ''
-                  : 'card-no-image'
-              }`}
+            <Fragment
               key={item.id}
-              onClick={(e) => {
-                e.stopPropagation()
-
-                if (
+            >
+              <div
+                className={`card ${
                   item.status === 'completed'
-                ) {
-                  setMenuSeriesId(
-                    menuSeriesId === item.id
-                      ? null
-                      : item.id
-                  )
-                  return
-                }
-
-                const isSelected =
+                    ? 'completed'
+                    : ''
+                } ${
                   selectedSeriesIds.includes(
                     item.id
                   )
+                    ? 'selected'
+                    : ''
+                } ${
+                  menuSeriesId === item.id
+                    ? 'expanded'
+                    : ''
+                } ${
+                  currentShowImages
+                    ? ''
+                    : 'card-no-image'
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation()
 
-                toggleSeriesSelection(
-                  item.id
-                )
-
-                setMenuSeriesId(
-                  isSelected &&
-                    menuSeriesId === item.id
-                    ? null
-                    : item.id
-                )
-              }}
-            >
-
-              {currentShowImages && (
-                <div className="cover">
-
-                  <ImageView
-                    imageId={item.imageId}
-                    fallbackImage={item.image}
-                  />
-
-                </div>
-              )}
-
-              <div className="card-title">
-                {item.title}
-              </div>
-
-              <div className="card-issue">
-                {renderReadIssueLabel(item)}
-              </div>
-
-              {shouldShowStartIssue && (
-                <div className="card-start-issue">
-                  <span className="card-start-label">
-                    開始
-                  </span>
-
-                  {renderStartIssueLabel(item)}
-                </div>
-              )}
-
-              {renderStatusBadges(
-                item,
-                getUnreadCount(item),
-                'card-unread'
-              )}
-
-              {menuSeriesId === item.id && (
-                <SeriesActionPanel
-                  item={item}
-                  navigate={navigate}
-                  toggleStatus={toggleStatus}
-                  deleteSeries={deleteSeries}
-                  onClose={() =>
-                    setMenuSeriesId(null)
+                  if (
+                    item.status === 'completed'
+                  ) {
+                    setMenuSeriesId(
+                      menuSeriesId === item.id
+                        ? null
+                        : item.id
+                    )
+                    return
                   }
-                />
-              )}
 
-            </div>
+                  const isSelected =
+                    selectedSeriesIds.includes(
+                      item.id
+                    )
+
+                  toggleSeriesSelection(
+                    item.id
+                  )
+
+                  setMenuSeriesId(
+                    isSelected &&
+                      menuSeriesId === item.id
+                      ? null
+                      : item.id
+                  )
+                }}
+              >
+
+                {currentShowImages && (
+                  <div className="cover">
+
+                    <ImageView
+                      imageId={item.imageId}
+                      fallbackImage={item.image}
+                    />
+
+                  </div>
+                )}
+
+                <div className="card-title">
+                  {item.title}
+                </div>
+
+                <div className="card-issue">
+                  {renderReadIssueLabel(item)}
+                </div>
+
+                {shouldShowStartIssue && (
+                  <div className="card-start-issue">
+                    <span className="card-start-label">
+                      開始
+                    </span>
+
+                    {renderStartIssueLabel(item)}
+                  </div>
+                )}
+
+                {renderStatusBadges(
+                  item,
+                  getUnreadCount(item),
+                  'card-unread'
+                )}
+
+              </div>
+
+              {expandedGridItem &&
+                expandedGridRowEndIndex ===
+                  index && (
+                  <SeriesActionPanel
+                    item={expandedGridItem}
+                    navigate={navigate}
+                    toggleStatus={toggleStatus}
+                    deleteSeries={deleteSeries}
+                    onClose={() =>
+                      setMenuSeriesId(null)
+                    }
+                  />
+                )}
+            </Fragment>
           ))}
 
         </div>
