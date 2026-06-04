@@ -1265,6 +1265,7 @@ function MagazineSeriesPage({
                     navigate={navigate}
                     toggleStatus={toggleStatus}
                     deleteSeries={deleteSeries}
+                    className="grid-popup-menu"
                     onClose={() =>
                       setMenuSeriesId(null)
                     }

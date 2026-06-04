@@ -3,11 +3,12 @@ function SeriesActionPanel({
   navigate,
   toggleStatus,
   deleteSeries,
+  className = '',
   onClose
 }) {
   return (
     <div
-      className="series-popup-menu"
+      className={`series-popup-menu ${className}`}
       onClick={(e) =>
         e.stopPropagation()
       }
