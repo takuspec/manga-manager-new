@@ -249,6 +249,107 @@ function MagazineSeriesPage({
     )
   }
 
+  const getSeriesPeriodSerial = (item) => {
+    const startSerial =
+      getSafeIssueSerial(
+        item.startIssueYear,
+        item.startIssue
+      )
+
+    const endSerial =
+      item.status === 'completed' &&
+      Number(item.completedIssue)
+        ? getSafeIssueSerial(
+            item.completedIssueYear,
+            item.completedIssue
+          )
+        : getSafeIssueSerial(
+            estimatedLatestIssue.year,
+            estimatedLatestIssue.issue
+          )
+
+    return Math.max(
+      0,
+      endSerial - startSerial
+    )
+  }
+
+  const formatSeriesPeriod = (item) => {
+    const diff =
+      getSeriesPeriodSerial(item)
+
+    if (isHarta) {
+      return `連載 ${diff}号分`
+    }
+
+    if (selectedMagazine.frequency === 'monthly') {
+      const years =
+        Math.floor(diff / 12)
+      const months =
+        diff % 12
+
+      return `連載 ${years}年${months}か月`
+    }
+
+    const years =
+      Math.floor(diff / 52)
+    const weeks =
+      diff % 52
+
+    return `連載 ${years}年${weeks}週`
+  }
+
+  const renderStatusText = (
+    item,
+    unreadCount
+  ) => {
+    return item.status === 'completed'
+      ? '完結'
+      : `未読 ${unreadCount}`
+  }
+
+  const renderStatusBadges = (
+    item,
+    unreadCount,
+    baseClassName
+  ) => {
+    const content = (
+      <>
+        <HartaGroupBadge
+          magazine={selectedMagazine}
+          series={item}
+        />
+
+        <span>
+          {renderStatusText(
+            item,
+            unreadCount
+          )}
+        </span>
+      </>
+    )
+
+    if (sortMode !== 'duration') {
+      return (
+        <div className={baseClassName}>
+          {content}
+        </div>
+      )
+    }
+
+    return (
+      <div className="series-status-badge-row">
+        <div className={baseClassName}>
+          {content}
+        </div>
+
+        <div className="series-period-badge">
+          {formatSeriesPeriod(item)}
+        </div>
+      </div>
+    )
+  }
+
   const createSortedSeries = () => {
     return seriesList
       .filter((item) => {
@@ -807,18 +908,11 @@ function MagazineSeriesPage({
                   </div>
                 )}
 
-                <div className="status-badge">
-                  <HartaGroupBadge
-                    magazine={selectedMagazine}
-                    series={item}
-                  />
-
-                  <span>
-                    {item.status === 'completed'
-                      ? '完結'
-                      : `未読 ${unreadCount}`}
-                  </span>
-                </div>
+                {renderStatusBadges(
+                  item,
+                  unreadCount,
+                  'status-badge'
+                )}
 
               </div>
 
@@ -903,16 +997,11 @@ function MagazineSeriesPage({
                       読了 {renderReadIssueLabel(item)}
                     </span>
 
-                    <span className="series-compact-status">
-                      <HartaGroupBadge
-                        magazine={selectedMagazine}
-                        series={item}
-                      />
-
-                      {item.status === 'completed'
-                        ? '完結'
-                        : `未読 ${unreadCount}`}
-                    </span>
+                    {renderStatusBadges(
+                      item,
+                      unreadCount,
+                      'series-compact-status'
+                    )}
 
                     {shouldShowStartIssue && (
                       <span className="series-compact-start-issue">
@@ -1036,18 +1125,11 @@ function MagazineSeriesPage({
                 </div>
               )}
 
-              <div className="card-unread">
-                <HartaGroupBadge
-                  magazine={selectedMagazine}
-                  series={item}
-                />
-
-                <span>
-                  {item.status === 'completed'
-                    ? '完結'
-                    : `未読 ${getUnreadCount(item)}`}
-                </span>
-              </div>
+              {renderStatusBadges(
+                item,
+                getUnreadCount(item),
+                'card-unread'
+              )}
 
             </div>
           ))}

@@ -734,6 +734,53 @@ textarea {
   font-weight: 700;
 }
 
+.series-status-badge-row {
+  order: 4;
+  width: fit-content;
+  max-width: 100%;
+  align-self: center;
+  margin: 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.series-status-badge-row .status-badge,
+.series-status-badge-row .card-unread,
+.series-status-badge-row .series-compact-status {
+  order: 0;
+  flex: 0 0 auto;
+  max-width: none;
+  align-self: center;
+  margin: 0;
+}
+
+.series-status-badge-row .series-compact-status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  font-weight: 800;
+}
+
+.series-period-badge {
+  order: 1;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .series-step-buttons {
   display: flex;
   flex-direction: column;
@@ -812,6 +859,11 @@ textarea {
   order: 5;
 }
 
+.series-scroll-area .card .series-status-badge-row {
+  order: 5;
+  max-width: calc(100% - 12px);
+}
+
 .card-no-image {
   min-height: 104px;
   display: flex;
@@ -834,6 +886,10 @@ textarea {
 
 .card-no-image .card-unread {
   margin: 4px auto 0;
+}
+
+.card-no-image .series-status-badge-row {
+  margin-top: 4px;
 }
 
 .cover {
@@ -947,6 +1003,11 @@ textarea {
   text-align: center;
 }
 
+.card .series-period-badge {
+  padding: 3px 6px;
+  font-size: 10px;
+}
+
 /* 簡易リスト */
 
 .series-compact-list {
@@ -999,6 +1060,16 @@ textarea {
   align-items: center;
   gap: 4px;
   order: 3;
+}
+
+.series-compact-meta .series-status-badge-row {
+  order: 3;
+  margin: 0;
+}
+
+.series-compact-meta .series-period-badge {
+  padding: 3px 7px;
+  font-size: 11px;
 }
 
 .series-compact-meta > span:not(.series-compact-status):not(.series-compact-start-issue) {
