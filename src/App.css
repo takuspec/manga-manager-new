@@ -652,9 +652,12 @@ textarea {
 
 .series-info {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .series-list-card .series-title {
+  order: 1;
   display: -webkit-box;
   max-height: 2.5em;
   line-height: 1.25;
@@ -683,6 +686,7 @@ textarea {
 }
 
 .series-issue {
+  order: 3;
   color: #9ca3af;
   font-size: 13px;
   margin-bottom: 6px;
@@ -701,6 +705,7 @@ textarea {
 }
 
 .series-start-issue {
+  order: 2;
   color: #9ca3af;
   font-size: 13px;
   margin: -4px 0 10px;
@@ -712,6 +717,7 @@ textarea {
 }
 
 .status-badge {
+  order: 4;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -774,6 +780,31 @@ textarea {
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.series-scroll-area .card {
+  display: flex;
+  flex-direction: column;
+}
+
+.series-scroll-area .card .cover {
+  order: 1;
+}
+
+.series-scroll-area .card .card-title {
+  order: 2;
+}
+
+.series-scroll-area .card .card-start-issue {
+  order: 3;
+}
+
+.series-scroll-area .card .card-issue {
+  order: 4;
+}
+
+.series-scroll-area .card .card-unread {
+  order: 5;
 }
 
 .card-no-image {
@@ -960,6 +991,11 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  order: 3;
+}
+
+.series-compact-meta > span:not(.series-compact-status):not(.series-compact-start-issue) {
+  order: 2;
 }
 
 .series-compact-meta .issue-label {
@@ -973,6 +1009,7 @@ textarea {
 }
 
 .series-compact-meta .series-compact-start-issue {
+  order: 1;
   color: #60a5fa;
   font-weight: 700;
 }
