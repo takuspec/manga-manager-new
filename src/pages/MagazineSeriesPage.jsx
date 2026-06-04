@@ -230,25 +230,6 @@ function MagazineSeriesPage({
     )
   }
 
-  const getSeriesDurationSerial = (item) => {
-    const readSerial =
-      getSafeIssueSerial(
-        item.issueYear,
-        item.issue
-      )
-
-    const startSerial =
-      getSafeIssueSerial(
-        item.startIssueYear,
-        item.startIssue
-      )
-
-    return Math.max(
-      0,
-      readSerial - startSerial
-    )
-  }
-
   const getSeriesPeriodSerial = (item) => {
     const startSerial =
       getSafeIssueSerial(
@@ -425,8 +406,8 @@ function MagazineSeriesPage({
 
           case 'duration':
             result =
-              getSeriesDurationSerial(a) -
-              getSeriesDurationSerial(b)
+              getSeriesPeriodSerial(a) -
+              getSeriesPeriodSerial(b)
             break
 
           default:
