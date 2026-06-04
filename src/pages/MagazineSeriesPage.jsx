@@ -1069,20 +1069,43 @@ function MagazineSeriesPage({
                   ? 'selected'
                   : ''
               } ${
+                menuSeriesId === item.id
+                  ? 'expanded'
+                  : ''
+              } ${
                 currentShowImages
                   ? ''
                   : 'card-no-image'
               }`}
               key={item.id}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+
                 if (
                   item.status === 'completed'
                 ) {
+                  setMenuSeriesId(
+                    menuSeriesId === item.id
+                      ? null
+                      : item.id
+                  )
                   return
                 }
 
+                const isSelected =
+                  selectedSeriesIds.includes(
+                    item.id
+                  )
+
                 toggleSeriesSelection(
                   item.id
+                )
+
+                setMenuSeriesId(
+                  isSelected &&
+                    menuSeriesId === item.id
+                    ? null
+                    : item.id
                 )
               }}
             >
@@ -1120,6 +1143,18 @@ function MagazineSeriesPage({
                 item,
                 getUnreadCount(item),
                 'card-unread'
+              )}
+
+              {menuSeriesId === item.id && (
+                <SeriesActionPanel
+                  item={item}
+                  navigate={navigate}
+                  toggleStatus={toggleStatus}
+                  deleteSeries={deleteSeries}
+                  onClose={() =>
+                    setMenuSeriesId(null)
+                  }
+                />
               )}
 
             </div>

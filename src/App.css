@@ -860,6 +860,10 @@ textarea {
   order: 5;
 }
 
+.series-scroll-area .card .series-popup-menu {
+  order: 6;
+}
+
 .series-scroll-area .card .series-status-badge-row {
   order: 5;
   max-width: 100%;
