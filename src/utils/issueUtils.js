@@ -1003,6 +1003,9 @@ export const getUnreadIssueCount = (
       magazine
     )
 
+  const isUnread =
+    (Number(series.issue) || 0) === 0
+
   const startIssue =
     Number(series.startIssue) || 0
 
@@ -1017,12 +1020,14 @@ export const getUnreadIssueCount = (
       : 0
 
   const effectiveReadSerial =
-    startSerial
-      ? Math.max(
-          readSerial,
-          startSerial - 1
-        )
-      : readSerial
+    isUnread && startSerial
+      ? startSerial - 1
+      : startSerial
+        ? Math.max(
+            readSerial,
+            startSerial - 1
+          )
+        : readSerial
 
   if (targetSerial <= effectiveReadSerial) {
     return 0
