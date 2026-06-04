@@ -1,10 +1,10 @@
 import {
   useRef,
-  useState
 } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   getWeeklyFinalIssue,
+  getWeeklyMergedIssues,
   getYearOptions
 } from '../utils/issueUtils'
 
@@ -19,11 +19,6 @@ function WeeklyIssueRulesPage({
     new Date().getFullYear()
   const years =
     getYearOptions()
-
-  const [rangeStart, setRangeStart] =
-    useState(1980)
-  const [rangeEnd, setRangeEnd] =
-    useState(2050)
 
   const currentYearRef =
     useRef(null)
@@ -42,41 +37,6 @@ function WeeklyIssueRulesPage({
     years.forEach((year) => {
       rules[year] = finalIssue
     })
-
-    updateWeeklyIssueRules(
-      magazineId,
-      rules
-    )
-  }
-
-  const applyRange = (finalIssue) => {
-    const start =
-      Math.max(
-        1980,
-        Math.min(
-          Number(rangeStart),
-          Number(rangeEnd)
-        )
-      )
-
-    const end =
-      Math.min(
-        2050,
-        Math.max(
-          Number(rangeStart),
-          Number(rangeEnd)
-        )
-      )
-
-    const rules = {}
-
-    for (
-      let year = start;
-      year <= end;
-      year += 1
-    ) {
-      rules[year] = finalIssue
-    }
 
     updateWeeklyIssueRules(
       magazineId,
@@ -152,51 +112,18 @@ function WeeklyIssueRulesPage({
           </button>
         </div>
 
-        <div className="weekly-range-row">
-          <input
-            type="number"
-            min="1980"
-            max="2050"
-            value={rangeStart}
-            onChange={(e) =>
-              setRangeStart(e.target.value)
-            }
-          />
-
-          <span>〜</span>
-
-          <input
-            type="number"
-            min="1980"
-            max="2050"
-            value={rangeEnd}
-            onChange={(e) =>
-              setRangeEnd(e.target.value)
-            }
-          />
-        </div>
-
-        <div className="weekly-bulk-buttons">
-          <button
-            type="button"
-            onClick={() => applyRange(52)}
-          >
-            範囲を52号
-          </button>
-
-          <button
-            type="button"
-            onClick={() => applyRange(53)}
-          >
-            範囲を53号
-          </button>
-        </div>
       </div>
 
       <div className="weekly-year-list">
         {years.map((year) => {
           const selected =
             getWeeklyFinalIssue(
+              magazine,
+              year
+            )
+
+          const mergedIssues =
+            getWeeklyMergedIssues(
               magazine,
               year
             )
@@ -214,9 +141,30 @@ function WeeklyIssueRulesPage({
                   ? 'current'
                   : ''
               }`}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                navigate(
+                  `/weekly-settings/${magazineId}/${year}`
+                )
+              }
+              onKeyDown={(e) => {
+                if (
+                  e.key === 'Enter' ||
+                  e.key === ' '
+                ) {
+                  e.preventDefault()
+                  navigate(
+                    `/weekly-settings/${magazineId}/${year}`
+                  )
+                }
+              }}
             >
               <div className="weekly-year-label">
                 {year}年
+                <span className="weekly-merged-count">
+                  合併 {mergedIssues.length}
+                </span>
               </div>
 
               <div className="weekly-issue-toggle">
@@ -227,13 +175,14 @@ function WeeklyIssueRulesPage({
                       ? 'active'
                       : ''
                   }
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation()
                     updateWeeklyIssueRule(
                       magazineId,
                       year,
                       52
                     )
-                  }
+                  }}
                 >
                   52号
                 </button>
@@ -245,13 +194,14 @@ function WeeklyIssueRulesPage({
                       ? 'active'
                       : ''
                   }
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation()
                     updateWeeklyIssueRule(
                       magazineId,
                       year,
                       53
                     )
-                  }
+                  }}
                 >
                   53号
                 </button>

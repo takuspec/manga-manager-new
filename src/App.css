@@ -1774,6 +1774,11 @@ select.issue-number-select option {
   padding: 10px 12px;
   border-radius: 16px;
   background: #1f2937;
+  cursor: pointer;
+}
+
+.weekly-year-row:active {
+  transform: scale(0.99);
 }
 
 .weekly-year-row.current {
@@ -1781,8 +1786,17 @@ select.issue-number-select option {
 }
 
 .weekly-year-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   font-weight: 800;
   color: white;
+}
+
+.weekly-merged-count {
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .weekly-issue-toggle {
@@ -1799,6 +1813,52 @@ select.issue-number-select option {
 }
 
 .weekly-issue-toggle button.active {
+  background: #2563eb;
+  color: white;
+}
+
+.weekly-merged-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #1f2937;
+}
+
+.weekly-merged-magazine {
+  overflow: hidden;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weekly-merged-clear {
+  min-height: 46px;
+  background: #374151;
+  color: #d1d5db;
+}
+
+.weekly-merged-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.weekly-merged-issue {
+  min-height: 46px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  background: #1f2937;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.weekly-merged-issue.active {
   background: #2563eb;
   color: white;
 }

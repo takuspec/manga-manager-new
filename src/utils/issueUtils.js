@@ -237,6 +237,29 @@ export const getWeeklyFinalIssue = (
     : 52
 }
 
+export const getWeeklyMergedIssues = (
+  magazine,
+  year
+) => {
+  const issues =
+    magazine?.weeklyMergedIssues?.[year]
+
+  if (!Array.isArray(issues)) {
+    return []
+  }
+
+  return issues
+    .map((issue) => {
+      return Number(issue) || 0
+    })
+    .filter((issue) => {
+      return issue > 0
+    })
+    .sort((a, b) => {
+      return a - b
+    })
+}
+
 export const HARTA_RELEASE_MONTHS = [
   2,
   3,

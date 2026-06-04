@@ -17,6 +17,7 @@ import useMangaData from './hooks/useMangaData'
 import CompletedSeriesPage from './pages/CompletedSeriesPage'
 import WeeklySettingsPage from './pages/WeeklySettingsPage'
 import WeeklyIssueRulesPage from './pages/WeeklyIssueRulesPage'
+import WeeklyMergedIssuesPage from './pages/WeeklyMergedIssuesPage'
 
 import {
   getEstimatedLatestIssue,
@@ -132,6 +133,8 @@ function App() {
     importData,
     updateWeeklyIssueRule,
     updateWeeklyIssueRules,
+    updateWeeklyMergedIssues,
+    toggleWeeklyMergedIssue,
     handleImageUpload
   } = useMangaData({
     navigate,
@@ -353,6 +356,25 @@ function App() {
             }
             updateWeeklyIssueRules={
               updateWeeklyIssueRules
+            }
+            navigate={navigate}
+          />
+        }
+      />
+
+      <Route
+        path="/weekly-settings/:magazineId/:year"
+        element={
+          <WeeklyMergedIssuesPage
+            magazineList={magazineList}
+            updateWeeklyIssueRule={
+              updateWeeklyIssueRule
+            }
+            updateWeeklyMergedIssues={
+              updateWeeklyMergedIssues
+            }
+            toggleWeeklyMergedIssue={
+              toggleWeeklyMergedIssue
             }
             navigate={navigate}
           />

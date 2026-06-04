@@ -1193,6 +1193,98 @@ function useMangaData({
     )
   }
 
+  const updateWeeklyMergedIssues = (
+    magazineId,
+    year,
+    issues
+  ) => {
+    const normalizedIssues =
+      Array.from(
+        new Set(
+          issues
+            .map((issue) => {
+              return Number(issue) || 0
+            })
+            .filter((issue) => {
+              return issue > 0
+            })
+        )
+      ).sort((a, b) => {
+        return a - b
+      })
+
+    setMagazineList((prevList) =>
+      prevList.map((magazine) => {
+        if (magazine.id !== magazineId) {
+          return magazine
+        }
+
+        return {
+          ...magazine,
+          weeklyMergedIssues: {
+            ...(magazine.weeklyMergedIssues || {}),
+            [year]: normalizedIssues
+          }
+        }
+      })
+    )
+  }
+
+  const toggleWeeklyMergedIssue = (
+    magazineId,
+    year,
+    issue
+  ) => {
+    const numericIssue =
+      Number(issue) || 0
+
+    if (!numericIssue) {
+      return
+    }
+
+    setMagazineList((prevList) =>
+      prevList.map((magazine) => {
+        if (magazine.id !== magazineId) {
+          return magazine
+        }
+
+        const currentIssues =
+          Array.isArray(
+            magazine.weeklyMergedIssues?.[year]
+          )
+            ? magazine.weeklyMergedIssues[year]
+            : []
+
+        const issueSet =
+          new Set(
+            currentIssues.map((currentIssue) => {
+              return Number(currentIssue) || 0
+            })
+          )
+
+        if (issueSet.has(numericIssue)) {
+          issueSet.delete(numericIssue)
+        } else {
+          issueSet.add(numericIssue)
+        }
+
+        return {
+          ...magazine,
+          weeklyMergedIssues: {
+            ...(magazine.weeklyMergedIssues || {}),
+            [year]: Array.from(issueSet)
+              .filter((currentIssue) => {
+                return currentIssue > 0
+              })
+              .sort((a, b) => {
+                return a - b
+              })
+          }
+        }
+      })
+    )
+  }
+
   const addIssue = (id) => {
     setSeriesList((prevList) =>
       prevList.map((item) => {
@@ -1794,6 +1886,8 @@ function useMangaData({
     importData,
     updateWeeklyIssueRule,
     updateWeeklyIssueRules,
+    updateWeeklyMergedIssues,
+    toggleWeeklyMergedIssue,
     updateHartaGroupDirect,
     handleImageUpload
   }
