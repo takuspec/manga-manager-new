@@ -256,17 +256,27 @@ function MagazineSeriesPage({
         item.startIssue
       )
 
-    const endSerial =
-      item.status === 'completed' &&
-      Number(item.completedIssue)
-        ? getSafeIssueSerial(
-            item.completedIssueYear,
-            item.completedIssue
-          )
-        : getSafeIssueSerial(
-            estimatedLatestIssue.year,
-            estimatedLatestIssue.issue
-          )
+    const completedIssue =
+      Number(item.completedIssue) || 0
+
+    let endSerial
+
+    if (completedIssue) {
+      endSerial = getSafeIssueSerial(
+        item.completedIssueYear,
+        completedIssue
+      )
+    } else if (item.status === 'completed') {
+      endSerial = getSafeIssueSerial(
+        item.issueYear,
+        item.issue
+      )
+    } else {
+      endSerial = getSafeIssueSerial(
+        estimatedLatestIssue.year,
+        estimatedLatestIssue.issue
+      )
+    }
 
     return Math.max(
       0,
