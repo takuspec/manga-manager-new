@@ -6,6 +6,7 @@ import {
 import {
   todayString,
   getHartaYearMonthFromVolume,
+  getIssueSerial,
   getNextPublishedIssue,
   getPrevPublishedIssue
 } from '../utils/issueUtils'
@@ -440,6 +441,231 @@ function useMangaData({
     }
   }
 
+  const getSeriesMagazine = (series) => {
+    return magazineList.find((magazine) => {
+      return magazine.id === series.magazineId
+    })
+  }
+
+  const getSeriesStartReadIssue = (
+    series
+  ) => {
+    const startIssue =
+      Number(series.startIssue) || 0
+
+    if (!startIssue) {
+      return null
+    }
+
+    return {
+      year:
+        Number(series.startIssueYear) ||
+        Number(series.issueYear) ||
+        new Date().getFullYear(),
+      issue: startIssue
+    }
+  }
+
+  const normalizeReadIssueForSeries = (
+    series,
+    magazine,
+    year,
+    issue
+  ) => {
+    const numericIssue =
+      Number(issue) || 0
+
+    const start =
+      getSeriesStartReadIssue(series)
+
+    const normalizedYear =
+      Number(year) ||
+      Number(series.issueYear) ||
+      start?.year ||
+      new Date().getFullYear()
+
+    if (!numericIssue) {
+      return {
+        year: normalizedYear,
+        issue: 0
+      }
+    }
+
+    if (!magazine || !start) {
+      return {
+        year: normalizedYear,
+        issue: numericIssue
+      }
+    }
+
+    const readSerial =
+      getIssueSerial(
+        normalizedYear,
+        numericIssue,
+        magazine
+      )
+
+    const startSerial =
+      getIssueSerial(
+        start.year,
+        start.issue,
+        magazine
+      )
+
+    if (readSerial < startSerial) {
+      return start
+    }
+
+    return {
+      year: normalizedYear,
+      issue: numericIssue
+    }
+  }
+
+  const getNextReadIssueForSeries = (
+    series,
+    magazine
+  ) => {
+    const start =
+      getSeriesStartReadIssue(series)
+
+    const currentIssue =
+      Number(series.issue) || 0
+
+    if (!currentIssue && start) {
+      return start
+    }
+
+    if (!magazine) {
+      return null
+    }
+
+    const currentYear =
+      Number(series.issueYear) ||
+      start?.year ||
+      new Date().getFullYear()
+
+    if (start) {
+      const currentSerial =
+        getIssueSerial(
+          currentYear,
+          currentIssue,
+          magazine
+        )
+
+      const startSerial =
+        getIssueSerial(
+          start.year,
+          start.issue,
+          magazine
+        )
+
+      if (currentSerial < startSerial) {
+        return start
+      }
+    }
+
+    const next =
+      getNextPublishedIssue(
+        series,
+        currentYear,
+        currentIssue,
+        magazine
+      )
+
+    return normalizeReadIssueForSeries(
+      series,
+      magazine,
+      next.year,
+      next.issue
+    )
+  }
+
+  const getPrevReadIssueForSeries = (
+    series,
+    magazine
+  ) => {
+    const start =
+      getSeriesStartReadIssue(series)
+
+    const currentIssue =
+      Number(series.issue) || 0
+
+    if (!currentIssue) {
+      return null
+    }
+
+    if (!magazine) {
+      return null
+    }
+
+    const currentYear =
+      Number(series.issueYear) ||
+      start?.year ||
+      new Date().getFullYear()
+
+    if (start) {
+      const currentSerial =
+        getIssueSerial(
+          currentYear,
+          currentIssue,
+          magazine
+        )
+
+      const startSerial =
+        getIssueSerial(
+          start.year,
+          start.issue,
+          magazine
+        )
+
+      if (currentSerial <= startSerial) {
+        return {
+          year: start.year,
+          issue: 0
+        }
+      }
+    }
+
+    const prev =
+      getPrevPublishedIssue(
+        series,
+        currentYear,
+        currentIssue,
+        magazine
+      )
+
+    if (start) {
+      const prevSerial =
+        getIssueSerial(
+          prev.year,
+          prev.issue,
+          magazine
+        )
+
+      const startSerial =
+        getIssueSerial(
+          start.year,
+          start.issue,
+          magazine
+        )
+
+      if (prevSerial < startSerial) {
+        return {
+          year: start.year,
+          issue: 0
+        }
+      }
+    }
+
+    return normalizeReadIssueForSeries(
+      series,
+      magazine,
+      prev.year,
+      prev.issue
+    )
+  }
+
   const deleteMagazine = (magazineId) => {
     const imageIdsToDelete = [
       ...magazineList
@@ -641,6 +867,20 @@ function useMangaData({
     const imageId =
       await saveImageValue(newSeriesImage)
 
+    const normalizedReadIssue =
+      normalizeReadIssueForSeries(
+        {
+          magazineId,
+          startIssueYear: startIssueYear,
+          startIssue: startIssue,
+          issueYear: issueYear,
+          issue: issue
+        },
+        magazine,
+        issueYear,
+        issue
+      )
+
   const newSeries = {
     id: Date.now(),
     title: newSeriesTitle,
@@ -649,8 +889,8 @@ function useMangaData({
     startIssueYear: startIssueYear,
     startIssue: startIssue,
 
-    issueYear: issueYear,
-    issue: issue,
+    issueYear: normalizedReadIssue.year,
+    issue: normalizedReadIssue.issue,
 
     completedIssueYear: completedIssueYear,
     completedIssue: completedIssue,
@@ -724,12 +964,26 @@ function useMangaData({
     (id, value) => {
       setSeriesList((prevList) =>
         prevList.map((item) => {
-          return item.id === id
-            ? {
-                ...item,
-                issue: value
-              }
-            : item
+          if (item.id !== id) {
+            return item
+          }
+
+          const magazine =
+            getSeriesMagazine(item)
+
+          const normalizedReadIssue =
+            normalizeReadIssueForSeries(
+              item,
+              magazine,
+              item.issueYear,
+              value
+            )
+
+          return {
+            ...item,
+            issueYear: normalizedReadIssue.year,
+            issue: normalizedReadIssue.issue
+          }
         })
       )
     }
@@ -738,12 +992,26 @@ function useMangaData({
     (id, value) => {
       setSeriesList((prevList) =>
         prevList.map((item) => {
-          return item.id === id
-            ? {
-                ...item,
-                issueYear: value
-              }
-            : item
+          if (item.id !== id) {
+            return item
+          }
+
+          const magazine =
+            getSeriesMagazine(item)
+
+          const normalizedReadIssue =
+            normalizeReadIssueForSeries(
+              item,
+              magazine,
+              value,
+              item.issue
+            )
+
+          return {
+            ...item,
+            issueYear: normalizedReadIssue.year,
+            issue: normalizedReadIssue.issue
+          }
         })
       )
     }
@@ -767,13 +1035,32 @@ function useMangaData({
     (id, year, issue) => {
       setSeriesList((prevList) =>
         prevList.map((item) => {
-          return item.id === id
-            ? {
-                ...item,
-                startIssueYear: year,
-                startIssue: issue
-              }
-            : item
+          if (item.id !== id) {
+            return item
+          }
+
+          const nextItem = {
+            ...item,
+            startIssueYear: year,
+            startIssue: issue
+          }
+
+          const magazine =
+            getSeriesMagazine(nextItem)
+
+          const normalizedReadIssue =
+            normalizeReadIssueForSeries(
+              nextItem,
+              magazine,
+              nextItem.issueYear,
+              nextItem.issue
+            )
+
+          return {
+            ...nextItem,
+            issueYear: normalizedReadIssue.year,
+            issue: normalizedReadIssue.issue
+          }
         })
       )
     }
@@ -851,22 +1138,21 @@ function useMangaData({
         }
 
         const magazine =
-          magazineList.find((magazine) => {
-            return magazine.id === item.magazineId
-          })
+          getSeriesMagazine(item)
 
         if (!magazine) {
           return item
         }
 
         const next =
-          getNextPublishedIssue(
+          getNextReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             magazine
           )
+
+        if (!next) {
+          return item
+        }
 
         return {
           ...item,
@@ -888,22 +1174,21 @@ function useMangaData({
         }
 
         const magazine =
-          magazineList.find((magazine) => {
-            return magazine.id === item.magazineId
-          })
+          getSeriesMagazine(item)
 
         if (!magazine) {
           return item
         }
 
         const prev =
-          getPrevPublishedIssue(
+          getPrevReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             magazine
           )
+
+        if (!prev) {
+          return item
+        }
 
         return {
           ...item,
@@ -925,22 +1210,21 @@ function useMangaData({
         }
 
         const magazine =
-          magazineList.find((magazine) => {
-            return magazine.id === item.magazineId
-          })
+          getSeriesMagazine(item)
 
         if (!magazine) {
           return item
         }
 
         const next =
-          getNextPublishedIssue(
+          getNextReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             magazine
           )
+
+        if (!next) {
+          return item
+        }
 
         return {
           ...item,
@@ -962,22 +1246,21 @@ function useMangaData({
         }
 
         const magazine =
-          magazineList.find((magazine) => {
-            return magazine.id === item.magazineId
-          })
+          getSeriesMagazine(item)
 
         if (!magazine) {
           return item
         }
 
         const prev =
-          getPrevPublishedIssue(
+          getPrevReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             magazine
           )
+
+        if (!prev) {
+          return item
+        }
 
         return {
           ...item,
@@ -1027,13 +1310,14 @@ function useMangaData({
         }
 
         const next =
-          getNextPublishedIssue(
+          getNextReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             targetMagazine
           )
+
+        if (!next) {
+          return item
+        }
 
         return {
           ...item,
@@ -1083,13 +1367,14 @@ function useMangaData({
         }
 
         const prev =
-          getPrevPublishedIssue(
+          getPrevReadIssueForSeries(
             item,
-            item.issueYear ||
-              new Date().getFullYear(),
-            item.issue,
             targetMagazine
           )
+
+        if (!prev) {
+          return item
+        }
 
         return {
           ...item,
@@ -1149,10 +1434,21 @@ function useMangaData({
         if (
           selectedSeriesIds.includes(item.id)
         ) {
+          const magazine =
+            getSeriesMagazine(item)
+
+          const normalizedReadIssue =
+            normalizeReadIssueForSeries(
+              item,
+              magazine,
+              targetYear,
+              targetIssue
+            )
+
           return {
             ...item,
-            issueYear: targetYear,
-            issue: targetIssue
+            issueYear: normalizedReadIssue.year,
+            issue: normalizedReadIssue.issue
           }
         }
 
