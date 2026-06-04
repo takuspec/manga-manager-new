@@ -843,7 +843,10 @@ function useMangaData({
   const addIssue = (id) => {
     setSeriesList((prevList) =>
       prevList.map((item) => {
-        if (item.id !== id) {
+        if (
+          item.id !== id ||
+          item.status === 'completed'
+        ) {
           return item
         }
 
@@ -877,7 +880,10 @@ function useMangaData({
   const minusIssue = (id) => {
     setSeriesList((prevList) =>
       prevList.map((item) => {
-        if (item.id !== id) {
+        if (
+          item.id !== id ||
+          item.status === 'completed'
+        ) {
           return item
         }
 
