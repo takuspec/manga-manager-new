@@ -774,14 +774,16 @@ textarea {
   max-width: none;
   align-self: center;
   margin: 0;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .series-status-badge-row .series-compact-status {
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 999px;
   background: rgba(37, 99, 235, 0.25);
   color: #60a5fa;
-  font-weight: 800;
+  font-size: 11px;
 }
 
 .series-period-badge {
@@ -913,7 +915,9 @@ textarea {
 }
 
 .series-scroll-area .card .series-status-badge-row .card-unread {
-  padding: 3px 5px;
+  padding: 3px 6px;
+  font-size: 10px;
+  line-height: 1;
 }
 
 .card-no-image {
