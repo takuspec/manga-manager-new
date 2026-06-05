@@ -1211,12 +1211,15 @@ function MagazineSeriesPage({
                     item.id
                   )
 
-                  setMenuSeriesId(
-                    isSelected &&
-                      menuSeriesId === item.id
-                      ? null
-                      : item.id
-                  )
+                  if (isSelected) {
+                    if (menuSeriesId === item.id) {
+                      setMenuSeriesId(null)
+                    }
+
+                    return
+                  }
+
+                  setMenuSeriesId(item.id)
                 }}
               >
 
