@@ -1,6 +1,7 @@
 import {
   Fragment,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import ImageView from '../components/ImageView'
@@ -48,6 +49,9 @@ const imageModeOptions = [
   }
 ]
 
+const SERIES_RETURN_STATE_KEY =
+  'manga-manager-series-return-state'
+
 function MagazineSeriesPage({
   magazineList,
   seriesList,
@@ -88,6 +92,9 @@ function MagazineSeriesPage({
 
   const magazineId =
     Number(params.magazineId)
+
+  const seriesScrollRef =
+    useRef(null)
 
   const selectedMagazine =
     magazineList.find((magazine) => {
@@ -446,6 +453,48 @@ function MagazineSeriesPage({
       })
   }
 
+  const getReturnState = () => {
+    try {
+      const rawValue =
+        sessionStorage.getItem(
+          SERIES_RETURN_STATE_KEY
+        )
+
+      return rawValue
+        ? JSON.parse(rawValue)
+        : null
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  }
+
+  const clearReturnState = () => {
+    sessionStorage.removeItem(
+      SERIES_RETURN_STATE_KEY
+    )
+  }
+
+  const saveReturnStateAndEdit = (item) => {
+    sessionStorage.setItem(
+      SERIES_RETURN_STATE_KEY,
+      JSON.stringify({
+        magazineId,
+        targetSeriesId: item.id,
+        displaySeriesIds,
+        sortMode,
+        sortDirection,
+        showCompleted,
+        viewMode: currentViewMode,
+        showImages: currentShowImages
+      })
+    )
+
+    navigate(
+      `/series/${item.id}`
+    )
+  }
+
   useEffect(() => {
     if (viewMode !== 'compact') {
       return
@@ -460,6 +509,29 @@ function MagazineSeriesPage({
   ])
 
   useEffect(() => {
+    const returnState =
+      getReturnState()
+
+    if (
+      returnState &&
+      returnState.magazineId === magazineId &&
+      returnState.sortMode === sortMode &&
+      returnState.sortDirection === sortDirection &&
+      returnState.showCompleted === showCompleted &&
+      Array.isArray(
+        returnState.displaySeriesIds
+      )
+    ) {
+      setDisplaySeriesIds(
+        returnState.displaySeriesIds
+      )
+      return
+    }
+
+    if (returnState) {
+      clearReturnState()
+    }
+
     setDisplaySeriesIds(
       createSortedSeries().map((item) => {
         return item.id
@@ -508,6 +580,61 @@ function MagazineSeriesPage({
 
         return true
       })
+
+  useEffect(() => {
+    const returnState =
+      getReturnState()
+
+    if (
+      !returnState ||
+      returnState.magazineId !== magazineId ||
+      !returnState.targetSeriesId ||
+      displaySeries.length === 0
+    ) {
+      return
+    }
+
+    const frameId =
+      requestAnimationFrame(() => {
+        const scrollArea =
+          seriesScrollRef.current
+
+        const targetElement =
+          scrollArea?.querySelector(
+            `[data-series-card-id="${returnState.targetSeriesId}"]`
+          )
+
+        if (
+          scrollArea &&
+          targetElement
+        ) {
+          const areaRect =
+            scrollArea.getBoundingClientRect()
+
+          const targetRect =
+            targetElement.getBoundingClientRect()
+
+          scrollArea.scrollTop +=
+            targetRect.top -
+            areaRect.top -
+            12
+        }
+
+        setMenuSeriesId(
+          returnState.targetSeriesId
+        )
+        clearReturnState()
+      })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+    }
+  }, [
+    magazineId,
+    displaySeriesIds,
+    displaySeries.length,
+    setMenuSeriesId
+  ])
 
   const selectableDisplaySeriesIds =
     displaySeries
@@ -938,7 +1065,10 @@ function MagazineSeriesPage({
 
       </div>
 
-      <div className="series-scroll-area">
+      <div
+        className="series-scroll-area"
+        ref={seriesScrollRef}
+      >
 
       {currentViewMode === 'list' && currentShowImages ? (
 
@@ -964,6 +1094,7 @@ function MagazineSeriesPage({
                   : ''
               }`}
               key={item.id}
+              data-series-card-id={item.id}
               onClick={(e) => {
                 e.stopPropagation()
 
@@ -1045,6 +1176,7 @@ function MagazineSeriesPage({
                   navigate={navigate}
                   toggleStatus={toggleStatus}
                   deleteSeries={deleteSeries}
+                  onEdit={saveReturnStateAndEdit}
                   onClose={() =>
                     setMenuSeriesId(null)
                   }
@@ -1075,6 +1207,7 @@ function MagazineSeriesPage({
                     : ''
                 }`}
                 key={item.id}
+                data-series-card-id={item.id}
                 onClick={(e) => {
                   e.stopPropagation()
 
@@ -1142,6 +1275,7 @@ function MagazineSeriesPage({
                     navigate={navigate}
                     toggleStatus={toggleStatus}
                     deleteSeries={deleteSeries}
+                    onEdit={saveReturnStateAndEdit}
                     onClose={() =>
                       setMenuSeriesId(null)
                     }
@@ -1188,6 +1322,7 @@ function MagazineSeriesPage({
                     ? ''
                     : 'card-no-image'
                 }`}
+                data-series-card-id={item.id}
                 onClick={(e) => {
                   e.stopPropagation()
 
@@ -1269,6 +1404,7 @@ function MagazineSeriesPage({
                     toggleStatus={toggleStatus}
                     deleteSeries={deleteSeries}
                     className="grid-popup-menu"
+                    onEdit={saveReturnStateAndEdit}
                     onClose={() =>
                       setMenuSeriesId(null)
                     }

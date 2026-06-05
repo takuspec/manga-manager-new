@@ -151,6 +151,24 @@ textarea {
   text-align: right;
 }
 
+.issue-label-long {
+  font-size: 0.9em;
+  column-gap: 1px;
+}
+
+.issue-label-long .issue-label-number {
+  min-width: 5.4ch;
+}
+
+.latest-issue-box .issue-label-long {
+  font-size: 0.86em;
+}
+
+.card-issue .issue-label-long,
+.card-start-issue .issue-label-long {
+  font-size: 0.86em;
+}
+
 .issue-display-row {
   display: flex;
   align-items: baseline;

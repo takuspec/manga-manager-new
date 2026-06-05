@@ -25,8 +25,17 @@ function IssueLabel({
     )
   }
 
+  const isLongIssueNumber =
+    String(parts.numberText).length > 3
+
   return (
-    <span className={`issue-label ${className}`}>
+    <span
+      className={`issue-label ${
+        isLongIssueNumber
+          ? 'issue-label-long'
+          : ''
+      } ${className}`}
+    >
       <span className="issue-label-year">
         {parts.yearText}
       </span>

@@ -4,6 +4,7 @@ function SeriesActionPanel({
   toggleStatus,
   deleteSeries,
   className = '',
+  onEdit,
   onClose
 }) {
   return (
@@ -17,9 +18,13 @@ function SeriesActionPanel({
         type="button"
         onClick={(e) => {
           e.stopPropagation()
-          navigate(
-            `/series/${item.id}`
-          )
+          if (onEdit) {
+            onEdit(item)
+          } else {
+            navigate(
+              `/series/${item.id}`
+            )
+          }
         }}
       >
         編集
