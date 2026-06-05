@@ -1060,6 +1060,30 @@ textarea {
   font-size: 10px;
 }
 
+.card-step-buttons {
+  width: calc(100% - 16px);
+  margin: -2px auto 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.card-step-buttons button {
+  min-height: 28px;
+  padding: 4px 0;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.card-step-buttons .minus-button {
+  background: #1e3a8a;
+}
+
+.card-no-image .card-step-buttons {
+  margin-bottom: 2px;
+}
+
 /* 簡易リスト */
 
 .series-compact-list {

@@ -995,10 +995,55 @@ export const getEstimatedLatestIssue = (
       today
     )
 
-  return Math.max(
-    (magazine.baseIssue || 1) +
-      releaseCount,
-    magazine.baseIssue || 1
+  let latest = {
+    year:
+      magazine.baseIssueYear ||
+      new Date().getFullYear(),
+    issue: magazine.baseIssue || 1
+  }
+
+  for (
+    let count = 0;
+    count < releaseCount;
+    count += 1
+  ) {
+    latest =
+      getNextWeeklyReleaseIssue(
+        latest.year,
+        latest.issue,
+        magazine
+      )
+  }
+
+  return latest.issue
+}
+
+const getNextWeeklyReleaseIssue = (
+  year,
+  issue,
+  magazine
+) => {
+  const mergedPair =
+    getWeeklyMergedPairForIssue(
+      magazine,
+      year,
+      issue
+    )
+
+  if (
+    mergedPair &&
+    issue === mergedPair[0]
+  ) {
+    return {
+      year,
+      issue: mergedPair[1]
+    }
+  }
+
+  return getNextIssue(
+    year,
+    issue,
+    magazine
   )
 }
 
@@ -1053,7 +1098,7 @@ export const getEstimatedLatestIssueInfo = (
         count += 1
       ) {
         latest =
-          getNextIssue(
+          getNextWeeklyReleaseIssue(
             latest.year,
             latest.issue,
             magazine
