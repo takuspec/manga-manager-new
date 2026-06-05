@@ -806,7 +806,8 @@ export const formatIssue = (
 
 export const formatIssueNumber = (
   issue,
-  magazine
+  magazine,
+  year
 ) => {
   if (!issue || issue === 0) {
     return '-'
@@ -816,12 +817,45 @@ export const formatIssueNumber = (
     return `volume ${issue}`
   }
 
+  const weeklyMergedPair =
+    magazine?.frequency === 'weekly'
+      ? getWeeklyMergedPairForIssue(
+          magazine,
+          year,
+          issue
+        )
+      : null
+
+  const issueText =
+    weeklyMergedPair
+      ? `${weeklyMergedPair[0]}\u30fb${weeklyMergedPair[1]}`
+      : String(issue)
+
   const suffix =
     magazine?.frequency === 'monthly'
       ? '月号'
       : '号'
 
-  return `${issue}${suffix}`
+  return `${issueText}${suffix}`
+}
+
+const getIssueNumberTextForDisplay = (
+  magazine,
+  year,
+  issue
+) => {
+  const weeklyMergedPair =
+    magazine?.frequency === 'weekly'
+      ? getWeeklyMergedPairForIssue(
+          magazine,
+          year,
+          issue
+        )
+      : null
+
+  return weeklyMergedPair
+    ? `${weeklyMergedPair[0]}\u30fb${weeklyMergedPair[1]}`
+    : String(issue)
 }
 
 export const formatIssueLabelParts = (
@@ -847,7 +881,11 @@ export const formatIssueLabelParts = (
       isUnread: false,
       label: '',
       yearText: 'volume',
-      numberText: String(numericIssue),
+      numberText: getIssueNumberTextForDisplay(
+        magazine,
+        year,
+        numericIssue
+      ),
       suffixText: ''
     }
   }
@@ -856,7 +894,11 @@ export const formatIssueLabelParts = (
     isUnread: false,
     label: '',
     yearText: `${year || '----'}年`,
-    numberText: String(numericIssue),
+    numberText: getIssueNumberTextForDisplay(
+      magazine,
+      year,
+      numericIssue
+    ),
     suffixText:
       magazine?.frequency === 'monthly'
         ? '月号'
