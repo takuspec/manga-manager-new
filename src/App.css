@@ -853,11 +853,13 @@ textarea {
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
 }
 
 .series-scroll-area .card {
   display: flex;
   flex-direction: column;
+  padding-bottom: 26px;
 }
 
 .series-scroll-area .card .cover {
@@ -1065,19 +1067,22 @@ textarea {
 }
 
 .card-step-buttons {
-  width: calc(100% - 16px);
-  margin: -2px auto 6px;
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 5px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  gap: 4px;
 }
 
 .card-step-buttons button {
-  min-height: 28px;
+  min-height: 23px;
   padding: 4px 0;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 10px;
+  font-size: 11px;
   font-weight: 800;
+  line-height: 1;
 }
 
 .card-step-buttons .minus-button {
@@ -1085,7 +1090,9 @@ textarea {
 }
 
 .card-no-image .card-step-buttons {
-  margin-bottom: 2px;
+  position: static;
+  width: calc(100% - 10px);
+  margin: 2px auto 0;
 }
 
 /* 簡易リスト */
