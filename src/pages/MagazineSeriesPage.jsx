@@ -188,8 +188,7 @@ function MagazineSeriesPage({
   }
 
   const shouldShowStartIssue =
-    sortMode === 'start' ||
-    sortMode === 'duration'
+    true
 
   const isHarta =
     selectedMagazine.frequency === 'harta'
@@ -1393,30 +1392,28 @@ function MagazineSeriesPage({
                   'card-unread'
                 )}
 
-                {item.status !== 'completed' && (
-                  <div className="card-step-buttons">
-                    <button
-                      type="button"
-                      className="minus-button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        minusIssue(item.id)
-                      }}
-                    >
-                      -1
-                    </button>
+                <div className="card-step-buttons">
+                  <button
+                    type="button"
+                    className="minus-button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      minusIssue(item.id)
+                    }}
+                  >
+                    -1
+                  </button>
 
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        addIssue(item.id)
-                      }}
-                    >
-                      +1
-                    </button>
-                  </div>
-                )}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      addIssue(item.id)
+                    }}
+                  >
+                    +1
+                  </button>
+                </div>
 
               </div>
 

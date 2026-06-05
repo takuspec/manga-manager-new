@@ -927,7 +927,7 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 10px 6px 8px;
+  padding: 10px 6px 28px;
 }
 
 .card-no-image .card-title {
@@ -1090,9 +1090,12 @@ textarea {
 }
 
 .card-no-image .card-step-buttons {
-  position: static;
-  width: calc(100% - 10px);
-  margin: 2px auto 0;
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 5px;
+  width: auto;
+  margin: 0;
 }
 
 /* 簡易リスト */
@@ -1132,9 +1135,9 @@ textarea {
 .series-compact-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: 4px 8px;
   color: #9ca3af;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.25;
 }
 
@@ -1151,7 +1154,7 @@ textarea {
 
 .series-compact-meta .series-status-badge-row {
   order: 3;
-  margin: 0;
+  margin: 1px 0 0 6px;
 }
 
 .series-compact-meta .series-period-badge {
@@ -1161,6 +1164,16 @@ textarea {
 
 .series-compact-meta > span:not(.series-compact-status):not(.series-compact-start-issue) {
   order: 2;
+}
+
+.series-compact-meta > span:not(.series-compact-status):not(.series-compact-start-issue),
+.series-compact-meta .series-compact-start-issue {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+.series-compact-meta .issue-label-long {
+  font-size: 0.84em;
 }
 
 .series-compact-meta .issue-label {
