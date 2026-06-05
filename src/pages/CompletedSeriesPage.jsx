@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom'
 import ImageView from '../components/ImageView'
 import IssueLabel from '../components/IssueLabel'
 import HartaGroupBadge from '../components/HartaGroupBadge'
+import {
+  getIssueSerial
+} from '../utils/issueUtils'
 
 const viewModeOptions = [
   {
@@ -105,6 +108,96 @@ function CompletedSeriesPage({
       ? '全雑誌'
       : magazine?.name || '雑誌'
 
+  const getSeriesPeriodSerial = (
+    item,
+    targetMagazine
+  ) => {
+    if (!targetMagazine) {
+      return 0
+    }
+
+    const startIssue =
+      Number(item.startIssue) || 0
+
+    const endIssue =
+      Number(item.completedIssue) ||
+      Number(item.issue) ||
+      0
+
+    if (!startIssue || !endIssue) {
+      return 0
+    }
+
+    const startSerial =
+      getIssueSerial(
+        Number(item.startIssueYear) ||
+          Number(item.issueYear) ||
+          new Date().getFullYear(),
+        startIssue,
+        targetMagazine
+      )
+
+    const endSerial =
+      getIssueSerial(
+        Number(item.completedIssueYear) ||
+          Number(item.issueYear) ||
+          Number(item.startIssueYear) ||
+          new Date().getFullYear(),
+        endIssue,
+        targetMagazine
+      )
+
+    return Math.max(
+      0,
+      endSerial - startSerial
+    )
+  }
+
+  const formatSeriesPeriod = (
+    item,
+    targetMagazine
+  ) => {
+    const diff =
+      getSeriesPeriodSerial(
+        item,
+        targetMagazine
+      )
+
+    if (targetMagazine?.frequency === 'harta') {
+      return `${diff}号分`
+    }
+
+    if (targetMagazine?.frequency === 'monthly') {
+      const years =
+        Math.floor(diff / 12)
+      const months =
+        diff % 12
+
+      return `${years}年${months}か月`
+    }
+
+    const years =
+      Math.floor(diff / 52)
+    const weeks =
+      diff % 52
+
+    return `${years}年${weeks}週`
+  }
+
+  const renderPeriodBadge = (
+    item,
+    targetMagazine
+  ) => {
+    return (
+      <div className="series-period-badge completed-period-badge">
+        {formatSeriesPeriod(
+          item,
+          targetMagazine
+        )}
+      </div>
+    )
+  }
+
   if (!isAllMagazines && !magazine) {
     return (
       <div className="app">
@@ -171,6 +264,18 @@ function CompletedSeriesPage({
             (b.completedIssue || 0)
 
           result = aEnd - bEnd
+        }
+
+        if (sortMode === 'duration') {
+          result =
+            getSeriesPeriodSerial(
+              a,
+              getSeriesMagazine(a)
+            ) -
+            getSeriesPeriodSerial(
+              b,
+              getSeriesMagazine(b)
+            )
         }
 
         return sortDirection === 'asc'
@@ -359,6 +464,9 @@ function CompletedSeriesPage({
           <option value="end">
             終了号順
           </option>
+          <option value="duration">
+            連載期間順
+          </option>
         </select>
 
         <button
@@ -415,6 +523,11 @@ function CompletedSeriesPage({
                     item,
                     itemMagazine
                   )}
+
+                  {renderPeriodBadge(
+                    item,
+                    itemMagazine
+                  )}
                 </div>
               </div>
             )
@@ -446,6 +559,11 @@ function CompletedSeriesPage({
                   {renderMagazineName(item)}
 
                   {renderCompactIssueInfo(
+                    item,
+                    itemMagazine
+                  )}
+
+                  {renderPeriodBadge(
                     item,
                     itemMagazine
                   )}
@@ -502,6 +620,11 @@ function CompletedSeriesPage({
                 {renderMagazineName(item)}
 
                 {renderIssueInfo(
+                  item,
+                  itemMagazine
+                )}
+
+                {renderPeriodBadge(
                   item,
                   itemMagazine
                 )}

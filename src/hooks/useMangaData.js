@@ -473,26 +473,58 @@ function useMangaData({
     series,
     magazine
   ) => {
-    const latest =
+    let latest =
       getEstimatedLatestIssueInfo(magazine)
 
-    if (magazine?.frequency !== 'harta') {
+    if (magazine?.frequency === 'harta') {
+      const afterLatest =
+        getNextIssue(
+          latest.year,
+          latest.issue,
+          magazine
+        )
+
+      latest =
+        getPrevPublishedIssue(
+          series,
+          afterLatest.year,
+          afterLatest.issue,
+          magazine
+        )
+    }
+
+    const completedIssue =
+      Number(series.completedIssue) || 0
+
+    if (!completedIssue) {
       return latest
     }
 
-    const afterLatest =
-      getNextIssue(
+    const completedLimit = {
+      year:
+        Number(series.completedIssueYear) ||
+        Number(series.issueYear) ||
+        latest.year,
+      issue: completedIssue
+    }
+
+    const latestSerial =
+      getIssueSerial(
         latest.year,
         latest.issue,
         magazine
       )
 
-    return getPrevPublishedIssue(
-      series,
-      afterLatest.year,
-      afterLatest.issue,
-      magazine
-    )
+    const completedSerial =
+      getIssueSerial(
+        completedLimit.year,
+        completedLimit.issue,
+        magazine
+      )
+
+    return completedSerial < latestSerial
+      ? completedLimit
+      : latest
   }
 
   const normalizeReadIssueForSeries = (

@@ -1629,6 +1629,24 @@ select.issue-number-select option {
   padding: 0;
 }
 
+.completed-period-badge {
+  margin: 6px auto 0;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.completed-grid-card .completed-period-badge {
+  margin-top: 4px;
+  padding: 3px 6px;
+  font-size: 10px;
+}
+
+.series-compact-card .completed-period-badge {
+  margin: 3px 0 0;
+  padding: 3px 7px;
+  font-size: 11px;
+}
+
 .completed-series-info .completed-issue-row {
   font-size: 13px;
 }
