@@ -1877,7 +1877,43 @@ select.issue-number-select option {
   font-weight: 800;
 }
 
-.weekly-merged-issue.active {
+.weekly-merged-issue.pending {
+  background: #1d4ed8;
+  color: white;
+  box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.6) inset;
+}
+
+.weekly-merged-issue.pair-0 {
   background: #2563eb;
+  color: white;
+}
+
+.weekly-merged-issue.pair-1 {
+  background: #0891b2;
+  color: white;
+}
+
+.weekly-merged-issue.pair-2 {
+  background: #059669;
+  color: white;
+}
+
+.weekly-merged-issue.pair-3 {
+  background: #7c3aed;
+  color: white;
+}
+
+.weekly-merged-issue.pair-4 {
+  background: #db2777;
+  color: white;
+}
+
+.weekly-merged-issue.pair-5 {
+  background: #ea580c;
+  color: white;
+}
+
+.weekly-merged-issue.pair-6 {
+  background: #4f46e5;
   color: white;
 }

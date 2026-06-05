@@ -10,7 +10,8 @@ import {
   getIssueSerial,
   getNextIssue,
   getNextPublishedIssue,
-  getPrevPublishedIssue
+  getPrevPublishedIssue,
+  normalizeWeeklyMergedIssuePairs
 } from '../utils/issueUtils'
 import {
   normalizeHartaGroup
@@ -1196,34 +1197,26 @@ function useMangaData({
   const updateWeeklyMergedIssues = (
     magazineId,
     year,
-    issues
+    issuePairs
   ) => {
-    const normalizedIssues =
-      Array.from(
-        new Set(
-          issues
-            .map((issue) => {
-              return Number(issue) || 0
-            })
-            .filter((issue) => {
-              return issue > 0
-            })
-        )
-      ).sort((a, b) => {
-        return a - b
-      })
-
     setMagazineList((prevList) =>
       prevList.map((magazine) => {
         if (magazine.id !== magazineId) {
           return magazine
         }
 
+        const normalizedPairs =
+          normalizeWeeklyMergedIssuePairs(
+            issuePairs,
+            magazine,
+            year
+          )
+
         return {
           ...magazine,
           weeklyMergedIssues: {
             ...(magazine.weeklyMergedIssues || {}),
-            [year]: normalizedIssues
+            [year]: normalizedPairs
           }
         }
       })

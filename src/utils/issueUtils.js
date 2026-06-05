@@ -237,27 +237,198 @@ export const getWeeklyFinalIssue = (
     : 52
 }
 
-export const getWeeklyMergedIssues = (
+export const DEFAULT_WEEKLY_MERGED_ISSUES = [
+  [3, 4],
+  [6, 7],
+  [22, 23],
+  [36, 37]
+]
+
+const toIssuePair = (value) => {
+  if (!Array.isArray(value)) {
+    return null
+  }
+
+  const first =
+    Number(value[0]) || 0
+  const second =
+    Number(value[1]) || 0
+
+  if (
+    first <= 0 ||
+    second <= 0 ||
+    Math.abs(first - second) !== 1
+  ) {
+    return null
+  }
+
+  return [
+    Math.min(first, second),
+    Math.max(first, second)
+  ]
+}
+
+export const normalizeWeeklyMergedIssuePairs = (
+  issues,
   magazine,
   year
 ) => {
-  const issues =
-    magazine?.weeklyMergedIssues?.[year]
+  const finalIssue =
+    getWeeklyFinalIssue(
+      magazine,
+      year
+    )
 
   if (!Array.isArray(issues)) {
     return []
   }
 
-  return issues
-    .map((issue) => {
-      return Number(issue) || 0
-    })
-    .filter((issue) => {
-      return issue > 0
+  const pairs =
+    issues.every(Array.isArray)
+      ? issues
+          .map(toIssuePair)
+          .filter(Boolean)
+      : []
+
+  if (!issues.every(Array.isArray)) {
+    const numbers =
+      Array.from(
+        new Set(
+          issues
+            .map((issue) => {
+              return Number(issue) || 0
+            })
+            .filter((issue) => {
+              return issue > 0
+            })
+        )
+      ).sort((a, b) => {
+        return a - b
+      })
+
+    for (let i = 0; i < numbers.length - 1; i += 1) {
+      if (numbers[i + 1] === numbers[i] + 1) {
+        pairs.push([
+          numbers[i],
+          numbers[i + 1]
+        ])
+        i += 1
+      }
+    }
+  }
+
+  const usedIssues =
+    new Set()
+
+  return pairs
+    .filter(([first, second]) => {
+      if (
+        first < 1 ||
+        second > finalIssue ||
+        usedIssues.has(first) ||
+        usedIssues.has(second)
+      ) {
+        return false
+      }
+
+      usedIssues.add(first)
+      usedIssues.add(second)
+      return true
     })
     .sort((a, b) => {
-      return a - b
+      return a[0] - b[0]
     })
+}
+
+export const getWeeklyMergedIssuePairs = (
+  magazine,
+  year
+) => {
+  const hasManualIssues =
+    Object.prototype.hasOwnProperty.call(
+      magazine?.weeklyMergedIssues || {},
+      year
+    )
+
+  const issues =
+    magazine?.weeklyMergedIssues?.[year]
+
+  return normalizeWeeklyMergedIssuePairs(
+    hasManualIssues
+      ? issues
+      : DEFAULT_WEEKLY_MERGED_ISSUES,
+    magazine,
+    year
+  )
+}
+
+export const getWeeklyMergedIssues = (
+  magazine,
+  year
+) => {
+  return getWeeklyMergedIssuePairs(
+    magazine,
+    year
+  )
+}
+
+export const getWeeklyMergedPairForIssue = (
+  magazine,
+  year,
+  issue
+) => {
+  const numericIssue =
+    Number(issue) || 0
+
+  return (
+    getWeeklyMergedIssuePairs(
+      magazine,
+      year
+    ).find(([first, second]) => {
+      return (
+        first === numericIssue ||
+        second === numericIssue
+      )
+    }) || null
+  )
+}
+
+const getWeeklyIssueSerialCount = (
+  magazine,
+  year
+) => {
+  return (
+    getWeeklyFinalIssue(
+      magazine,
+      year
+    ) -
+    getWeeklyMergedIssuePairs(
+      magazine,
+      year
+    ).length
+  )
+}
+
+const getWeeklyIssueSerialInYear = (
+  magazine,
+  year,
+  issue
+) => {
+  const numericIssue =
+    Number(issue) || 0
+
+  const mergedSecondHalfCount =
+    getWeeklyMergedIssuePairs(
+      magazine,
+      year
+    ).filter(([, second]) => {
+      return second <= numericIssue
+    }).length
+
+  return (
+    numericIssue -
+    mergedSecondHalfCount
+  )
 }
 
 export const HARTA_RELEASE_MONTHS = [
@@ -595,9 +766,26 @@ export const getIssueSerial = (
   let total = 0
 
   for (let y = 1980; y < year; y++) {
-    total += getIssuesPerYear(
-      magazine,
-      y
+    total +=
+      magazine?.frequency === 'weekly'
+        ? getWeeklyIssueSerialCount(
+            magazine,
+            y
+          )
+        : getIssuesPerYear(
+            magazine,
+            y
+          )
+  }
+
+  if (magazine?.frequency === 'weekly') {
+    return (
+      total +
+      getWeeklyIssueSerialInYear(
+        magazine,
+        year,
+        issue
+      )
     )
   }
 
@@ -792,6 +980,48 @@ export const getEstimatedLatestIssueInfo = (
     }
   }
 
+  if (
+    magazine?.frequency === 'weekly' &&
+    magazine.baseDate
+  ) {
+    const baseDate =
+      parseLocalDate(magazine.baseDate)
+
+    const today =
+      startOfDay(targetDate)
+
+    if (baseDate && today >= baseDate) {
+      const releaseCount =
+        getWeeklyReleaseCountAfterDate(
+          baseDate,
+          magazine.releaseDay,
+          today
+        )
+
+      let latest = {
+        year:
+          magazine.baseIssueYear ||
+          new Date().getFullYear(),
+        issue: magazine.baseIssue || 1
+      }
+
+      for (
+        let count = 0;
+        count < releaseCount;
+        count += 1
+      ) {
+        latest =
+          getNextIssue(
+            latest.year,
+            latest.issue,
+            magazine
+          )
+      }
+
+      return latest
+    }
+  }
+
   const estimatedIssue =
     getEstimatedLatestIssue(
       magazine,
@@ -860,6 +1090,32 @@ export const getNextIssue = (
       year
     )
 
+  if (magazine?.frequency === 'weekly') {
+    const mergedPair =
+      getWeeklyMergedPairForIssue(
+        magazine,
+        year,
+        issue
+      )
+
+    if (mergedPair) {
+      const nextIssue =
+        mergedPair[1] + 1
+
+      if (nextIssue > maxIssue) {
+        return {
+          year: year + 1,
+          issue: 1
+        }
+      }
+
+      return {
+        year,
+        issue: nextIssue
+      }
+    }
+  }
+
   if (issue >= maxIssue) {
     return {
       year: year + 1,
@@ -898,12 +1154,50 @@ export const getPrevIssue = (
     const prevYear =
       year - 1
 
-    return {
-      year: prevYear,
-      issue: getMaxIssueNumber(
+    const prevIssue =
+      getMaxIssueNumber(
         magazine,
         prevYear
       )
+
+    if (magazine?.frequency === 'weekly') {
+      const prevMergedPair =
+        getWeeklyMergedPairForIssue(
+          magazine,
+          prevYear,
+          prevIssue
+        )
+
+      if (prevMergedPair) {
+        return {
+          year: prevYear,
+          issue: prevMergedPair[0]
+        }
+      }
+    }
+
+    return {
+      year: prevYear,
+      issue: prevIssue
+    }
+  }
+
+  if (magazine?.frequency === 'weekly') {
+    const prevIssue =
+      issue - 1
+
+    const prevMergedPair =
+      getWeeklyMergedPairForIssue(
+        magazine,
+        year,
+        prevIssue
+      )
+
+    if (prevMergedPair) {
+      return {
+        year,
+        issue: prevMergedPair[0]
+      }
     }
   }
 

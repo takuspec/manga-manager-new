@@ -1,14 +1,17 @@
+import {
+  useEffect,
+  useState
+} from 'react'
 import { useParams } from 'react-router-dom'
 import {
   getWeeklyFinalIssue,
-  getWeeklyMergedIssues
+  getWeeklyMergedIssuePairs
 } from '../utils/issueUtils'
 
 function WeeklyMergedIssuesPage({
   magazineList,
   updateWeeklyIssueRule,
   updateWeeklyMergedIssues,
-  toggleWeeklyMergedIssue,
   navigate
 }) {
   const params = useParams()
@@ -16,6 +19,18 @@ function WeeklyMergedIssuesPage({
     Number(params.magazineId)
   const year =
     Number(params.year)
+
+  const [
+    pendingIssue,
+    setPendingIssue
+  ] = useState(null)
+
+  useEffect(() => {
+    setPendingIssue(null)
+  }, [
+    magazineId,
+    year
+  ])
 
   const magazine =
     magazineList.find((item) => {
@@ -54,14 +69,11 @@ function WeeklyMergedIssuesPage({
       year
     )
 
-  const mergedIssues =
-    getWeeklyMergedIssues(
+  const mergedIssuePairs =
+    getWeeklyMergedIssuePairs(
       magazine,
       year
     )
-
-  const mergedIssueSet =
-    new Set(mergedIssues)
 
   const issueNumbers =
     Array.from(
@@ -69,12 +81,74 @@ function WeeklyMergedIssuesPage({
       (_, index) => index + 1
     )
 
+  const getPairIndex = (issue) => {
+    return mergedIssuePairs.findIndex(
+      ([first, second]) => {
+        return (
+          first === issue ||
+          second === issue
+        )
+      }
+    )
+  }
+
   const clearMergedIssues = () => {
+    setPendingIssue(null)
     updateWeeklyMergedIssues(
       magazineId,
       year,
       []
     )
+  }
+
+  const handleIssueClick = (issue) => {
+    const pairIndex =
+      getPairIndex(issue)
+
+    if (pairIndex >= 0) {
+      setPendingIssue(null)
+      updateWeeklyMergedIssues(
+        magazineId,
+        year,
+        mergedIssuePairs.filter(
+          (_, index) => {
+            return index !== pairIndex
+          }
+        )
+      )
+      return
+    }
+
+    if (!pendingIssue) {
+      setPendingIssue(issue)
+      return
+    }
+
+    if (pendingIssue === issue) {
+      setPendingIssue(null)
+      return
+    }
+
+    if (
+      Math.abs(
+        pendingIssue - issue
+      ) !== 1
+    ) {
+      return
+    }
+
+    updateWeeklyMergedIssues(
+      magazineId,
+      year,
+      [
+        ...mergedIssuePairs,
+        [
+          Math.min(pendingIssue, issue),
+          Math.max(pendingIssue, issue)
+        ]
+      ]
+    )
+    setPendingIssue(null)
   }
 
   return (
@@ -146,28 +220,32 @@ function WeeklyMergedIssuesPage({
           className="weekly-merged-clear"
           onClick={clearMergedIssues}
         >
-          合併号を全解除
+          合併号をすべて解除
         </button>
       </div>
 
       <div className="weekly-merged-grid">
         {issueNumbers.map((issue) => {
-          const isSelected =
-            mergedIssueSet.has(issue)
+          const pairIndex =
+            getPairIndex(issue)
+
+          const isPending =
+            pendingIssue === issue
+
+          const issueClassName =
+            pairIndex >= 0
+              ? `pair-${pairIndex % 7}`
+              : isPending
+                ? 'pending'
+                : ''
 
           return (
             <button
               key={issue}
               type="button"
-              className={`weekly-merged-issue ${
-                isSelected ? 'active' : ''
-              }`}
+              className={`weekly-merged-issue ${issueClassName}`}
               onClick={() =>
-                toggleWeeklyMergedIssue(
-                  magazineId,
-                  year,
-                  issue
-                )
+                handleIssueClick(issue)
               }
             >
               {issue}号
