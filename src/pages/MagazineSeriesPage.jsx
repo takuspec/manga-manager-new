@@ -1316,6 +1316,13 @@ function MagazineSeriesPage({
                     ? 'selected'
                     : ''
                 } ${
+                  selectedSeriesIds.includes(
+                    item.id
+                  ) &&
+                  selectedSeriesIds.length === 1
+                    ? 'single-selected'
+                    : ''
+                } ${
                   menuSeriesId === item.id &&
                   shouldShowGridActionPanel
                     ? 'expanded'

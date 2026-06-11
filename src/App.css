@@ -861,7 +861,7 @@ textarea {
   flex-direction: column;
 }
 
-.series-scroll-area .card.selected,
+.series-scroll-area .card.single-selected,
 .series-scroll-area .card.expanded {
   padding-bottom: 26px;
 }
@@ -934,7 +934,7 @@ textarea {
   padding: 10px 6px 8px;
 }
 
-.card-no-image.selected,
+.card-no-image.single-selected,
 .card-no-image.expanded {
   padding-bottom: 28px;
 }
@@ -1085,7 +1085,7 @@ textarea {
   gap: 4px;
 }
 
-.card.selected .card-step-buttons,
+.card.single-selected .card-step-buttons,
 .card.expanded .card-step-buttons {
   display: grid;
 }
