@@ -859,6 +859,10 @@ textarea {
 .series-scroll-area .card {
   display: flex;
   flex-direction: column;
+}
+
+.series-scroll-area .card.selected,
+.series-scroll-area .card.expanded {
   padding-bottom: 26px;
 }
 
@@ -927,7 +931,12 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 10px 6px 28px;
+  padding: 10px 6px 8px;
+}
+
+.card-no-image.selected,
+.card-no-image.expanded {
+  padding-bottom: 28px;
 }
 
 .card-no-image .card-title {
@@ -1071,9 +1080,14 @@ textarea {
   left: 6px;
   right: 6px;
   bottom: 5px;
-  display: grid;
+  display: none;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
+}
+
+.card.selected .card-step-buttons,
+.card.expanded .card-step-buttons {
+  display: grid;
 }
 
 .card-step-buttons button {

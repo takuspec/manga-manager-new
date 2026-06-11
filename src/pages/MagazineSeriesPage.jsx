@@ -656,6 +656,9 @@ function MagazineSeriesPage({
       ? displaySeries[expandedGridIndex]
       : null
 
+  const shouldShowGridActionPanel =
+    selectedSeriesIds.length <= 1
+
   const expandedGridRowEndIndex =
     expandedGridIndex >= 0
       ? Math.min(
@@ -1313,7 +1316,8 @@ function MagazineSeriesPage({
                     ? 'selected'
                     : ''
                 } ${
-                  menuSeriesId === item.id
+                  menuSeriesId === item.id &&
+                  shouldShowGridActionPanel
                     ? 'expanded'
                     : ''
                 } ${
@@ -1328,6 +1332,11 @@ function MagazineSeriesPage({
                   if (
                     item.status === 'completed'
                   ) {
+                    if (selectedSeriesIds.length > 1) {
+                      setMenuSeriesId(null)
+                      return
+                    }
+
                     setMenuSeriesId(
                       menuSeriesId === item.id
                         ? null
@@ -1341,6 +1350,14 @@ function MagazineSeriesPage({
                       item.id
                     )
 
+                  const nextSelectedCount =
+                    isSelected
+                      ? Math.max(
+                          0,
+                          selectedSeriesIds.length - 1
+                        )
+                      : selectedSeriesIds.length + 1
+
                   toggleSeriesSelection(
                     item.id
                   )
@@ -1353,7 +1370,11 @@ function MagazineSeriesPage({
                     return
                   }
 
-                  setMenuSeriesId(item.id)
+                  setMenuSeriesId(
+                    nextSelectedCount === 1
+                      ? item.id
+                      : null
+                  )
                 }}
               >
 
@@ -1418,6 +1439,7 @@ function MagazineSeriesPage({
               </div>
 
               {expandedGridItem &&
+                shouldShowGridActionPanel &&
                 expandedGridRowEndIndex ===
                   index && (
                   <SeriesActionPanel
