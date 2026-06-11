@@ -4,7 +4,7 @@ import ImageView from '../components/ImageView'
 import IssueLabel from '../components/IssueLabel'
 import HartaGroupBadge from '../components/HartaGroupBadge'
 import {
-  getIssueSerial
+  getIssueSpanCount
 } from '../utils/issueUtils'
 
 const viewModeOptions = [
@@ -22,17 +22,6 @@ const viewModeLabelMap = {
   list: 'リスト',
   grid: 'グリッド'
 }
-
-const imageModeOptions = [
-  {
-    value: true,
-    label: '画像あり'
-  },
-  {
-    value: false,
-    label: '画像なし'
-  }
-]
 
 function CompletedSeriesPage({
   magazineList,
@@ -66,17 +55,9 @@ function CompletedSeriesPage({
   const [viewMode, setViewMode] =
     useState('grid')
 
-  const [showImages, setShowImages] =
-    useState(true)
-
   const [
     isViewModeMenuOpen,
     setIsViewModeMenuOpen
-  ] = useState(false)
-
-  const [
-    isImageModeMenuOpen,
-    setIsImageModeMenuOpen
   ] = useState(false)
 
   const [
@@ -128,28 +109,17 @@ function CompletedSeriesPage({
       return 0
     }
 
-    const startSerial =
-      getIssueSerial(
+    return getIssueSpanCount(
+      targetMagazine,
+      Number(item.startIssueYear) ||
+        Number(item.issueYear) ||
+        new Date().getFullYear(),
+      startIssue,
+      Number(item.completedIssueYear) ||
+        Number(item.issueYear) ||
         Number(item.startIssueYear) ||
-          Number(item.issueYear) ||
-          new Date().getFullYear(),
-        startIssue,
-        targetMagazine
-      )
-
-    const endSerial =
-      getIssueSerial(
-        Number(item.completedIssueYear) ||
-          Number(item.issueYear) ||
-          Number(item.startIssueYear) ||
-          new Date().getFullYear(),
-        endIssue,
-        targetMagazine
-      )
-
-    return Math.max(
-      0,
-      endSerial - startSerial
+        new Date().getFullYear(),
+      endIssue
     )
   }
 
@@ -285,7 +255,6 @@ function CompletedSeriesPage({
 
   const closeMenus = () => {
     setIsViewModeMenuOpen(false)
-    setIsImageModeMenuOpen(false)
     setIsMagazineMenuOpen(false)
   }
 
@@ -351,56 +320,6 @@ function CompletedSeriesPage({
             {renderEndIssueLabel()}
           </span>
         </div>
-      </div>
-    )
-  }
-
-  const renderCompactIssueInfo = (
-    item,
-    targetMagazine
-  ) => {
-    const renderEndIssueLabel = () => {
-      if (!Number(item.completedIssue)) {
-        return (
-          <span className="issue-label issue-label-unread">
-            ----
-          </span>
-        )
-      }
-
-      return (
-        <IssueLabel
-          magazine={targetMagazine}
-          year={item.completedIssueYear}
-          issue={item.completedIssue}
-        />
-      )
-    }
-
-    return (
-      <div className="completed-compact-issue">
-        <span className="completed-compact-label">
-          開始:
-        </span>
-
-        <IssueLabel
-          magazine={targetMagazine}
-          year={item.startIssueYear}
-          issue={item.startIssue}
-        />
-
-        <span
-          className="completed-compact-spacer"
-          aria-hidden="true"
-        >
-          {' '}
-        </span>
-
-        <span className="completed-compact-label">
-          終了:
-        </span>
-
-        {renderEndIssueLabel()}
       </div>
     )
   }
@@ -487,7 +406,7 @@ function CompletedSeriesPage({
 
       </div>
 
-      {viewMode === 'list' && showImages ? (
+      {viewMode === 'list' ? (
         <div className="completed-series-list">
           {completedSeries.map((item) => {
             const itemMagazine =
@@ -533,53 +452,8 @@ function CompletedSeriesPage({
             )
           })}
         </div>
-      ) : viewMode === 'list' ? (
-        <div className="series-compact-list">
-          {completedSeries.map((item) => {
-            const itemMagazine =
-              getSeriesMagazine(item)
-
-            return (
-              <div
-                className="series-compact-card"
-                key={item.id}
-              >
-                <div className="series-compact-main">
-                  <div className="completed-title-row">
-                    <div className="series-compact-title">
-                      {item.title}
-                    </div>
-
-                    {renderHartaGroupBadge(
-                      item,
-                      itemMagazine
-                    )}
-                  </div>
-
-                  {renderMagazineName(item)}
-
-                  {renderCompactIssueInfo(
-                    item,
-                    itemMagazine
-                  )}
-
-                  {renderPeriodBadge(
-                    item,
-                    itemMagazine
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
       ) : (
-        <div
-          className={`grid ${
-            showImages
-              ? ''
-              : 'grid-no-images'
-          }`}
-        >
+        <div className="grid">
 
           {completedSeries.map((item) => {
             const itemMagazine =
@@ -587,24 +461,18 @@ function CompletedSeriesPage({
 
             return (
               <div
-                className={`card completed-grid-card ${
-                  showImages
-                    ? ''
-                    : 'card-no-image'
-                }`}
+                className="card completed-grid-card"
                 key={item.id}
               >
 
-                {showImages && (
-                  <div className="cover">
+                <div className="cover">
 
-                    <ImageView
-                      imageId={item.imageId}
-                      fallbackImage={item.image}
-                    />
+                  <ImageView
+                    imageId={item.imageId}
+                    fallbackImage={item.image}
+                  />
 
-                  </div>
-                )}
+                </div>
 
                 <div className="completed-title-row completed-grid-title-row">
                   <div className="card-title">
@@ -636,7 +504,6 @@ function CompletedSeriesPage({
       )}
 
       {(isViewModeMenuOpen ||
-        isImageModeMenuOpen ||
         isMagazineMenuOpen) && (
         <div
           className="view-mode-menu-backdrop"
@@ -693,7 +560,6 @@ function CompletedSeriesPage({
             type="button"
             className="view-mode-button"
             onClick={() => {
-              setIsImageModeMenuOpen(false)
               setIsMagazineMenuOpen(false)
               setIsViewModeMenuOpen(
                 (isOpen) => !isOpen
@@ -704,70 +570,6 @@ function CompletedSeriesPage({
               'グリッド'}
             {' '}
             {isViewModeMenuOpen
-              ? '▲'
-              : '▼'}
-          </button>
-        </div>
-
-        <div
-          className="view-mode-selector image-mode-selector"
-          onClick={(e) =>
-            e.stopPropagation()
-          }
-        >
-          {isImageModeMenuOpen && (
-            <div
-              className="view-mode-menu"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
-            >
-              {imageModeOptions.map((option) => {
-                const isSelected =
-                  showImages === option.value
-
-                return (
-                  <button
-                    key={option.label}
-                    type="button"
-                    className={`view-mode-menu-item ${
-                      isSelected ? 'active' : ''
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setShowImages(option.value)
-                      setIsImageModeMenuOpen(false)
-                    }}
-                  >
-                    <span className="view-mode-check">
-                      {isSelected ? '✓' : ''}
-                    </span>
-
-                    <span>
-                      {option.label}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="view-mode-button"
-            onClick={() => {
-              setIsViewModeMenuOpen(false)
-              setIsMagazineMenuOpen(false)
-              setIsImageModeMenuOpen(
-                (isOpen) => !isOpen
-              )
-            }}
-          >
-            {showImages
-              ? '画像あり'
-              : '画像なし'}
-            {' '}
-            {isImageModeMenuOpen
               ? '▲'
               : '▼'}
           </button>
@@ -824,7 +626,6 @@ function CompletedSeriesPage({
             className="view-mode-button"
             onClick={() => {
               setIsViewModeMenuOpen(false)
-              setIsImageModeMenuOpen(false)
               setIsMagazineMenuOpen(
                 (isOpen) => !isOpen
               )

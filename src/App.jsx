@@ -31,9 +31,6 @@ function App() {
   const [viewMode, setViewMode] =
     useState('list')
 
-  const [showImages, setShowImages] =
-    useState(true)
-
   const [sortMode, setSortMode] =
     useState('unread')
 
@@ -42,6 +39,11 @@ function App() {
 
   const [showCompleted, setShowCompleted] =
     useState(true)
+
+  const [
+    showUnreadZeroOngoing,
+    setShowUnreadZeroOngoing
+  ] = useState(true)
 
   const [menuSeriesId, setMenuSeriesId] =
     useState(null)
@@ -268,14 +270,18 @@ function App() {
             seriesList={seriesList}
             viewMode={viewMode}
             setViewMode={setViewMode}
-            showImages={showImages}
-            setShowImages={setShowImages}
             sortMode={sortMode}
             setSortMode={setSortMode}
             sortDirection={sortDirection}
             setSortDirection={setSortDirection}
             showCompleted={showCompleted}
             setShowCompleted={setShowCompleted}
+            showUnreadZeroOngoing={
+              showUnreadZeroOngoing
+            }
+            setShowUnreadZeroOngoing={
+              setShowUnreadZeroOngoing
+            }
             menuSeriesId={menuSeriesId}
             setMenuSeriesId={setMenuSeriesId}
             selectedSeriesIds={selectedSeriesIds}

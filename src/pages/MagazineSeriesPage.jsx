@@ -15,6 +15,7 @@ import {
   getIssueOptions,
   getYearOptions,
   getEstimatedLatestIssueInfo,
+  getIssueSpanCount,
   getIssueSerial
 } from '../utils/issueUtils'
 import {
@@ -38,16 +39,10 @@ const viewModeLabelMap = {
   grid: 'グリッド'
 }
 
-const imageModeOptions = [
-  {
-    value: true,
-    label: '画像あり'
-  },
-  {
-    value: false,
-    label: '画像なし'
-  }
-]
+const unreadZeroLabelMap = {
+  true: '未読0を表示',
+  false: '未読0を非表示'
+}
 
 const SERIES_RETURN_STATE_KEY =
   'manga-manager-series-return-state'
@@ -57,14 +52,14 @@ function MagazineSeriesPage({
   seriesList,
   viewMode,
   setViewMode,
-  showImages,
-  setShowImages,
   sortMode,
   setSortMode,
   sortDirection,
   setSortDirection,
   showCompleted,
   setShowCompleted,
+  showUnreadZeroOngoing,
+  setShowUnreadZeroOngoing,
   menuSeriesId,
   setMenuSeriesId,
   selectedSeriesIds,
@@ -141,11 +136,6 @@ function MagazineSeriesPage({
   ] = useState(false)
 
   const [
-    isImageModeMenuOpen,
-    setIsImageModeMenuOpen
-  ] = useState(false)
-
-  const [
     displaySeriesIds,
     setDisplaySeriesIds
   ] = useState([])
@@ -161,9 +151,7 @@ function MagazineSeriesPage({
       : viewMode
 
   const currentShowImages =
-    viewMode === 'compact'
-      ? false
-      : showImages
+    true
 
   const getSafeIssueSerial = (
     year,
@@ -241,37 +229,31 @@ function MagazineSeriesPage({
   }
 
   const getSeriesPeriodSerial = (item) => {
-    const startSerial =
-      getSafeIssueSerial(
-        item.startIssueYear,
-        item.startIssue
-      )
-
     const completedIssue =
       Number(item.completedIssue) || 0
 
-    let endSerial
+    let endIssueInfo
 
     if (completedIssue) {
-      endSerial = getSafeIssueSerial(
-        item.completedIssueYear,
-        completedIssue
-      )
+      endIssueInfo = {
+        year: item.completedIssueYear,
+        issue: completedIssue
+      }
     } else if (item.status === 'completed') {
-      endSerial = getSafeIssueSerial(
-        item.issueYear,
-        item.issue
-      )
+      endIssueInfo = {
+        year: item.issueYear,
+        issue: item.issue
+      }
     } else {
-      endSerial = getSafeIssueSerial(
-        estimatedLatestIssue.year,
-        estimatedLatestIssue.issue
-      )
+      endIssueInfo = estimatedLatestIssue
     }
 
-    return Math.max(
-      0,
-      endSerial - startSerial
+    return getIssueSpanCount(
+      selectedMagazine,
+      item.startIssueYear,
+      item.startIssue,
+      endIssueInfo.year,
+      endIssueInfo.issue
     )
   }
 
@@ -366,6 +348,14 @@ function MagazineSeriesPage({
         }
 
         if (!shouldShowByHartaGroup(item)) {
+          return false
+        }
+
+        if (
+          !showUnreadZeroOngoing &&
+          item.status === 'ongoing' &&
+          getUnreadCount(item) === 0
+        ) {
           return false
         }
 
@@ -484,8 +474,8 @@ function MagazineSeriesPage({
         sortMode,
         sortDirection,
         showCompleted,
-        viewMode: currentViewMode,
-        showImages: currentShowImages
+        showUnreadZeroOngoing,
+        viewMode: currentViewMode
       })
     )
 
@@ -500,11 +490,9 @@ function MagazineSeriesPage({
     }
 
     setViewMode('list')
-    setShowImages(false)
   }, [
     viewMode,
-    setViewMode,
-    setShowImages
+    setViewMode
   ])
 
   useEffect(() => {
@@ -517,6 +505,8 @@ function MagazineSeriesPage({
       returnState.sortMode === sortMode &&
       returnState.sortDirection === sortDirection &&
       returnState.showCompleted === showCompleted &&
+      returnState.showUnreadZeroOngoing ===
+        showUnreadZeroOngoing &&
       Array.isArray(
         returnState.displaySeriesIds
       )
@@ -541,6 +531,7 @@ function MagazineSeriesPage({
     sortMode,
     sortDirection,
     showCompleted,
+    showUnreadZeroOngoing,
     selectedHartaGroups
   ])
 
@@ -574,6 +565,14 @@ function MagazineSeriesPage({
         }
 
         if (!shouldShowByHartaGroup(item)) {
+          return false
+        }
+
+        if (
+          !showUnreadZeroOngoing &&
+          item.status === 'ongoing' &&
+          getUnreadCount(item) === 0
+        ) {
           return false
         }
 
@@ -1468,12 +1467,11 @@ function MagazineSeriesPage({
 
       )}
 
-      {(isViewModeMenuOpen || isImageModeMenuOpen) && (
+      {isViewModeMenuOpen && (
         <div
           className="view-mode-menu-backdrop"
           onClick={() => {
             setIsViewModeMenuOpen(false)
-            setIsImageModeMenuOpen(false)
           }}
         />
       )}
@@ -1529,7 +1527,6 @@ function MagazineSeriesPage({
             type="button"
             className="view-mode-button"
             onClick={() => {
-              setIsImageModeMenuOpen(false)
               setIsViewModeMenuOpen(
                 (isOpen) => !isOpen
               )
@@ -1544,68 +1541,20 @@ function MagazineSeriesPage({
           </button>
         </div>
 
-        <div
-          className="view-mode-selector image-mode-selector"
-          onClick={(e) =>
-            e.stopPropagation()
+        <button
+          type="button"
+          onClick={() =>
+            setShowUnreadZeroOngoing(
+              !showUnreadZeroOngoing
+            )
           }
         >
-          {isImageModeMenuOpen && (
-            <div
-              className="view-mode-menu"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
-            >
-              {imageModeOptions.map((option) => {
-                const isSelected =
-                  currentShowImages === option.value
-
-                return (
-                  <button
-                    key={option.label}
-                    type="button"
-                    className={`view-mode-menu-item ${
-                      isSelected ? 'active' : ''
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setShowImages(option.value)
-                      setIsImageModeMenuOpen(false)
-                    }}
-                  >
-                    <span className="view-mode-check">
-                      {isSelected ? '✓' : ''}
-                    </span>
-
-                    <span>
-                      {option.label}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="view-mode-button"
-            onClick={() => {
-              setIsViewModeMenuOpen(false)
-              setIsImageModeMenuOpen(
-                (isOpen) => !isOpen
-              )
-            }}
-          >
-            {currentShowImages
-              ? '画像あり'
-              : '画像なし'}
-            {' '}
-            {isImageModeMenuOpen
-              ? '▲'
-              : '▼'}
-          </button>
-        </div>
+          {
+            unreadZeroLabelMap[
+              String(showUnreadZeroOngoing)
+            ]
+          }
+        </button>
 
         <button
           onClick={() =>

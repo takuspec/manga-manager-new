@@ -792,6 +792,124 @@ export const getIssueSerial = (
   return total + issue
 }
 
+const getIssueNumberSerial = (
+  year,
+  issue,
+  magazine
+) => {
+  if (isHartaMagazine(magazine)) {
+    return Number(issue) || 0
+  }
+
+  let total = 0
+
+  for (let y = 1980; y < year; y++) {
+    total +=
+      magazine?.frequency === 'weekly'
+        ? getWeeklyFinalIssue(
+            magazine,
+            y
+          )
+        : getIssuesPerYear(
+            magazine,
+            y
+          )
+  }
+
+  return total + (Number(issue) || 0)
+}
+
+export const getIssueSpanCount = (
+  magazine,
+  startYear,
+  startIssue,
+  endYear,
+  endIssue
+) => {
+  const normalizedStartIssue =
+    Number(startIssue) || 0
+
+  const normalizedEndIssue =
+    Number(endIssue) || 0
+
+  if (
+    !magazine ||
+    !normalizedStartIssue ||
+    !normalizedEndIssue
+  ) {
+    return 0
+  }
+
+  const normalizedStartYear =
+    Number(startYear) ||
+    new Date().getFullYear()
+
+  const normalizedEndYear =
+    Number(endYear) ||
+    normalizedStartYear
+
+  const startMergedPair =
+    magazine.frequency === 'weekly'
+      ? getWeeklyMergedPairForIssue(
+          magazine,
+          normalizedStartYear,
+          normalizedStartIssue
+        )
+      : null
+
+  const effectiveStartIssue =
+    startMergedPair
+      ? startMergedPair[0]
+      : normalizedStartIssue
+
+  const startSerial =
+    getIssueNumberSerial(
+      normalizedStartYear,
+      effectiveStartIssue,
+      magazine
+    )
+
+  const endSerial =
+    getIssueNumberSerial(
+      normalizedEndYear,
+      normalizedEndIssue,
+      magazine
+    )
+
+  if (endSerial < startSerial) {
+    return 0
+  }
+
+  let span =
+    endSerial - startSerial + 1
+
+  if (magazine.frequency === 'weekly') {
+    const endMergedPair =
+      getWeeklyMergedPairForIssue(
+        magazine,
+        normalizedEndYear,
+        normalizedEndIssue
+      )
+
+    const isSameMergedPair =
+      startMergedPair &&
+      endMergedPair &&
+      normalizedStartYear === normalizedEndYear &&
+      startMergedPair[0] === endMergedPair[0] &&
+      startMergedPair[1] === endMergedPair[1]
+
+    if (
+      endMergedPair &&
+      normalizedEndIssue === endMergedPair[1] &&
+      !isSameMergedPair
+    ) {
+      span -= 1
+    }
+  }
+
+  return Math.max(1, span)
+}
+
 export const formatIssue = (
   year,
   issue,
