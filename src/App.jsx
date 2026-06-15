@@ -96,6 +96,11 @@ function App() {
     setNewSeriesHartaGroup
   ] = useState('ha')
 
+  const [
+    newSeriesPublicationPace,
+    setNewSeriesPublicationPace
+  ] = useState('weekly')
+
   const [newSeriesImage, setNewSeriesImage] =
     useState('')
 
@@ -116,6 +121,7 @@ function App() {
     deleteSeries,
     updateStartIssueDirect,
     updateHartaGroupDirect,
+    updatePublicationPaceDirect,
     saveEdit,
     updateIssueDirect,
     updateIssueYearDirect,
@@ -127,6 +133,7 @@ function App() {
     bulkAddIssueByHartaGroups,
     bulkMinusIssueByHartaGroups,
     toggleStatus,
+    updateStatus,
     toggleSeriesSelection,
     bulkChangeSelectedIssue,
     saveCroppedImage,
@@ -166,7 +173,8 @@ function App() {
 
     if (
       !magazine ||
-      item.status === 'completed'
+      item.status === 'completed' ||
+      item.status === 'paused'
     ) {
       return 0
     }
@@ -313,6 +321,7 @@ function App() {
               toggleSeriesSelection
             }
             toggleStatus={toggleStatus}
+            updateStatus={updateStatus}
             deleteSeries={deleteSeries}
             navigate={navigate}
             useParams={useParams}
@@ -443,6 +452,12 @@ function App() {
             setNewSeriesImage={setNewSeriesImage}
             newSeriesHartaGroup={newSeriesHartaGroup}
             setNewSeriesHartaGroup={setNewSeriesHartaGroup}
+            newSeriesPublicationPace={
+              newSeriesPublicationPace
+            }
+            setNewSeriesPublicationPace={
+              setNewSeriesPublicationPace
+            }
             saveNewSeries={(magazineId) =>
               saveNewSeries({
                 magazineId,
@@ -455,6 +470,7 @@ function App() {
                 newSeriesCompletedIssue,
                 newSeriesImage,
                 newSeriesHartaGroup,
+                newSeriesPublicationPace,
                 setNewSeriesTitle,
                 setNewSeriesStartIssueYear,
                 setNewSeriesStartIssue,
@@ -463,6 +479,7 @@ function App() {
                 setNewSeriesCompletedIssueYear,
                 setNewSeriesCompletedIssue,
                 setNewSeriesHartaGroup,
+                setNewSeriesPublicationPace,
                 setNewSeriesImage
               })
             }
@@ -487,6 +504,9 @@ function App() {
             }
             updateStartIssueDirect={updateStartIssueDirect}
             updateHartaGroupDirect={updateHartaGroupDirect}
+            updatePublicationPaceDirect={
+              updatePublicationPaceDirect
+            }
             handleImageUpload={handleImageUpload}
             saveCroppedImage={saveCroppedImage}
             navigate={navigate}

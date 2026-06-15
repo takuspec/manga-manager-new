@@ -13,6 +13,7 @@ function SeriesEditPage({
   updateCompletedIssueDirect,
   updateStartIssueDirect,
   updateHartaGroupDirect,
+  updatePublicationPaceDirect,
   handleImageUpload,
   saveCroppedImage,
   navigate
@@ -86,6 +87,9 @@ function SeriesEditPage({
       }
       updateHartaGroupDirect={
         updateHartaGroupDirect
+      }
+      updatePublicationPaceDirect={
+        updatePublicationPaceDirect
       }
       handleImageUpload={
         handleImageUpload

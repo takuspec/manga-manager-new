@@ -654,6 +654,121 @@ export const isHartaSeriesPublishedInIssue = (
   return true
 }
 
+export const SERIES_PUBLICATION_PACE_OPTIONS = [
+  {
+    value: 'weekly',
+    label: '毎号'
+  },
+  {
+    value: 'biweekly',
+    label: '隔週'
+  },
+  {
+    value: 'monthly',
+    label: '月1'
+  }
+]
+
+export const normalizeSeriesPublicationPace = (
+  value
+) => {
+  if (
+    value === 'biweekly' ||
+    value === 'monthly'
+  ) {
+    return value
+  }
+
+  return 'weekly'
+}
+
+export const getSeriesPublicationPaceLabel = (
+  value
+) => {
+  const normalizedValue =
+    normalizeSeriesPublicationPace(value)
+
+  return (
+    SERIES_PUBLICATION_PACE_OPTIONS.find(
+      (option) => {
+        return option.value === normalizedValue
+      }
+    )?.label || '毎号'
+  )
+}
+
+export const isSeriesPublishedInIssue = (
+  series,
+  year,
+  issue,
+  magazine
+) => {
+  if (!magazine) {
+    return true
+  }
+
+  if (isHartaMagazine(magazine)) {
+    return isHartaSeriesPublishedInIssue(
+      series,
+      issue
+    )
+  }
+
+  if (magazine.frequency !== 'weekly') {
+    return true
+  }
+
+  const pace =
+    normalizeSeriesPublicationPace(
+      series.publicationPace
+    )
+
+  if (pace === 'weekly') {
+    return true
+  }
+
+  const startIssue =
+    Number(series.startIssue) || 0
+
+  if (!startIssue) {
+    return true
+  }
+
+  const startYear =
+    Number(series.startIssueYear) ||
+    Number(series.issueYear) ||
+    Number(year) ||
+    new Date().getFullYear()
+
+  const currentSerial =
+    getIssueSerial(
+      Number(year) || startYear,
+      Number(issue) || 0,
+      magazine
+    )
+
+  const startSerial =
+    getIssueSerial(
+      startYear,
+      startIssue,
+      magazine
+    )
+
+  const offset =
+    currentSerial - startSerial
+
+  if (offset < 0) {
+    return false
+  }
+
+  const interval =
+    pace === 'monthly'
+      ? 4
+      : 2
+
+  return offset % interval === 0
+}
+
 export const getIssuesPerYear = (
   magazine,
   year = new Date().getFullYear()
@@ -1409,6 +1524,22 @@ export const getNextPublishedIssue = (
     )
 
   if (!isHartaMagazine(magazine)) {
+    while (
+      !isSeriesPublishedInIssue(
+        series,
+        next.year,
+        next.issue,
+        magazine
+      )
+    ) {
+      next =
+        getNextIssue(
+          next.year,
+          next.issue,
+          magazine
+        )
+    }
+
     return next
   }
 
@@ -1443,6 +1574,23 @@ export const getPrevPublishedIssue = (
     )
 
   if (!isHartaMagazine(magazine)) {
+    while (
+      prev.issue > 1 &&
+      !isSeriesPublishedInIssue(
+        series,
+        prev.year,
+        prev.issue,
+        magazine
+      )
+    ) {
+      prev =
+        getPrevIssue(
+          prev.year,
+          prev.issue,
+          magazine
+        )
+    }
+
     return prev
   }
 
@@ -1471,7 +1619,8 @@ export const getUnreadIssueCount = (
 ) => {
   if (
     !magazine ||
-    series.status === 'completed'
+    series.status === 'completed' ||
+    series.status === 'paused'
   ) {
     return 0
   }
@@ -1538,21 +1687,42 @@ export const getUnreadIssueCount = (
     return 0
   }
 
-  if (!isHartaMagazine(magazine)) {
-    return targetSerial - effectiveReadSerial
-  }
-
   let count = 0
 
-  for (
-    let volume = effectiveReadSerial + 1;
-    volume <= targetSerial;
-    volume += 1
+  let current = {
+    year: readYear,
+    issue: Number(series.issue) || 0
+  }
+
+  if (isUnread && startIssue) {
+    current = getPrevIssue(
+      series.startIssueYear ||
+        readYear,
+      startIssue,
+      magazine
+    )
+  }
+
+  while (
+    getIssueSerial(
+      current.year,
+      current.issue,
+      magazine
+    ) < targetSerial
   ) {
+    current =
+      getNextIssue(
+        current.year,
+        current.issue,
+        magazine
+      )
+
     if (
-      isHartaSeriesPublishedInIssue(
+      isSeriesPublishedInIssue(
         series,
-        volume
+        current.year,
+        current.issue,
+        magazine
       )
     ) {
       count += 1

@@ -6,7 +6,9 @@ import {
   clampIssueForYear,
   getIssueOptions,
   getHartaYearMonthFromVolume,
-  getYearOptions
+  getYearOptions,
+  normalizeSeriesPublicationPace,
+  SERIES_PUBLICATION_PACE_OPTIONS
 } from '../utils/issueUtils'
 
 function SeriesEdit({
@@ -21,6 +23,7 @@ function SeriesEdit({
   updateCompletedIssueDirect,
   updateStartIssueDirect,
   updateHartaGroupDirect,
+  updatePublicationPaceDirect,
   handleImageUpload,
   saveCroppedImage
 }) {
@@ -34,6 +37,9 @@ function SeriesEdit({
 
   const isHarta =
     magazine?.frequency === 'harta'
+
+  const isWeekly =
+    magazine?.frequency === 'weekly'
 
   const [localTitle, setLocalTitle] =
     useState(editTitle)
@@ -114,6 +120,15 @@ function SeriesEdit({
     selectedSeries.hartaGroup || 'ha'
   )
 
+  const [
+    localPublicationPace,
+    setLocalPublicationPace
+  ] = useState(
+    normalizeSeriesPublicationPace(
+      selectedSeries.publicationPace
+    )
+  )
+
   const [showCropModal, setShowCropModal] =
     useState(false)
 
@@ -157,6 +172,12 @@ function SeriesEdit({
 
     setLocalHartaGroup(
       selectedSeries.hartaGroup || 'ha'
+    )
+
+    setLocalPublicationPace(
+      normalizeSeriesPublicationPace(
+        selectedSeries.publicationPace
+      )
     )
   }, [editTitle, selectedSeries])
 
@@ -229,6 +250,11 @@ function SeriesEdit({
     updateHartaGroupDirect(
       selectedSeries.id,
       localHartaGroup
+    )
+
+    updatePublicationPaceDirect(
+      selectedSeries.id,
+      localPublicationPace
     )
 
     setSelectedSeries(null)
@@ -430,6 +456,32 @@ function SeriesEdit({
               <option value="ta">
                 た組（奇数号）
               </option>
+            </select>
+          </div>
+        )}
+
+        {isWeekly && (
+          <div className="edit-group">
+            <div>掲載ペース</div>
+
+            <select
+              value={localPublicationPace}
+              onChange={(e) =>
+                setLocalPublicationPace(
+                  e.target.value
+                )
+              }
+            >
+              {SERIES_PUBLICATION_PACE_OPTIONS.map(
+                (option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                )
+              )}
             </select>
           </div>
         )}

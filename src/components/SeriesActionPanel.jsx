@@ -2,6 +2,7 @@ function SeriesActionPanel({
   item,
   navigate,
   toggleStatus,
+  updateStatus,
   deleteSeries,
   className = '',
   onEdit,
@@ -29,6 +30,41 @@ function SeriesActionPanel({
       >
         編集
       </button>
+
+      {item.status !== 'completed' && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+
+            const nextStatus =
+              item.status === 'paused'
+                ? 'ongoing'
+                : 'paused'
+
+            const ok =
+              window.confirm(
+                nextStatus === 'paused'
+                  ? `「${item.title}」を休載中にしますか？`
+                  : `「${item.title}」を連載中に戻しますか？`
+              )
+
+            if (!ok) {
+              return
+            }
+
+            updateStatus?.(
+              item.id,
+              nextStatus
+            )
+            onClose?.()
+          }}
+        >
+          {item.status === 'paused'
+            ? '連載中に戻す'
+            : '休載中にする'}
+        </button>
+      )}
 
       <button
         type="button"

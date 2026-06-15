@@ -7,6 +7,8 @@ function SeriesAddPage({
   setNewSeriesTitle,
   newSeriesHartaGroup,
   setNewSeriesHartaGroup,
+  newSeriesPublicationPace,
+  setNewSeriesPublicationPace,
   newSeriesStartIssueYear,
   setNewSeriesStartIssueYear,
   newSeriesStartIssue,
@@ -81,6 +83,12 @@ function SeriesAddPage({
       newSeriesImage={newSeriesImage}
       newSeriesHartaGroup={newSeriesHartaGroup}
       setNewSeriesHartaGroup={setNewSeriesHartaGroup}
+      newSeriesPublicationPace={
+        newSeriesPublicationPace
+      }
+      setNewSeriesPublicationPace={
+        setNewSeriesPublicationPace
+      }
       setNewSeriesImage={setNewSeriesImage}
       magazine={magazine}
       saveNewSeries={() =>

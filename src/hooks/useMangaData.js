@@ -11,6 +11,7 @@ import {
   getNextIssue,
   getNextPublishedIssue,
   getPrevPublishedIssue,
+  normalizeSeriesPublicationPace,
   normalizeWeeklyMergedIssuePairs
 } from '../utils/issueUtils'
 import {
@@ -33,6 +34,17 @@ const IMAGE_MIGRATION_COMPLETE_KEY =
 const LEGACY_IMAGE_MIGRATION_LIMIT = 5
 
 let hasShownStorageAlert = false
+
+function normalizeSeriesStatus(value) {
+  if (
+    value === 'completed' ||
+    value === 'paused'
+  ) {
+    return value
+  }
+
+  return 'ongoing'
+}
 
 function isImageDataUrl(value) {
   return (
@@ -97,6 +109,7 @@ function normalizeSeriesItem(item) {
 
   return {
     ...item,
+    status: normalizeSeriesStatus(item.status),
     completedIssueYear:
       hasCompletedIssueYear &&
       item.completedIssueYear
@@ -105,7 +118,11 @@ function normalizeSeriesItem(item) {
     completedIssue:
       hasCompletedIssue
         ? Number(item.completedIssue) || 0
-        : fallbackIssue
+        : fallbackIssue,
+    publicationPace:
+      normalizeSeriesPublicationPace(
+        item.publicationPace
+      )
   }
 }
 
@@ -910,6 +927,7 @@ function useMangaData({
     newSeriesCompletedIssueYear,
     newSeriesCompletedIssue,
     newSeriesImage,
+    newSeriesPublicationPace,
     setNewSeriesTitle,
     setNewSeriesHartaGroup,
     setNewSeriesStartIssueYear,
@@ -919,6 +937,7 @@ function useMangaData({
     setNewSeriesCompletedIssueYear,
     setNewSeriesCompletedIssue,
     newSeriesHartaGroup,
+    setNewSeriesPublicationPace,
     setNewSeriesImage
   }) => {
     if (newSeriesTitle.trim() === '') {
@@ -995,6 +1014,10 @@ function useMangaData({
     completedIssue: completedIssue,
 
     hartaGroup: newSeriesHartaGroup,
+    publicationPace:
+      normalizeSeriesPublicationPace(
+        newSeriesPublicationPace
+      ),
 
     status: 'ongoing',
     imageId: imageId,
@@ -1014,6 +1037,7 @@ function useMangaData({
     setNewSeriesCompletedIssueYear(new Date().getFullYear())
     setNewSeriesCompletedIssue(0)
     setNewSeriesHartaGroup('ha')
+    setNewSeriesPublicationPace('weekly')
     setNewSeriesImage('')
 
     navigate(
@@ -1178,6 +1202,23 @@ function useMangaData({
       )
     }
 
+  const updatePublicationPaceDirect =
+    (id, publicationPace) => {
+      setSeriesList((prevList) =>
+        prevList.map((item) => {
+          return item.id === id
+            ? {
+                ...item,
+                publicationPace:
+                  normalizeSeriesPublicationPace(
+                    publicationPace
+                  )
+              }
+            : item
+        })
+      )
+    }
+
   const updateWeeklyIssueRule = (
     magazineId,
     year,
@@ -1315,7 +1356,8 @@ function useMangaData({
       prevList.map((item) => {
         if (
           item.id !== id ||
-          item.status === 'completed'
+          item.status === 'completed' ||
+          item.status === 'paused'
         ) {
           return item
         }
@@ -1351,7 +1393,8 @@ function useMangaData({
       prevList.map((item) => {
         if (
           item.id !== id ||
-          item.status === 'completed'
+          item.status === 'completed' ||
+          item.status === 'paused'
         ) {
           return item
         }
@@ -1575,9 +1618,26 @@ function useMangaData({
           ? {
               ...item,
               status:
-                item.status === 'ongoing'
-                  ? 'completed'
-                  : 'ongoing'
+                item.status === 'completed'
+                  ? 'ongoing'
+                  : 'completed'
+            }
+          : item
+      })
+    )
+  }
+
+  const updateStatus = (
+    id,
+    status
+  ) => {
+    setSeriesList((prevList) =>
+      prevList.map((item) => {
+        return item.id === id
+          ? {
+              ...item,
+              status:
+                normalizeSeriesStatus(status)
             }
           : item
       })
@@ -1902,6 +1962,7 @@ function useMangaData({
     bulkAddIssueByHartaGroups,
     bulkMinusIssueByHartaGroups,
     toggleStatus,
+    updateStatus,
     toggleSeriesSelection,
     bulkChangeSelectedIssue,
     updateStartIssueDirect,
@@ -1914,6 +1975,7 @@ function useMangaData({
     updateWeeklyMergedIssues,
     toggleWeeklyMergedIssue,
     updateHartaGroupDirect,
+    updatePublicationPaceDirect,
     handleImageUpload
   }
 }

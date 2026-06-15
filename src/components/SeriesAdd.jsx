@@ -7,7 +7,8 @@ import {
   clampIssueForYear,
   getEstimatedLatestIssueInfo,
   getIssueOptions,
-  getYearOptions
+  getYearOptions,
+  SERIES_PUBLICATION_PACE_OPTIONS
 } from '../utils/issueUtils'
 
 function SeriesAdd({
@@ -30,6 +31,8 @@ function SeriesAdd({
   saveNewSeries,
   newSeriesHartaGroup,
   setNewSeriesHartaGroup,
+  newSeriesPublicationPace,
+  setNewSeriesPublicationPace,
   magazine,
   goBack
 }) {
@@ -38,6 +41,9 @@ function SeriesAdd({
 
   const isHarta =
     magazine?.frequency === 'harta'
+
+  const isWeekly =
+    magazine?.frequency === 'weekly'
 
   const startIssueOptions =
     getIssueOptions(
@@ -303,6 +309,32 @@ function SeriesAdd({
               <option value="ta">
                 た組（奇数号）
               </option>
+            </select>
+          </div>
+        )}
+
+        {isWeekly && (
+          <div className="edit-group">
+            <div>掲載ペース</div>
+
+            <select
+              value={newSeriesPublicationPace}
+              onChange={(e) =>
+                setNewSeriesPublicationPace(
+                  e.target.value
+                )
+              }
+            >
+              {SERIES_PUBLICATION_PACE_OPTIONS.map(
+                (option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                )
+              )}
             </select>
           </div>
         )}

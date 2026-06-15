@@ -80,6 +80,7 @@ function MagazineSeriesPage({
   bulkChangeSelectedIssue,
   toggleSeriesSelection,
   toggleStatus,
+  updateStatus,
   deleteSeries,
   navigate,
   useParams
@@ -240,7 +241,10 @@ function MagazineSeriesPage({
         year: item.completedIssueYear,
         issue: completedIssue
       }
-    } else if (item.status === 'completed') {
+    } else if (
+      item.status === 'completed' ||
+      item.status === 'paused'
+    ) {
       endIssueInfo = {
         year: item.issueYear,
         issue: item.issue
@@ -273,6 +277,10 @@ function MagazineSeriesPage({
     item,
     unreadCount
   ) => {
+    if (item.status === 'paused') {
+      return '休載中'
+    }
+
     return item.status === 'completed'
       ? '完結'
       : `未読 ${unreadCount}`
@@ -1155,6 +1163,7 @@ function MagazineSeriesPage({
                   item={item}
                   navigate={navigate}
                   toggleStatus={toggleStatus}
+                  updateStatus={updateStatus}
                   deleteSeries={deleteSeries}
                   onEdit={saveReturnStateAndEdit}
                   onClose={() =>
@@ -1254,6 +1263,7 @@ function MagazineSeriesPage({
                     item={item}
                     navigate={navigate}
                     toggleStatus={toggleStatus}
+                    updateStatus={updateStatus}
                     deleteSeries={deleteSeries}
                     onEdit={saveReturnStateAndEdit}
                     onClose={() =>
@@ -1431,6 +1441,7 @@ function MagazineSeriesPage({
                     item={expandedGridItem}
                     navigate={navigate}
                     toggleStatus={toggleStatus}
+                    updateStatus={updateStatus}
                     deleteSeries={deleteSeries}
                     className="grid-popup-menu"
                     onEdit={saveReturnStateAndEdit}
