@@ -4,6 +4,7 @@ import ImageView from '../components/ImageView'
 import IssueLabel from '../components/IssueLabel'
 import HartaGroupBadge from '../components/HartaGroupBadge'
 import {
+  formatIssueSpanPeriod,
   getIssueSpanCount
 } from '../utils/issueUtils'
 
@@ -133,25 +134,11 @@ function CompletedSeriesPage({
         targetMagazine
       )
 
-    if (targetMagazine?.frequency === 'harta') {
-      return `${diff}号分`
-    }
-
-    if (targetMagazine?.frequency === 'monthly') {
-      const years =
-        Math.floor(diff / 12)
-      const months =
-        diff % 12
-
-      return `${years}年${months}か月`
-    }
-
-    const years =
-      Math.floor(diff / 52)
-    const weeks =
-      diff % 52
-
-    return `${years}年${weeks}週`
+    return formatIssueSpanPeriod(
+      targetMagazine,
+      diff,
+      item.startIssueYear
+    )
   }
 
   const renderPeriodBadge = (

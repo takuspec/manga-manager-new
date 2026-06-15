@@ -792,33 +792,6 @@ export const getIssueSerial = (
   return total + issue
 }
 
-const getIssueNumberSerial = (
-  year,
-  issue,
-  magazine
-) => {
-  if (isHartaMagazine(magazine)) {
-    return Number(issue) || 0
-  }
-
-  let total = 0
-
-  for (let y = 1980; y < year; y++) {
-    total +=
-      magazine?.frequency === 'weekly'
-        ? getWeeklyFinalIssue(
-            magazine,
-            y
-          )
-        : getIssuesPerYear(
-            magazine,
-            y
-          )
-  }
-
-  return total + (Number(issue) || 0)
-}
-
 export const getIssueSpanCount = (
   magazine,
   startYear,
@@ -840,38 +813,19 @@ export const getIssueSpanCount = (
     return 0
   }
 
-  const normalizedStartYear =
-    Number(startYear) ||
-    new Date().getFullYear()
-
-  const normalizedEndYear =
-    Number(endYear) ||
-    normalizedStartYear
-
-  const startMergedPair =
-    magazine.frequency === 'weekly'
-      ? getWeeklyMergedPairForIssue(
-          magazine,
-          normalizedStartYear,
-          normalizedStartIssue
-        )
-      : null
-
-  const effectiveStartIssue =
-    startMergedPair
-      ? startMergedPair[0]
-      : normalizedStartIssue
-
   const startSerial =
-    getIssueNumberSerial(
-      normalizedStartYear,
-      effectiveStartIssue,
+    getIssueSerial(
+      Number(startYear) ||
+        new Date().getFullYear(),
+      normalizedStartIssue,
       magazine
     )
 
   const endSerial =
-    getIssueNumberSerial(
-      normalizedEndYear,
+    getIssueSerial(
+      Number(endYear) ||
+        Number(startYear) ||
+        new Date().getFullYear(),
       normalizedEndIssue,
       magazine
     )
@@ -880,26 +834,63 @@ export const getIssueSpanCount = (
     return 0
   }
 
-  let span =
+  return Math.max(
+    1,
     endSerial - startSerial + 1
+  )
+}
 
-  if (magazine.frequency === 'weekly') {
-    const endMergedPair =
-      getWeeklyMergedPairForIssue(
-        magazine,
-        normalizedEndYear,
-        normalizedEndIssue
-      )
+export const formatIssueSpanPeriod = (
+  magazine,
+  spanCount,
+  startYear = new Date().getFullYear()
+) => {
+  const normalizedSpanCount =
+    Number(spanCount) || 0
 
-    if (
-      endMergedPair &&
-      normalizedEndIssue === endMergedPair[1]
-    ) {
-      span -= 1
-    }
+  if (isHartaMagazine(magazine)) {
+    return `${normalizedSpanCount}号分`
   }
 
-  return Math.max(1, span)
+  if (magazine?.frequency === 'monthly') {
+    const years =
+      Math.floor(normalizedSpanCount / 12)
+    const months =
+      normalizedSpanCount % 12
+
+    return `${years}年${months}か月`
+  }
+
+  if (magazine?.frequency === 'weekly') {
+    let years = 0
+    let weeks = normalizedSpanCount
+    let currentYear =
+      Number(startYear) ||
+      new Date().getFullYear()
+
+    while (weeks > 0) {
+      const yearIssueCount =
+        getWeeklyIssueSerialCount(
+          magazine,
+          currentYear
+        )
+
+      if (
+        !yearIssueCount ||
+        weeks < yearIssueCount
+      ) {
+        break
+      }
+
+      weeks -= yearIssueCount
+      years += 1
+      currentYear += 1
+    }
+
+    return `${years}年${weeks}週`
+  }
+
+  return `${normalizedSpanCount}号分`
 }
 
 export const formatIssue = (

@@ -15,6 +15,7 @@ import {
   getIssueOptions,
   getYearOptions,
   getEstimatedLatestIssueInfo,
+  formatIssueSpanPeriod,
   getIssueSpanCount,
   getIssueSerial
 } from '../utils/issueUtils'
@@ -261,25 +262,11 @@ function MagazineSeriesPage({
     const diff =
       getSeriesPeriodSerial(item)
 
-    if (isHarta) {
-      return `${diff}号分`
-    }
-
-    if (selectedMagazine.frequency === 'monthly') {
-      const years =
-        Math.floor(diff / 12)
-      const months =
-        diff % 12
-
-      return `${years}年${months}か月`
-    }
-
-    const years =
-      Math.floor(diff / 52)
-    const weeks =
-      diff % 52
-
-    return `${years}年${weeks}週`
+    return formatIssueSpanPeriod(
+      selectedMagazine,
+      diff,
+      item.startIssueYear
+    )
   }
 
   const renderStatusText = (
@@ -311,14 +298,6 @@ function MagazineSeriesPage({
         </span>
       </>
     )
-
-    if (sortMode !== 'duration') {
-      return (
-        <div className={baseClassName}>
-          {content}
-        </div>
-      )
-    }
 
     return (
       <div className="series-status-badge-row">

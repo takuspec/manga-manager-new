@@ -1657,15 +1657,17 @@ select.issue-number-select option {
 }
 
 .completed-period-badge {
-  margin: 6px auto 0;
-  padding: 4px 8px;
-  font-size: 11px;
+  margin: 8px 0 0;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .completed-grid-card .completed-period-badge {
-  margin-top: 4px;
-  padding: 3px 6px;
-  font-size: 10px;
+  margin: 3px auto 2px;
+  padding: 5px 9px;
+  font-size: 12px;
+  min-width: 56px;
 }
 
 .series-compact-card .completed-period-badge {
