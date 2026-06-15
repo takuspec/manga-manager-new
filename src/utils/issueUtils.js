@@ -891,17 +891,9 @@ export const getIssueSpanCount = (
         normalizedEndIssue
       )
 
-    const isSameMergedPair =
-      startMergedPair &&
-      endMergedPair &&
-      normalizedStartYear === normalizedEndYear &&
-      startMergedPair[0] === endMergedPair[0] &&
-      startMergedPair[1] === endMergedPair[1]
-
     if (
       endMergedPair &&
-      normalizedEndIssue === endMergedPair[1] &&
-      !isSameMergedPair
+      normalizedEndIssue === endMergedPair[1]
     ) {
       span -= 1
     }
