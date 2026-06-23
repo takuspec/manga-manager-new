@@ -187,6 +187,21 @@ function MagazineSeriesPage({
     isHarta &&
     selectedHartaGroups.length > 0
 
+  const shouldShowByUnreadZeroFilter = (item) => {
+    if (showUnreadZeroOngoing) {
+      return true
+    }
+
+    if (item.status === 'paused') {
+      return false
+    }
+
+    return !(
+      item.status === 'ongoing' &&
+      getUnreadCount(item) === 0
+    )
+  }
+
   const shouldShowByHartaGroup = (item) => {
     if (!hasSelectedHartaGroups) {
       return true
@@ -338,11 +353,7 @@ function MagazineSeriesPage({
           return false
         }
 
-        if (
-          !showUnreadZeroOngoing &&
-          item.status === 'ongoing' &&
-          getUnreadCount(item) === 0
-        ) {
+        if (!shouldShowByUnreadZeroFilter(item)) {
           return false
         }
 
@@ -555,11 +566,7 @@ function MagazineSeriesPage({
           return false
         }
 
-        if (
-          !showUnreadZeroOngoing &&
-          item.status === 'ongoing' &&
-          getUnreadCount(item) === 0
-        ) {
+        if (!shouldShowByUnreadZeroFilter(item)) {
           return false
         }
 
