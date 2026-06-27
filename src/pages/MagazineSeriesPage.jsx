@@ -45,6 +45,29 @@ const unreadZeroLabelMap = {
   false: '未読0を非表示'
 }
 
+const sortOptions = [
+  {
+    value: 'unread',
+    label: '未読順'
+  },
+  {
+    value: 'read',
+    label: '読了順'
+  },
+  {
+    value: 'title',
+    label: '作品名順'
+  },
+  {
+    value: 'start',
+    label: '開始号順'
+  },
+  {
+    value: 'duration',
+    label: '連載期間順'
+  }
+]
+
 const SERIES_RETURN_STATE_KEY =
   'manga-manager-series-return-state'
 
@@ -57,6 +80,11 @@ function MagazineSeriesPage({
   setSortMode,
   sortDirection,
   setSortDirection,
+  secondarySortMode,
+  setSecondarySortMode,
+  secondarySortDirection,
+  setSecondarySortDirection,
+  saveDefaultSeriesSort,
   showCompleted,
   setShowCompleted,
   showUnreadZeroOngoing,
@@ -175,6 +203,74 @@ function MagazineSeriesPage({
       normalizedIssue,
       selectedMagazine
     )
+  }
+
+  const compareSeriesBySortMode = (
+    mode,
+    a,
+    b
+  ) => {
+    switch (mode) {
+      case 'unread':
+        return (
+          getUnreadCount(a) -
+          getUnreadCount(b)
+        )
+
+      case 'title':
+        return (a.title || '').localeCompare(
+          b.title || '',
+          'ja'
+        )
+
+      case 'issue':
+      case 'read':
+        return (
+          getSafeIssueSerial(
+            a.issueYear,
+            a.issue
+          ) -
+          getSafeIssueSerial(
+            b.issueYear,
+            b.issue
+          )
+        )
+
+      case 'start':
+        return (
+          getSafeIssueSerial(
+            a.startIssueYear,
+            a.startIssue
+          ) -
+          getSafeIssueSerial(
+            b.startIssueYear,
+            b.startIssue
+          )
+        )
+
+      case 'duration':
+        return (
+          getSeriesPeriodSerial(a) -
+          getSeriesPeriodSerial(b)
+        )
+
+      default:
+        return 0
+    }
+  }
+
+  const compareSeriesBySort = (
+    mode,
+    direction,
+    a,
+    b
+  ) => {
+    const result =
+      compareSeriesBySortMode(mode, a, b)
+
+    return direction === 'asc'
+      ? result
+      : result * -1
   }
 
   const shouldShowStartIssue =
@@ -360,59 +456,27 @@ function MagazineSeriesPage({
         return true
       })
       .sort((a, b) => {
-        let result = 0
+        const primaryResult =
+          compareSeriesBySort(
+            sortMode,
+            sortDirection,
+            a,
+            b
+          )
 
-        switch (sortMode) {
-          case 'unread':
-            result =
-              getUnreadCount(a) -
-              getUnreadCount(b)
-            break
-
-          case 'title':
-            result =
-              (a.title || '').localeCompare(
-                b.title || '',
-                'ja'
-              )
-            break
-
-          case 'issue':
-          case 'read':
-            result =
-              getSafeIssueSerial(
-                a.issueYear,
-                a.issue
-              ) -
-              getSafeIssueSerial(
-                b.issueYear,
-                b.issue
-              )
-            break
-
-          case 'start':
-            result =
-              getSafeIssueSerial(
-                a.startIssueYear,
-                a.startIssue
-              ) -
-              getSafeIssueSerial(
-                b.startIssueYear,
-                b.startIssue
-              )
-            break
-
-          case 'duration':
-            result =
-              getSeriesPeriodSerial(a) -
-              getSeriesPeriodSerial(b)
-            break
-
-          default:
-            result = 0
+        if (primaryResult !== 0) {
+          return primaryResult
         }
 
-        if (result === 0) {
+        const secondaryResult =
+          compareSeriesBySort(
+            secondarySortMode,
+            secondarySortDirection,
+            a,
+            b
+          )
+
+        if (secondaryResult === 0) {
           if (
             a.status !== 'completed' &&
             b.status === 'completed'
@@ -433,10 +497,7 @@ function MagazineSeriesPage({
           )
         }
 
-        return sortDirection === 'asc'
-          ? result
-          : result * -1        
-
+        return secondaryResult
       })
   }
 
@@ -471,6 +532,8 @@ function MagazineSeriesPage({
         displaySeriesIds,
         sortMode,
         sortDirection,
+        secondarySortMode,
+        secondarySortDirection,
         showCompleted,
         showUnreadZeroOngoing,
         viewMode: currentViewMode
@@ -502,6 +565,10 @@ function MagazineSeriesPage({
       returnState.magazineId === magazineId &&
       returnState.sortMode === sortMode &&
       returnState.sortDirection === sortDirection &&
+      returnState.secondarySortMode ===
+        secondarySortMode &&
+      returnState.secondarySortDirection ===
+        secondarySortDirection &&
       returnState.showCompleted === showCompleted &&
       returnState.showUnreadZeroOngoing ===
         showUnreadZeroOngoing &&
@@ -528,6 +595,8 @@ function MagazineSeriesPage({
     magazineId,
     sortMode,
     sortDirection,
+    secondarySortMode,
+    secondarySortDirection,
     showCompleted,
     showUnreadZeroOngoing,
     selectedHartaGroups
@@ -883,53 +952,98 @@ function MagazineSeriesPage({
 
         {showSeriesControls && (
           <>
-            <div className="sort-row sort-row-with-button">
+            <div className="sort-controls">
+              <div className="sort-control-label">
+                第1条件
+              </div>
 
-            <select
-              value={sortMode}
-              onChange={(e) =>
-                setSortMode(
-                  e.target.value
-                )
-              }
-            >
-              <option value="unread">
-                未読順
-              </option>
+              <div className="sort-row sort-row-with-button">
+                <select
+                  value={sortMode}
+                  onChange={(e) =>
+                    setSortMode(
+                      e.target.value
+                    )
+                  }
+                >
+                  {sortOptions.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
 
-              <option value="read">
-                読了順
-              </option>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSortDirection(
+                      sortDirection === 'asc'
+                        ? 'desc'
+                        : 'asc'
+                    )
+                  }
+                >
+                  {sortDirection === 'asc'
+                    ? '昇順'
+                    : '降順'}
+                </button>
+              </div>
 
-              <option value="title">
-                作品名順
-              </option>
+              <div className="sort-control-label">
+                第2条件
+              </div>
 
-              <option value="start">
-                開始号順
-              </option>
+              <div className="sort-row sort-row-with-button">
+                <select
+                  value={secondarySortMode}
+                  onChange={(e) =>
+                    setSecondarySortMode(
+                      e.target.value
+                    )
+                  }
+                >
+                  <option value="none">
+                    指定なし
+                  </option>
 
-              <option value="duration">
-                連載期間順
-              </option>
+                  {sortOptions.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
 
-            </select>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSecondarySortDirection(
+                      secondarySortDirection ===
+                        'asc'
+                        ? 'desc'
+                        : 'asc'
+                    )
+                  }
+                >
+                  {secondarySortDirection === 'asc'
+                    ? '昇順'
+                    : '降順'}
+                </button>
+              </div>
 
-            <button
-              onClick={() =>
-                setSortDirection(
-                  sortDirection === 'asc'
-                    ? 'desc'
-                    : 'asc'
-                )
-              }
-            >
-              {sortDirection === 'asc'
-                ? '昇順'
-                : '降順'}
-            </button>
-
-          </div>
+              <button
+                type="button"
+                className="sort-default-button"
+                onClick={saveDefaultSeriesSort}
+              >
+                デフォルトにする
+              </button>
+            </div>
 
             {currentViewMode === 'grid' && (
 

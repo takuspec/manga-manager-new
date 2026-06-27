@@ -25,17 +25,149 @@ import {
   getUnreadIssueCount
 } from './utils/issueUtils'
 
+const SERIES_SORT_SETTINGS_KEY =
+  'manga-manager-series-sort-settings'
+
+const primarySeriesSortModeValues = [
+  'unread',
+  'read',
+  'title',
+  'start',
+  'duration'
+]
+
+const secondarySeriesSortModeValues = [
+  ...primarySeriesSortModeValues,
+  'none'
+]
+
+const seriesSortDirectionValues = [
+  'asc',
+  'desc'
+]
+
+const defaultSeriesSortSettings = {
+  sortMode: 'unread',
+  sortDirection: 'desc',
+  secondarySortMode: 'title',
+  secondarySortDirection: 'asc'
+}
+
+const normalizeSeriesSortSettings = (value) => {
+  const source =
+    value && typeof value === 'object'
+      ? value
+      : {}
+
+  const sortMode =
+    primarySeriesSortModeValues.includes(
+      source.sortMode
+    )
+      ? source.sortMode
+      : defaultSeriesSortSettings.sortMode
+
+  const sortDirection =
+    seriesSortDirectionValues.includes(
+      source.sortDirection
+    )
+      ? source.sortDirection
+      : defaultSeriesSortSettings.sortDirection
+
+  const secondarySortMode =
+    secondarySeriesSortModeValues.includes(
+      source.secondarySortMode
+    )
+      ? source.secondarySortMode
+      : defaultSeriesSortSettings.secondarySortMode
+
+  const secondarySortDirection =
+    seriesSortDirectionValues.includes(
+      source.secondarySortDirection
+    )
+      ? source.secondarySortDirection
+      : defaultSeriesSortSettings.secondarySortDirection
+
+  return {
+    sortMode,
+    sortDirection,
+    secondarySortMode,
+    secondarySortDirection
+  }
+}
+
+const getInitialSeriesSortSettings = () => {
+  try {
+    const rawValue =
+      localStorage.getItem(
+        SERIES_SORT_SETTINGS_KEY
+      )
+
+    return normalizeSeriesSortSettings(
+      rawValue ? JSON.parse(rawValue) : null
+    )
+  } catch (error) {
+    console.error(error)
+    return defaultSeriesSortSettings
+  }
+}
+
 function App() {
   const navigate = useNavigate()
 
   const [viewMode, setViewMode] =
     useState('list')
 
-  const [sortMode, setSortMode] =
-    useState('unread')
+  const [
+    seriesSortSettings,
+    setSeriesSortSettings
+  ] = useState(getInitialSeriesSortSettings)
 
-  const [sortDirection, setSortDirection] =
-    useState('desc')
+  const {
+    sortMode,
+    sortDirection,
+    secondarySortMode,
+    secondarySortDirection
+  } = seriesSortSettings
+
+  const updateSeriesSortSettings = (patch) => {
+    setSeriesSortSettings((prev) =>
+      normalizeSeriesSortSettings({
+        ...prev,
+        ...patch
+      })
+    )
+  }
+
+  const setSortMode = (value) => {
+    updateSeriesSortSettings({
+      sortMode: value
+    })
+  }
+
+  const setSortDirection = (value) => {
+    updateSeriesSortSettings({
+      sortDirection: value
+    })
+  }
+
+  const setSecondarySortMode = (value) => {
+    updateSeriesSortSettings({
+      secondarySortMode: value
+    })
+  }
+
+  const setSecondarySortDirection = (value) => {
+    updateSeriesSortSettings({
+      secondarySortDirection: value
+    })
+  }
+
+  const saveDefaultSeriesSort = () => {
+    localStorage.setItem(
+      SERIES_SORT_SETTINGS_KEY,
+      JSON.stringify(seriesSortSettings)
+    )
+  }
 
   const [showCompleted, setShowCompleted] =
     useState(true)
@@ -282,6 +414,19 @@ function App() {
             setSortMode={setSortMode}
             sortDirection={sortDirection}
             setSortDirection={setSortDirection}
+            secondarySortMode={secondarySortMode}
+            setSecondarySortMode={
+              setSecondarySortMode
+            }
+            secondarySortDirection={
+              secondarySortDirection
+            }
+            setSecondarySortDirection={
+              setSecondarySortDirection
+            }
+            saveDefaultSeriesSort={
+              saveDefaultSeriesSort
+            }
             showCompleted={showCompleted}
             setShowCompleted={setShowCompleted}
             showUnreadZeroOngoing={

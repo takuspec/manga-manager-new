@@ -479,6 +479,21 @@ textarea {
   margin-bottom: 16px;
 }
 
+.sort-controls {
+  margin-bottom: 16px;
+}
+
+.sort-control-label {
+  margin: 0 0 6px 2px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sort-controls .sort-row {
+  margin-bottom: 10px;
+}
+
 .sort-row select {
   width: 100%;
 }
@@ -494,6 +509,13 @@ textarea {
 
 .sort-row-with-button button {
   width: 88px;
+}
+
+.sort-default-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 2px;
+  padding: 10px 12px;
 }
 
 .bulk-issue-box {
